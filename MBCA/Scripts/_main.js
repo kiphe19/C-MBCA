@@ -1,6 +1,8 @@
 ﻿var editor,
     unitEditor,
-    unitTable;
+    unitTable,
+    HireEditor,
+    i = 1;
 var getNewDistance = function () {
     $.post("api/distancevalue")
         .success(function (e) {
@@ -13,6 +15,20 @@ var getNewDistance = function () {
                 distance.push(qp);
             }
             unitEditor.field("unit_distance").update(distance);
+        })
+}
+var getVessel = function () {
+    $.post("api/getvessel")
+        .success(function (e) {
+            var vessel = Array();
+            for (var i in e.data) {
+                var qp = {
+                    label: e.data[i].name,
+                    value: e.data[i].name
+                }
+                vessel.push(qp);
+            }
+            HireEditor.field("vessel_name").update(vessel);
         })
 }
 
@@ -34,12 +50,16 @@ $(document).ready(function () {
 
     $('#vesselTable').DataTable({
         dom: "Bfrtip",
-        serverSide: true,
         ajax: {
             url: "api/vessel",
             type: 'post'
         },
         columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
             { data: "name" },
             { data: "vs_desc" }
         ],
@@ -49,7 +69,9 @@ $(document).ready(function () {
             { extend: 'edit', editor: editor },
             { extend: 'remove', editor: editor },
         ]
-    });
+    }).on('init', function () {
+        i = 1;
+    })
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/activity",
@@ -62,12 +84,16 @@ $(document).ready(function () {
 
     $('#activityTable').DataTable({
         dom: "Bfrtip",
-        serverSide: true,
         ajax: {
             url: "api/activity",
             type: 'post'
         },
         columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
             { data: "activity_name" },
             { data: "activity_ket" }
         ],
@@ -87,6 +113,8 @@ $(document).ready(function () {
                 editor: editor,
             },
         ]
+    }).on('init', function () {
+        i = 1;
     });
 
 
@@ -101,7 +129,7 @@ $(document).ready(function () {
                 type: "select",
                 className: ""
             },
-            { name: "unit_ket", label: "Description"}
+            { name: "unit_ket", label: "Description" }
         ]
     });
     unitEditor.one('preOpen', function () {
@@ -110,12 +138,16 @@ $(document).ready(function () {
 
     unitTable = $("#userTable").DataTable({
         dom: "Bfrtip",
-        serverSide: true,
         ajax: {
             url: "api/unit",
             type: 'post'
         },
         columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
             { data: "unit_name" },
             { data: "unit_distance" },
             { data: "unit_ket" }
@@ -126,7 +158,9 @@ $(document).ready(function () {
             { extend: 'edit', editor: unitEditor },
             { extend: 'remove', editor: unitEditor }
         ]
-    })
+    }).on('init', function () {
+        i = 1;
+    });
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/distance",
@@ -146,8 +180,12 @@ $(document).ready(function () {
             url: "api/distance",
             type: 'post'
         },
-        serverSide: true,
         columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
             { data: "distance_name" },
             {
                 data: null, render: function (data, type, row) {
@@ -161,6 +199,8 @@ $(document).ready(function () {
             { extend: "edit", editor: editor },
             { extend: "remove", editor: editor }
         ]
+    }).on('init', function () {
+        i = 1;
     });
 
     editor = new $.fn.dataTable.Editor({
@@ -179,6 +219,11 @@ $(document).ready(function () {
             type: "post"
         },
         columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
             { data: "tgl" },
             { data: "cost" }
         ],
@@ -188,17 +233,23 @@ $(document).ready(function () {
             { extend: "edit", editor: editor },
             { extend: "remove", editor: editor }
         ]
-    })
-        .order(0, 'desc');
+    }).order(0, 'desc')
+        .on('init', function () {
+            i = 1;
+        });
 
-    editor = new $.fn.dataTable.Editor({
+    HireEditor = new $.fn.dataTable.Editor({
         ajax: "api/hire",
         table: "#hireTable",
         fields: [
             { label: "Vessel", name: "vessel_name", type: "select" },
-            { label: "Early Period", name: "s_period", type: "datetime", format: "M/D/YYY"},
+            { label: "Early Period", name: "s_period", type: "datetime", format: "M/D/YYY" },
             { label: "End of Period", name: "f_period", type: "datetime", format: "M/D/YYY" }
         ]
+    })
+
+    HireEditor.one('preOpen', function () {
+        getVessel();
     })
 
     $("#hireTable").dataTable({
@@ -207,17 +258,23 @@ $(document).ready(function () {
             url: "api/hire",
             type: 'post'
         },
-        serverSide: true,
         select: true,
         columns: [
-            //{ data: "name" },
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
+            { data: "vessel" },
             { data: "s_period" },
             { data: "f_period" }
         ],
         buttons: [
-            { extend: "create", editor: editor, text: "Add new Hire" },
-            { extend: "edit", editor: editor },
-            { extend: "remove", editor: editor }
+            { extend: "create", editor: HireEditor, text: "Add new Hire" },
+            { extend: "edit", editor: HireEditor },
+            { extend: "remove", editor: HireEditor }
         ]
+    }).on('init', function () {
+        i = 1;
     });
 });
