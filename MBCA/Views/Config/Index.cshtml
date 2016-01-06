@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Config";
+    Layout = "~/Views/_Layout.cshtml";
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="active"><a href="#vessel" aria-controls="vessel" role="tab" data-toggle="tab">Vessel</a></li>
+            <li role="presentation"><a href="#activity" aria-controls="activity" role="tab" data-toggle="tab">Activity</a></li>
+            <li role="presentation"><a href="#user" aria-controls="user" role="tab" data-toggle="tab">User Unit</a></li>
+            <li role="presentation"><a href="#distance" aria-controls="distance" role="tab" data-toggle="tab">Distance</a></li>
+            <li role="presentation"><a href="#fuel" aria-controls="fuel" role="tab" data-toggle="tab">Daily Fuel</a></li>
+            <li role="presentation"><a href="#hire" aria-controls="hire" role="tab" data-toggle="tab">Hire</a></li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="vessel">
+                <table id="vesselTable" class="display table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Vessel Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="activity">
+                <table id="activityTable" class="display table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Activity Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="user">
+                <table id="userTable" class="table display table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Name of Unit</th>
+                            <th>Distance Area</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="distance">
+                <table id="distanceTable" class="display table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Area Name</th>
+                            <th>Distance</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="fuel">
+                <table id="fuelTable" class="display table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="hire">
+                <table id="hireTable" class="display table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Vessel Name</th>
+                            <th>Early Period</th>
+                            <th>End of Period</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
