@@ -302,6 +302,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\uikit.min.js" />
+    <Content Include="Scripts\_config.js" />
     <Content Include="Scripts\_main.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

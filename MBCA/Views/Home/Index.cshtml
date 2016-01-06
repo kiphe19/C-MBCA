@@ -3,4 +3,52 @@
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="active"><a href="#dailyPanel" role="tab" data-toggle="tab">Daily Activity</a></li>
+            <li role="presentation"><a href="#monthlyPanel" data-toggle="tab" role="tab">Monthly Activity</a></li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="#dailyPanel">
+                <table id="dailyTable" class="table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            @*<th>No</th>*@
+                            <th>Date</th>
+                            <th>Vessel Name</th>
+                            <th>Activity</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" id="qq"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="monthlyPanel">
+                <table id="monthlyTable" class="table table-hover table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            @*<th>No</th>*@
+                            <th>Date</th>
+                            <th>Vessel Name</th>
+                            <th>Activity</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" id="qq"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Script/xdkJKAds")
