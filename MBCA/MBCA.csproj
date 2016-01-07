@@ -178,9 +178,6 @@
     <Content Include="App_Data\Database_log.ldf">
       <DependentUpon>Database.mdf</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap-flat-extras.min.css" />
-    <Content Include="Content\bootstrap-flat.min.css" />
-    <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\editor.dataTables.min.css" />
     <Content Include="Content\metro-bootstrap.min.css" />
     <Content Include="DataTables\Bootstrap-3.3.5\css\bootstrap-theme.css" />
@@ -302,11 +299,10 @@
     <Content Include="images\close.png" />
     <Content Include="images\shadow_left.png" />
     <Content Include="images\shadow_right.png" />
+    <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\dataTables.editor.min.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\moment.min.js" />
-    <Content Include="Scripts\uikit.min.js" />
     <Content Include="Scripts\_config.js" />
     <Content Include="Scripts\_main.js" />
     <Content Include="Web.config" />

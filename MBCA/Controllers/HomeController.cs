@@ -30,7 +30,7 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
-                //.Where("tgl", DateTime.Now.ToShortDateString().ToString(), "=")
+                .Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "dd/MM/yyyy")))
                 .Process(request)

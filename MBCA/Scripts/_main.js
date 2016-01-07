@@ -62,7 +62,6 @@ function getAV() {
         ],
         select: true,
         buttons: [
-            //{ extend: "create", editor: dailyEditor, text: "Add new Daily Activity" },
             {
                 text: "Add new Daily Activity",
                 action: function () {
@@ -80,7 +79,7 @@ function getAV() {
                     alert("click");
                 }
 
-            },
+            }
         ]
     });
 
@@ -141,3 +140,10 @@ function getAV() {
         e.preventDefault();
     })
 })(jQuery)
+
+$(document).ready(function () {
+    $("#dailyDate").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    })
+})
