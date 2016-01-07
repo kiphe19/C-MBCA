@@ -130,6 +130,8 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "hire_table")
                 .Model<HireModel>()
+                .Field(new Field("s_period").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "dd/MM/yyyy")))
+                .Field(new Field("e_period").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "dd/MM/yyyy")))
                 .Process(request)
                 .Data();
 

@@ -243,8 +243,8 @@ $(document).ready(function () {
         table: "#hireTable",
         fields: [
             { label: "Vessel", name: "vessel", type: "select" },
-            { label: "Early Period", name: "s_period", type: "datetime", format: "MM/DD/YYYY" },
-            { label: "End of Period", name: "e_period", type: "datetime", format: "MM/DD/YYYY" }
+            { label: "Early Period", name: "s_period", type: "datetime", format: "DD/MM/YYYY" },
+            { label: "End of Period", name: "e_period", type: "datetime", format: "DD/MM/YYYY" }
         ]
     })
 

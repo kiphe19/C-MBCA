@@ -34,8 +34,8 @@ namespace chevron.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\v11.0;AttachDbFilename=|DataDirectory|\\Database.mdf;Integra" +
-            "ted Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLEXPRESS;Initial Catalog=Database1;Integrated Security=True;User " +
+            "Id=Syahrul;Password=qpse")]
         public string DbConnection {
             get {
                 return ((string)(this["DbConnection"]));

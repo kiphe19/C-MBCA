@@ -12,23 +12,18 @@
     </div>
     <div class="panel-body">
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="#dailyPanel">
-                <table id="dailyTable" class="table table-hover table-bordered" style="width:100%">
+            <div role="tabpanel" class="tab-pane active" id="dailyPanel">
+                @*<table id="dailyTable" class="table table-hover table-bordered" style="width:100%">
                     <thead>
                         <tr>
-                            @*<th>No</th>*@
                             <th>Date</th>
                             <th>Vessel Name</th>
                             <th>Activity</th>
                             <th>Duration</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" id="qq"></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                </table>*@
+                    
             </div>
             <div role="tabpanel" class="tab-pane" id="monthlyPanel">
                 <table id="monthlyTable" class="table table-hover table-bordered" style="width:100%">
@@ -41,14 +36,14 @@
                             <th>Duration</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" id="qq"></td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
+    </div>
+    <div class="panel-footer">
+        <footer class="text-right">
+            <strong>&copy; @DateTime.Now.Year MBCA - DAUNBIRU</strong>
+        </footer>
     </div>
 </div>
 @Scripts.Render("~/Script/xdkJKAds")
