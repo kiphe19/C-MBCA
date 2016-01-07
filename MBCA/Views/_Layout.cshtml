@@ -10,15 +10,17 @@
     @Scripts.Render("~/Scripts/main")
 </head>
 <body>
-    <header class="navbar navbar-inverse" style="background-color: #4db6ac;border-color:transparent;">
-        <div class="container">
-            <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="@Url.Action("index","home")">Home</a></li>
-                    <li><a href="@Url.Action("index", "config")">Config</a></li>
-                </ul>
+    <header>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="@Url.Action("index","home")">Home</a></li>
+                        <li><a href="@Url.Action("index", "config")">Config</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        </nav>
     </header>
     <main>
         <div class="container">
@@ -29,5 +31,26 @@
             </div>
         </div>
     </main>
+    <script>
+        $(function () {
+            function getPage(str) {
+                if (str.substr(-1) == '/') {
+                    return str.substr(0, str.length - 1);
+                }
+                return str;
+            }
+
+            var url = window.location.pathname;
+            var activePage = getPage(url);
+
+            $('.nav li a').each(function () {
+                var currentPage = getPage($(this).attr('href'));
+
+                if (activePage == currentPage) {
+                    $(this).parent().addClass('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
