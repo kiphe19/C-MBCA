@@ -1,7 +1,9 @@
-﻿var editor;
+﻿var editor,
+    dailyTable,
+    path = window.location.pathname;
 
 function getAV() {
-    $.post("api/dataa")
+    $.post(path+"/api/dataa")
             .success(function (e) {
                 var activity = new Array();
                 for (var i in e.data) {
@@ -13,7 +15,7 @@ function getAV() {
                 }
                 dailyEditor.field("daily_activity").update(activity);
             })
-    $.post("api/datav")
+    $.post(path+"/api/datav")
             .success(function (e) {
                 var vessel = new Array();
                 for (var i in e.data) {
@@ -27,14 +29,13 @@ function getAV() {
             })
 }
 
-
 (function () {
 
     dailyEditor = new $.fn.dataTable.Editor({
-        ajax: "api/daily",
+        ajax: path+"/api/daily",
         table: "#dailyTable",
         fields: [
-            { label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
+            { label: "Date", name: "daily_date", type: "datetime", format: "DD/MM/YYYY" },
             { label: "Vessel", name: "daily_vessel", type: "select" },
             { label: "Activity", name: "daily_activity", type: "select" },
             { label: "Duration", name: "daily_duration" }
@@ -45,10 +46,10 @@ function getAV() {
         dailyEditor.title('Add new Daily Activity');
     })
 
-    $("#dailyTable").DataTable({
+    dailyTable = $("#dailyTable").DataTable({
         dom: 'Bfrtip',
         ajax: {
-            url: "api/daily",
+            url: path+"/api/daily",
             method: "post"
         },
         serverSide: true,
@@ -61,16 +62,18 @@ function getAV() {
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: dailyEditor, text: "Add new Daily Activity" },
+            //{ extend: "create", editor: dailyEditor, text: "Add new Daily Activity" },
+            {
+                text: "Add new Daily Activity",
+                action: function () {
+                    $("#dailyInput").modal({
+                        backdrop: false,
+                        show: true
+                    });
+                }
+            },
             { extend: "edit", editor: dailyEditor },
             { extend: "remove", editor: dailyEditor },
-            //{
-            //    extend: "collection",
-            //    text: "<i class='glyphicon-export'> Export to ..<i>",
-            //    buttons: [
-            //        'excel'
-            //    ]
-            //},
             {
                 text: "Save data today",
                 action: function (e, dt, node, config) {
@@ -83,7 +86,7 @@ function getAV() {
 
 
     editor = new $.fn.dataTable.Editor({
-        ajax: "api/monthly",
+        ajax: path+"/api/monthly",
         table: "#monthlyTable",
         fields: [
             { label: "Date", name: "monthly_date", type: "datetime", format: "MM/DD/YYYY" },
@@ -96,7 +99,7 @@ function getAV() {
     $("#monthlyTable").dataTable({
         dom: "Bfrtip",
         ajax: {
-            url: "api/monthly",
+            url: path+"/api/monthly",
             type: "post"
         },
         serverSide: true,
@@ -119,4 +122,22 @@ function getAV() {
             }
         ]
     });
+
+    $("#dailyForm").submit(function (e) {
+        var data = $(this).serialize();
+        $.ajax({
+            url: path+"/api/cs/daily",
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (e) {
+                dailyTable.ajax.reload();
+                $("#dailyInput").modal('hide');
+                $("#dailyForm .form-control").each(function () {
+                    $(this).val(null)
+                });
+            }
+        })
+        e.preventDefault();
+    })
 })(jQuery)

@@ -178,6 +178,8 @@
     <Content Include="App_Data\Database_log.ldf">
       <DependentUpon>Database.mdf</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap-flat-extras.min.css" />
+    <Content Include="Content\bootstrap-flat.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\editor.dataTables.min.css" />
     <Content Include="Content\metro-bootstrap.min.css" />

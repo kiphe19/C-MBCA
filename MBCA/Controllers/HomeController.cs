@@ -14,28 +14,12 @@ namespace chevron.Controllers
     public class HomeController : Controller
     {
         chevron.Properties.Settings setting = chevron.Properties.Settings.Default;
+        
+        Connection con = new Connection();
 
         public ActionResult Index()
         {
-            Connection con = new Connection();
-            con.get();
-
-            con.select("daily_activity", "*");
-
-            List<DailyActivityModel> dailyGrid = new List<DailyActivityModel>();
-
-            while (con.result.Read())
-            {
-                dailyGrid.Add(new DailyActivityModel
-                {
-                    activity = con.result["activity"].ToString(),
-                    duration = (decimal)con.result["duration"],
-                    tgl = con.result["tgl"].ToString(),
-                    vessel = con.result["vessel"].ToString()
-                });
-            }
-
-            return View(dailyGrid);
+            return View();
         }
 
         [Route("daily")]
@@ -47,7 +31,6 @@ namespace chevron.Controllers
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
                 //.Where("tgl", DateTime.Now.ToShortDateString().ToString(), "=")
-                //.Where("Cdate(tgl)", DateTime.Now.ToShortDateString().ToString(), "between")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "dd/MM/yyyy")))
                 .Process(request)
@@ -99,6 +82,15 @@ namespace chevron.Controllers
 
                 return Json(response);
             }
+        }
+
+        [Route("cs/daily")]
+        [HttpPost]
+        public void _dailyInsert(FormCollection input)
+        {
+            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration]) values ('{0}','{1}','{2}','{3}')", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"]);
+            con.queryExec(query);
+            Response.Write("true");
         }
 
     }
