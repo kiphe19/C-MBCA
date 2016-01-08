@@ -17,6 +17,7 @@ namespace chevron
             bundles.Add(new StyleBundle("~/Content/css").Include(
                     "~/DataTables/datatables.min.css",
                     "~/content/editor.dataTables.min.css",
+                    "~/Content/bootstrap-datetimepicker.min.css",
                     "~/content/metro-bootstrap.min.css"
                 ));
 
@@ -24,6 +25,7 @@ namespace chevron
                     "~/Scripts/_main.js",
                     "~/Scripts/bootstrap-datetimepicker.min.js"
                 ));
+
             bundles.Add(new ScriptBundle("~/Script/cfgxYSa").Include("~/Scripts/_config.js"));
 
 

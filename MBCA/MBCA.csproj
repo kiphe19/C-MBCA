@@ -178,6 +178,7 @@
     <Content Include="App_Data\Database_log.ldf">
       <DependentUpon>Database.mdf</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\editor.dataTables.min.css" />
     <Content Include="Content\metro-bootstrap.min.css" />
     <Content Include="DataTables\Bootstrap-3.3.5\css\bootstrap-theme.css" />

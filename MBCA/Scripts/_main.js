@@ -130,11 +130,15 @@ function getAV() {
             dataType: "json",
             data: data,
             success: function (e) {
-                dailyTable.ajax.reload();
-                $("#dailyInput").modal('hide');
-                $("#dailyForm .form-control").each(function () {
-                    $(this).val(null)
-                });
+                if (e) {
+                    dailyTable.ajax.reload();
+                    $("#dailyInput").modal('hide');
+                    $("#dailyForm .form-control").each(function () {
+                        $(this).val(null)
+                    });
+                } else {
+                    $("#dailyInput .modal-footer").text(e)
+                }
             }
         })
         e.preventDefault();

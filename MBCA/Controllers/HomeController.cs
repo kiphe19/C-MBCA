@@ -89,8 +89,16 @@ namespace chevron.Controllers
         public void _dailyInsert(FormCollection input)
         {
             var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration]) values ('{0}','{1}','{2}','{3}')", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"]);
-            con.queryExec(query);
-            Response.Write("true");
+            try
+            {
+                con.queryExec(query);
+                Response.Write("true");
+            }
+            catch (Exception ex)
+            {
+
+                Response.Write(ex.Message);
+            }
         }
 
     }

@@ -60,7 +60,7 @@ namespace chevron
             catch (Exception ex)
             {
 
-                System.Web.HttpContext.Current.Response.Write(ex.Message);
+                throw new Exception(ex.Message);
             }
             finally
             {
