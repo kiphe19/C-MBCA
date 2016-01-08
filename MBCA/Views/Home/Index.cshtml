@@ -63,13 +63,13 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3">Vessel</label>
                         <div class="col-sm-9">
-                            <input type="text" name="daily_vessel" class="form-control" />
+                            @Html.DropDownList("daily_vessel", null, new { @class="form-control" })
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3">Activity</label>
                         <div class="col-sm-9">
-                            <input type="text" name="daily_activity" class="form-control" />
+                            @Html.DropDownList("daily_activity", null, new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="form-group">
@@ -81,6 +81,7 @@
                     <div class="form-group">
                         <span class="col-sm-3"></span>
                         <div class="col-sm-9">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             <input type="submit" value="Add New" class="btn btn-primary right" />
                         </div>
                     </div>

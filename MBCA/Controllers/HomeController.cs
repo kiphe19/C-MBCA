@@ -14,13 +14,62 @@ namespace chevron.Controllers
     public class HomeController : Controller
     {
         chevron.Properties.Settings setting = chevron.Properties.Settings.Default;
-        
+
         Connection con = new Connection();
 
         public ActionResult Index()
         {
+
+            ViewBag.daily_vessel = getListVessel();
+            ViewBag.daily_activity = getListActivity();
             return View();
         }
+
+        /// <summary>
+        /// Dropdown
+        /// </summary>
+
+        private List<SelectListItem> getListVessel()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+            
+            con.select("vessel_table", "name");
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["name"].ToString()
+                });
+            }
+            
+            con.Close();
+            
+            return vessel;
+        }
+
+        private List<SelectListItem> getListActivity()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+
+            con.select("activity_table", "name");
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["name"].ToString()
+                });
+            }
+            con.Close();
+            return vessel;
+        }
+
+        /// <summary>
+        /// END DROPDOWn
+        /// </summary>
+        /// <returns></returns>
+
 
         [Route("daily")]
         public ActionResult _ApiDaily()
@@ -32,7 +81,10 @@ namespace chevron.Controllers
                 .Model<DailyActivityModel>()
                 .Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
-                .Field(new Field("tgl").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "dd/MM/yyyy")))
+                .Field(new Field("tgl")
+                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    .Validator(Validation.NotEmpty())
+                )
                 .Process(request)
                 .Data();
 
@@ -99,6 +151,40 @@ namespace chevron.Controllers
 
                 Response.Write(ex.Message);
             }
+        }
+
+        [Route("save/daily")]
+        [HttpPost]
+        public void saveDailytoMonthly()
+        {
+            List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
+
+            var where = string.Format("tgl = '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
+
+            con.select("daily_activity", "tgl, vessel, activity, duration", where);
+            
+            while (con.result.Read())
+            {
+                dataDaily.Add(new DailyActivityModel
+                {
+                    activity = con.result["activity"].ToString(),
+                    duration = (decimal) con.result["duration"],
+                    tgl = DateTime.Parse(con.result["tgl"].ToString()).ToShortDateString(),
+                    vessel = con.result["vessel"].ToString()
+                });
+            }
+            
+            con.Close();
+
+            foreach (DailyActivityModel daily in dataDaily)
+            {
+                var query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration]) values('{0}', '{1}', '{2}', CAST('{3}' AS numeric(18,3)))", daily.tgl, daily.vessel, daily.activity, daily.duration);
+                con.queryExec(query);
+                Response.Write("true");
+            }
+
+            var kueri = string.Format("delete from daily_activity where tgl= '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
+            con.queryExec(kueri);
         }
 
     }

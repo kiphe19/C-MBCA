@@ -30,9 +30,17 @@ namespace chevron
             }
         }
 
-        public void select(String table, String column)
+        public void select(String table, String column = "*", string where = "")
         {
-            var query = string.Format("select {0} from {1}", column, table);
+            var query = "";
+            if (where == "")
+            {
+                query = string.Format("select {0} from {1}", column, table);
+            }
+            else
+            {
+                query = string.Format("select {0} from {1} where {2}", column, table, where);
+            }
             con.Open();
             try
             {
@@ -42,10 +50,6 @@ namespace chevron
             catch (Exception ex)
             {
                 System.Web.HttpContext.Current.Response.Write(ex.Message);
-            }
-            finally
-            {
-                con.Close();
             }
         }
 
@@ -66,6 +70,11 @@ namespace chevron
             {
                 con.Close();
             }
+        }
+
+        public void Close()
+        {
+            con.Close();
         }
     }
 }
