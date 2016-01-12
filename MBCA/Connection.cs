@@ -9,7 +9,7 @@ namespace chevron
     public class Connection
     {
         private SqlCommand cmd;
-        private SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=MBCA;Integrated Security=True;User Id=Syahrul;Password=qpse");
+        private SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS;AttachDbFilename=|DataDirectory|\\Database.mdf;Initial Catalog=MBCA;Integrated Security=True;");
 
         public SqlDataReader result;
 

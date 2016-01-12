@@ -11,7 +11,11 @@ namespace chevron
                     "~/DataTables/datatables.min.js",
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/dataTables.editor.min.js",
-                    "~/Scripts/moment.min.js"
+                    "~/Scripts/moment.min.js",
+                    "~/Scripts/bootstrap-datetimepicker.min.js"
+                    //"~/DataTables/pdfmake-0.1.18/build/pdfmake.min.js",
+                    //"~/DataTables/JSZip-2.5.0/jszip.min.js",
+                    //"~/DataTables/pdfmake-0.1.18/build/vfs_fonts.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
@@ -22,8 +26,7 @@ namespace chevron
                 ));
 
             bundles.Add(new ScriptBundle("~/Script/xdkJKAds").Include(
-                    "~/Scripts/_main.js",
-                    "~/Scripts/bootstrap-datetimepicker.min.js"
+                    "~/Scripts/_main.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/Script/cfgxYSa").Include("~/Scripts/_config.js"));

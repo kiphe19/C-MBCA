@@ -13,11 +13,40 @@
     <div class="panel-body">
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="dailyPanel">
-                <table id="dailyTable" class="table table-bordered" style="width:100%">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <form class="form-inline" id="dailyForm">
+                            <div class="form-group">
+                                <input type="text" name="daily_date" class="form-control" id="daily_date" autocomplete="off" value="@DateTime.Today.ToString("dd/MM/yyyy")" placeholder="Date" />
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("daily_vessel", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("daily_activity", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.DropDownList("daily_unit", null, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="daily_fuel" class="form-control" placeholder="Fuel per Liters" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="daily_duration" class="form-control" placeholder="Duration" />
+                                <input type="hidden" name="daily_type" value="create" />
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="btnSaveDaily"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                            <button type="button" class="btn btn-success" id="btnSaveDataDaily"><i class="glyphicon glyphicon-floppy-save"></i> Save data today</button>
+                            <button type="submit" class="btn btn-warning" id="btnUpdateDaily" style="display: none;"><i class="glyphicon glyphicon-edit"></i> Update</button>
+                            <button type="button" class="btn btn-default" id="btnCancelDaily" style="display: none;"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
+                        </form>
+                    </div>
+                </div>
+
+                <table id="dailyTable" class="table table-bordered responsive nowrap display" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Vessel Name</th>
+                            <th>User Unit</th>
                             <th>Activity</th>
                             <th>Duration</th>
                         </tr>
@@ -25,12 +54,13 @@
                 </table>
             </div>
             <div role="tabpanel" class="tab-pane" id="monthlyPanel">
-                <table id="monthlyTable" class="table table-bordered" style="width:100%">
+                <table id="monthlyTable" class="table table-bordered responsive nowrap display" cellspacing="0" style="width:100%">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Vessel Name</th>
                             <th>Activity</th>
+                            <th>User Unit</th>
                             <th>Duration</th>
                         </tr>
                     </thead>
@@ -44,51 +74,45 @@
         </footer>
     </div>
 </div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="dailyInput">
+@*<div class="modal fade" tabindex="-1" role="dialog" id="dailyModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Add new Daily Activity</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal" id="dailyForm">
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new Daily Fuel</h4>
+                </div>
+                <div class="modal-body">
                     <div class="form-group">
-                        <label class="control-label col-sm-3">Date</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="daily_date" class="form-control"  id="dailyDate" autocomplete="off"/>
+                        <label class="col-sm-2 control-label">Date</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="tgl" class="form-control" autocomplete="off" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3">Vessel</label>
-                        <div class="col-sm-9">
-                            @Html.DropDownList("daily_vessel", null, new { @class="form-control" })
+                        <label class="col-sm-2 control-label">Currency</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("daily_vessel", null, new { @class = "form-control" })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3">Activity</label>
-                        <div class="col-sm-9">
-                            @Html.DropDownList("daily_activity", null, new { @class = "form-control" })
+                        <label class="col-sm-2 control-label">Cost</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="cost" />
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3">Duration</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="daily_duration" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <span class="col-sm-3"></span>
-                        <div class="col-sm-9">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <input type="submit" value="Add New" class="btn btn-primary right" />
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+</div>*@
+<style>
+    div.floatright {
+        float: right;
+    }
+</style>
 @Scripts.Render("~/Script/xdkJKAds")

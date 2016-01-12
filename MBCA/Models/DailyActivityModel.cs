@@ -8,6 +8,7 @@ namespace chevron.Models
 {
     public class DailyActivityModel
     {
+        public Int32 id { get; set; }
         [EditorHttpName("daily_date")]
         public string tgl { get; set; }
         [EditorHttpName("daily_vessel")]
@@ -16,5 +17,9 @@ namespace chevron.Models
         public string activity { get; set; }
         [EditorHttpName("daily_duration")]
         public decimal duration { get; set; }
+        [EditorHttpName("daily_unit")]
+        public string unit { get; set; }
+        [EditorHttpName("daily_fuel")]
+        public Int32 fuel { get; set; }
     }
 }

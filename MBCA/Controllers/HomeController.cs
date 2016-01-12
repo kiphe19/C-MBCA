@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using DataTables;
 using chevron.Models;
+using System.Globalization;
 
 namespace chevron.Controllers
 {
@@ -22,6 +23,7 @@ namespace chevron.Controllers
 
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_activity = getListActivity();
+            ViewBag.daily_unit = getUserUnit();
             return View();
         }
 
@@ -32,7 +34,7 @@ namespace chevron.Controllers
         private List<SelectListItem> getListVessel()
         {
             List<SelectListItem> vessel = new List<SelectListItem>();
-            
+
             con.select("vessel_table", "name");
             while (con.result.Read())
             {
@@ -42,27 +44,51 @@ namespace chevron.Controllers
                     Value = con.result["name"].ToString()
                 });
             }
-            
             con.Close();
-            
-            return vessel;
+
+            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+
+            return VesselSorted;
         }
 
         private List<SelectListItem> getListActivity()
         {
-            List<SelectListItem> vessel = new List<SelectListItem>();
+            List<SelectListItem> activity = new List<SelectListItem>();
 
             con.select("activity_table", "name");
             while (con.result.Read())
             {
-                vessel.Add(new SelectListItem
+                activity.Add(new SelectListItem
                 {
                     Text = con.result["name"].ToString(),
                     Value = con.result["name"].ToString()
                 });
             }
             con.Close();
-            return vessel;
+
+            var ActivitySorted = (from li in activity orderby li.Text select li).ToList();
+
+            return ActivitySorted;
+        }
+
+        private List<SelectListItem> getUserUnit()
+        {
+            List<SelectListItem> unit = new List<SelectListItem>();
+
+            con.select("unit_table", "name");
+            while (con.result.Read())
+            {
+                unit.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["name"].ToString()
+                });
+            }
+            con.Close();
+
+            var unitSorted = (from li in unit orderby li.Text select li).ToList();
+
+            return unitSorted;
         }
 
         /// <summary>
@@ -79,7 +105,7 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
-                .Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
+                .Where("tgl", DateTime.Now.ToString("yyyy-dd-MM"), "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl")
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
@@ -100,6 +126,10 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "monthly_activity")
                 .Model<MonthlyActivityModel>()
+                .Field(new Field("tgl")
+                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    .Validator(Validation.NotEmpty())
+                )
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Process(request)
                 .Data();
@@ -115,6 +145,20 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "activity_table")
                 .Model<ActivityModel>()
+                .Process(Request.Form)
+                .Data();
+
+                return Json(response);
+            }
+        }
+
+        [Route("datau")]
+        public ActionResult _dataUnit()
+        {
+            using (var db = new Database(setting.DbType, setting.DbConnection))
+            {
+                var response = new Editor(db, "unit_table")
+                .Model<UnitModel>()
                 .Process(Request.Form)
                 .Data();
 
@@ -138,18 +182,35 @@ namespace chevron.Controllers
 
         [Route("cs/daily")]
         [HttpPost]
-        public void _dailyInsert(FormCollection input)
+        public String _dailyInsert(FormCollection input)
         {
-            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration]) values ('{0}','{1}','{2}','{3}')", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"]);
+            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel]) values ('{0}','{1}','{2}','{3}', '{4}', CAST('{5}' AS INT))", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"]);
             try
             {
                 con.queryExec(query);
-                Response.Write("true");
+                return "success";
             }
             catch (Exception ex)
             {
 
-                Response.Write(ex.Message);
+                return ex.Message;
+            }
+        }
+
+        [Route("cs/daily/up")]
+        [HttpPost]
+        public String _dailyUpdate(FormCollection input)
+        {
+            var query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3} where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_type"]);
+            try
+            {
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+
+                return ex.Message;
             }
         }
 
@@ -161,24 +222,25 @@ namespace chevron.Controllers
 
             var where = string.Format("tgl = '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
 
-            con.select("daily_activity", "tgl, vessel, activity, duration", where);
-            
+            con.select("daily_activity", "tgl, vessel, activity, duration, unit", where);
+
             while (con.result.Read())
             {
                 dataDaily.Add(new DailyActivityModel
                 {
                     activity = con.result["activity"].ToString(),
-                    duration = (decimal) con.result["duration"],
+                    duration = (decimal)con.result["duration"],
                     tgl = DateTime.Parse(con.result["tgl"].ToString()).ToShortDateString(),
-                    vessel = con.result["vessel"].ToString()
+                    vessel = con.result["vessel"].ToString(),
+                    unit = con.result["unit"].ToString()
                 });
             }
-            
+
             con.Close();
 
             foreach (DailyActivityModel daily in dataDaily)
             {
-                var query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration]) values('{0}', '{1}', '{2}', CAST('{3}' AS numeric(18,3)))", daily.tgl, daily.vessel, daily.activity, daily.duration);
+                var query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) values('{0}', '{1}', '{2}', CAST('{3}' AS numeric(18,2)), '{4}')", daily.tgl, daily.vessel, daily.activity, daily.duration.ToString(CultureInfo.InvariantCulture), daily.unit);
                 con.queryExec(query);
                 Response.Write("true");
             }

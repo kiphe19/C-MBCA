@@ -46,9 +46,17 @@ $(document).ready(function () {
                 name: "vs_desc"
             }
         ]
-    });
+    }).on('initCreate', function () {
+        i = vesselTable.data().length + 1;
+    }).on('remove', function () {
+        i = 1;
+        vesselTable.ajax.reload()
+    }).on('edit', function () {
+        i = 1;
+        vesselTable.ajax.reload()
+    })
 
-    $('#vesselTable').DataTable({
+    vesselTable = $('#vesselTable').DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/vessel",
@@ -207,12 +215,12 @@ $(document).ready(function () {
         ajax: "api/fuel",
         table: "#fuelTable",
         fields: [
-            { label: "Date", name: "tgl", type: "datetime", format: "MM/DD/YYYY" },
+            { label: "Date", name: "tgl", type: "datetime", format: "DD/MM/YYYY" },
             { label: "Cost", name: "cost" }
         ]
     })
 
-    $("#fuelTable").DataTable({
+    fuelTable = $("#fuelTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/fuel",
@@ -225,18 +233,32 @@ $(document).ready(function () {
                 }
             },
             { data: "tgl" },
-            { data: "cost" }
+            {
+                data: null, render: function (data, type, row) {
+                    return "$ " + Number(data.cost_usd).toLocaleString();
+                }
+            },
+            {
+                data: null, render: function (data, type, row) {
+                    return "Rp. "+Number(data.cost_rp).toLocaleString();
+                }
+            }
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: editor, text: "Add new Daily Fuel" },
+            //{ extend: "create", editor: editor, text: "Add new Daily Fuel" },
+            {
+                text: "New",
+                action: function(){
+                    $("#modalFuel").modal({backdrop:false})
+                }
+            },
             { extend: "edit", editor: editor },
             { extend: "remove", editor: editor }
         ]
-    }).order(0, 'desc')
-        .on('init', function () {
-            i = 1;
-        });
+    }).on('init', function () {
+        i = 1;
+    });
 
     HireEditor = new $.fn.dataTable.Editor({
         ajax: "api/hire",
@@ -279,4 +301,74 @@ $(document).ready(function () {
     }).on('create', function () {
         i = 1;
     });
+
+    editor = new $.fn.dataTable.Editor({
+        ajax: "api/currency",
+        table: "#currencyTable",
+        fields: [
+            { label: "Name", name: "currency_name" },
+            { label: "Value", name: "currency_value" },
+        ]
+    })
+
+    currencyTable = $("#currencyTable").DataTable({
+        dom: '<B<"floatright"f>>rtip',
+        ajax: {
+            url: "api/currency",
+            type: "post"
+        },
+        serverSide: true,
+        columns: [
+            { data: "currency_name" },
+            { data: "currency_value" },
+            { data: "last_up" }
+        ],
+        select: true,
+        buttons: [
+            //{ extend: "create", editor: editor },
+            {
+                text: "Edit", action: function (e, dt, node, config) {
+                    var q = currencyTable.rows('.selected').indexes()
+                    if (q.length !== 0) {
+                        var a = currencyTable.row(q).data();
+                        $("#modalCurrency").modal({
+                            backdrop: false
+                        })
+                        $("#modalCurrency form input[name='currency_name']").val(a.currency_name);
+                        $("#modalCurrency form input[name='currency_value']").val(a.currency_value);
+                        $("#modalCurrency form input[name='currency_id']").val(a.id);
+                    }
+                }
+            },
+            { extend: "remove", editor: editor }
+        ]
+    })
+
+    $("#modalCurrency form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/currency", data, function (res) {
+            if(res == "success"){
+                $("#modalCurrency").modal('hide');
+                currencyTable.ajax.reload();
+            }else{
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
+    $("#modalFuel form input[name='tgl']").datetimepicker({
+        format: "DD/MM/YYYY"
+    })
+    $("#modalFuel form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/fuel", data, function (res) {
+            if (res=="true") {
+                $("#modalFuel").modal('hide');
+                fuelTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
 });

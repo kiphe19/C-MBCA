@@ -9,6 +9,7 @@ namespace chevron.Models
     public class FuelModel
     {
         public String tgl { get; set; }
-        public Decimal cost { get; set; }
+        public Decimal cost_usd { get; set; }
+        public Decimal cost_rp { get; set; }
     }
 }

@@ -6,7 +6,7 @@
       <Value Profile="(Default)">sqlserver</Value>
     </Setting>
     <Setting Name="DbConnection" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Database.mdf;Initial Catalog=MBCA;Integrated Security=True;User Id=Syahrul;Password=qpse</Value>
+      <Value Profile="(Default)">Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Database.mdf;Initial Catalog=MBCA;Integrated Security=True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

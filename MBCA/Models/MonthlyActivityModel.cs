@@ -16,5 +16,7 @@ namespace chevron.Models
         public string activity { get; set; }
         [EditorHttpName("monthly_duration")]
         public decimal duration { get; set; }
+        [EditorHttpName("monthly_unit")]
+        public string unit { get; set; }
     }
 }
