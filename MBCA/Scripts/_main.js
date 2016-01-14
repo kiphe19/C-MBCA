@@ -68,7 +68,6 @@ function getAV() {
             method: "post"
         },
         serverSide: true,
-        deferRender: true,
         columns: [
             { data: 'daily_unit' },
             { data: "daily_activity" },
@@ -81,7 +80,7 @@ function getAV() {
                 text: "Edit",
                 action: function (e, dt, node, config) {
                     var a = dailyTable.rows('.selected').indexes()
-                    if (a.length !==0) {
+                    if (a.length !== 0) {
                         var b = dailyTable.row(a).data();
                         $("#daily_unit").val(b.daily_unit);
                         $("#daily_activity").val(b.daily_activity);
@@ -137,15 +136,15 @@ function getAV() {
             }
         ]
     }).one('processing', function () {
-        getAV();
+        //getAV();
     });
 })(jQuery)
 
 $(document).ready(function () {
-    
+
     $("#dailyForm").submit(function (e) {
         var data = $(this).serialize();
-        if ($("#dailyForm input[name='daily_type']") == "create") {
+        if ($("#dailyForm input[name='daily_type']").val() == "create") {
             $.post(path + "/api/cs/daily", data, function (res) {
                 if (res === "success") {
                     dailyTable.ajax.reload();
@@ -159,8 +158,6 @@ $(document).ready(function () {
             $.post(path + "/api/cs/daily/up", data, function (res) {
                 if (res === "success") {
                     dailyTable.ajax.reload();
-                    $("#dailyForm input[name='daily_duration']").val(null);
-                    $("#dailyForm input[name='daily_fuel']").val(null);
                     dailyCancel.apply();
                 } else {
                     alert(res);
@@ -171,23 +168,51 @@ $(document).ready(function () {
     })
 
     $("#daily_date").datetimepicker({
-        format: "DD/MM/YYYY",
+        format: "MM/DD/YYYY",
         maxDate: new Date(),
         minDate: new Date()
     })
     $("#btnSaveDataDaily").click(function () {
-        if (dailyTable.data().length == 0) {
+        var data = dailyTable.data();
+
+        var qp = function () {
+            $.post(path + "/api/save/daily")
+            .success(function (res) {
+                if (res) {
+                    monthlyTable.ajax.reload();
+                    dailyTable.ajax.reload();
+                }
+            })
+        }
+
+        if (data.length == 0) {
             alert("apa yang mau disimpen?");
         } else {
-            var q = confirm("Are you sure you want to save current data?");
-            if (q) {
-                $.post(path + "/api/save/daily")
-                    .success(function (res) {
-                        if (res) {
-                            monthlyTable.ajax.reload();
-                            dailyTable.ajax.reload();
-                        }
-                    })
+            var a = confirm("Are you sure you want to save current data?");
+            if (a) {
+                var duration = 0,
+                    downTime = false;
+                for (var i = 0; i < data.length; i++) {
+                    duration += data[i].daily_duration;
+                    if (data[i].daily_activity == "Downtime") {
+                        downTime = true;
+                    }
+                }
+                var b = 24 - duration;
+                if (!downTime && duration < 24) {
+                    var c = confirm("Downtime can't be found. Do you want to add remaining time (" + b + " hours) for \"Downtime Activity\"?");
+                    if (c) {
+                        qp();
+                    }
+                } else if (!downTime && duration > 24) {
+                    alert("Downtime Can't be found.")
+                } else if (downTime && duration < 24) {
+                    alert("Please check blablabla");
+                } else {
+                    qp()
+                }
+
+
             }
         }
     })
@@ -199,6 +224,7 @@ $(document).ready(function () {
         $("#btnSaveDataDaily").show();
         $("#dailyForm input[name='daily_duration']").val(null);
         $("#dailyForm input[name='daily_fuel']").val(null);
+        $("#dailyForm input[name='daily_type']").val("create");
     }
     $("#btnCancelDaily").click(function () {
         dailyCancel.apply();

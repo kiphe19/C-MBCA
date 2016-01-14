@@ -29,10 +29,10 @@
                                 @Html.DropDownList("daily_unit", null, new { @class = "form-control" })
                             </div>
                             <div class="form-group">
-                                <input type="text" name="daily_fuel" class="form-control" placeholder="Fuel per Liters" />
+                                <input type="number" min="0" name="daily_fuel" class="form-control" placeholder="Fuel per Liters" />
                             </div>
                             <div class="form-group">
-                                <input type="text" name="daily_duration" class="form-control" placeholder="Duration" />
+                                <input type="text" name="daily_duration" class="form-control" placeholder="Duration" autocomplete="off" />
                                 <input type="hidden" name="daily_type" value="create" />
                             </div>
                             <button type="submit" class="btn btn-primary" id="btnSaveDaily"><i class="glyphicon glyphicon-plus"></i> Add</button>

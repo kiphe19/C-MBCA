@@ -54,8 +54,9 @@
       <HintPath>..\packages\AttributeRouting.3.5.6\lib\net40\AttributeRouting.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DataTables">
-      <HintPath>..\..\..\DLL\DataTables.dll</HintPath>
+    <Reference Include="DataTables, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Desktop\ai\DataTables.dll</HintPath>
     </Reference>
     <Reference Include="HtmlSanitizationLibrary">
       <HintPath>..\..\..\DLL\HtmlSanitizationLibrary.dll</HintPath>
@@ -155,6 +156,7 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Controllers\ConfigController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,7 +166,10 @@
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\FuelModel.cs" />
     <Compile Include="Models\HireModel.cs" />
+    <Compile Include="Models\KipheModel.cs" />
     <Compile Include="Models\MonthlyActivityModel.cs" />
+    <Compile Include="Models\ReportModel.cs" />
+    <Compile Include="Models\ReportModelCS.cs" />
     <Compile Include="Models\UnitModel.cs" />
     <Compile Include="Models\VesselModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -333,6 +338,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Views\Report\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

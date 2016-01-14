@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        @{
+            var grid = new WebGrid(source: ViewBag.report);
+        }
+        @grid.GetHtml(
+        tableStyle: "table table-bordered",
+        htmlAttributes: new { id = "reportTable"},
+        columns: grid.Columns(
+        grid.Column(null, "Date", format: (item) => item.date),
+        grid.Column(null, "Vessel", format: (item) => item.vessel_name),
+                   grid.Column(null, "Fuel Cost (USD)", format: (item) => item.fuel_usd.ToString("c", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
+                            grid.Column(null, "Fuel Cost (Rp)", format: (item) => item.fuel_rp.ToString("c", System.Globalization.CultureInfo.CreateSpecificCulture("en-Id")))
+            )
+        )
+    </div>
+    <div class="panel-footer">
+        <footer class="text-right">
+            <strong>&copy; @DateTime.Now.Year MBCA - DAUNBIRU</strong>
+        </footer>
+    </div>
+</div>
+<style>
+    div.dataTables_wrapper div.dataTables_paginate {
+        margin-top: 40px;
+    }
+    div .dataTables_length{
+        float: left;
+    }
+    div .btn-group, .btn-group-vertical {
+        float: left;
+    }
+    div.dataTables_wrapper div.dataTables_info {
+        float: right;
+    }
+</style>
+<script>
+    $("#reportTable").DataTable({
+        dom: 'Bfrtlip',
+        buttons: [
+            {
+                extend: "collection",
+                text: "<i class='glyphicon glyphicon-export'></i> Export Data ...",
+                className: "btn-info",
+                buttons: ['excel']
+            }
+        ]
+    });
+</script>

@@ -132,10 +132,18 @@ $(document).ready(function () {
         fields: [
             { name: "unit_name", label: "Unit Name" },
             {
+                label: "Unit Category",
+                name: "unit_cat",
+                type: "select",
+                options: [
+                    { label: "0", value: "0" },
+                    { label: "1", value: "1" }
+                ]
+            },
+            {
                 label: "Distance",
                 name: "unit_distance",
                 type: "select",
-                className: ""
             },
             { name: "unit_ket", label: "Description" }
         ]
@@ -157,6 +165,7 @@ $(document).ready(function () {
                 }
             },
             { data: "unit_name" },
+            { data: "unit_cat" },
             { data: "unit_distance" },
             { data: "unit_ket" }
         ],

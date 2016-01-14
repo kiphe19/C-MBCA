@@ -20,7 +20,6 @@ namespace chevron.Controllers
 
         public ActionResult Index()
         {
-
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
@@ -75,7 +74,7 @@ namespace chevron.Controllers
         {
             List<SelectListItem> unit = new List<SelectListItem>();
 
-            con.select("unit_table", "name");
+            con.select("unit_table", "id, name");
             while (con.result.Read())
             {
                 unit.Add(new SelectListItem
@@ -105,10 +104,10 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
-                .Where("tgl", DateTime.Now.ToString("yyyy-dd-MM"), "=")
+                .Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl")
-                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
                     .Validator(Validation.NotEmpty())
                 )
                 .Process(request)
@@ -184,7 +183,11 @@ namespace chevron.Controllers
         [HttpPost]
         public String _dailyInsert(FormCollection input)
         {
-            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel]) values ('{0}','{1}','{2}','{3}', '{4}', CAST('{5}' AS INT))", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"]);
+            var q = string.Format("name = '{0}'", input["daily_unit"]);
+            con.select("unit_table", "cat", q);
+            con.result.Read();
+            q = con.result["cat"].ToString();
+            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat]) values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6})", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q);
             try
             {
                 con.queryExec(query);
@@ -201,7 +204,13 @@ namespace chevron.Controllers
         [HttpPost]
         public String _dailyUpdate(FormCollection input)
         {
-            var query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3} where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_type"]);
+            var q = string.Format("name = '{0}'", input["daily_unit"]);
+            
+            con.select("unit_table", "cat", q);
+            con.result.Read();
+            q = con.result["cat"].ToString();
+
+            var query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_type"], q);
             try
             {
                 con.queryExec(query);
@@ -218,10 +227,11 @@ namespace chevron.Controllers
         [HttpPost]
         public void saveDailytoMonthly()
         {
+            var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+            var kueriDelete = string.Format("delete from daily_activity where tgl= '{0}'", nowDate);
             List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
 
-            var where = string.Format("tgl = '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
-
+            var where = string.Format("tgl = '{0}'", nowDate);
             con.select("daily_activity", "tgl, vessel, activity, duration, unit", where);
 
             while (con.result.Read())
@@ -230,9 +240,9 @@ namespace chevron.Controllers
                 {
                     activity = con.result["activity"].ToString(),
                     duration = (decimal)con.result["duration"],
-                    tgl = DateTime.Parse(con.result["tgl"].ToString()).ToShortDateString(),
+                    tgl = DateTime.Parse(con.result["tgl"].ToString()).ToString("MM/dd/yyy"),
                     vessel = con.result["vessel"].ToString(),
-                    unit = con.result["unit"].ToString()
+                    unit = con.result["unit"].ToString(),
                 });
             }
 
@@ -240,14 +250,140 @@ namespace chevron.Controllers
 
             foreach (DailyActivityModel daily in dataDaily)
             {
-                var query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) values('{0}', '{1}', '{2}', CAST('{3}' AS numeric(18,2)), '{4}')", daily.tgl, daily.vessel, daily.activity, daily.duration.ToString(CultureInfo.InvariantCulture), daily.unit);
-                con.queryExec(query);
-                Response.Write("true");
+                var Query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) \n"+
+                        "values('{0}', '{1}', '{2}', {3}, '{4}')",
+                        daily.tgl, daily.vessel, daily.activity, daily.duration.ToString(CultureInfo.InvariantCulture), daily.unit
+                    );
+                con.queryExec(Query);
+                //Response.Write(Query + "<br><hr>");
             }
 
-            var kueri = string.Format("delete from daily_activity where tgl= '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
-            con.queryExec(kueri);
-        }
+            List<ReportModelCS> ya = new List<ReportModelCS>();
+            List<ReportModelCS> tidak = new List<ReportModelCS>();
+            Decimal standby = 0, load = 0, steaming = 0, countDistance = 0, downTime = 0;
+            Decimal rupiah = 0, dollar = 0;
 
+            var query = "select vt.id as vessel_id, da.vessel, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
+                                       "from daily_activity da \n" +
+                                       "inner join vessel_table vt \n" +
+                                       "on vt.name = da.vessel \n" +
+                                       "inner join unit_table ut \n" +
+                                       "on da.unit = ut.name \n" +
+                                       "where da.unit_cat=1 and da.tgl = '" + nowDate + "'";
+
+            var query2 = "select vt.id as vessel_id, da.vessel, da.activity, da.duration, da.fuel from daily_activity da \n" +
+                                       "inner join vessel_table vt \n" +
+                                       "on vt.name = da.vessel \n" +
+                                       "inner join unit_table ut \n" +
+                                       "on da.unit = ut.name \n" +
+                                       "where da.unit_cat!=1";
+
+            var query3 = "select name, value from currency_cat";
+
+            try
+            {
+                con.query(query);
+                while (con.result.Read())
+                {
+                    ya.Add(new ReportModelCS
+                    {
+                        vessel_id = int.Parse(con.result["vessel_id"].ToString()),
+                        vessel_name = con.result["vessel"].ToString(),
+                        duration = Decimal.Parse(con.result["duration"].ToString()),
+                        distance = int.Parse(con.result["distance"].ToString()),
+                        fuel = int.Parse(con.result["fuel"].ToString()),
+                        jml = int.Parse(con.result["jml"].ToString())
+                    });
+                }
+                con.Close();
+
+                con.query(query2);
+                while (con.result.Read())
+                {
+                    tidak.Add(new ReportModelCS
+                    {
+                        vessel_id = int.Parse(con.result["vessel_id"].ToString()),
+                        vessel_name = con.result["vessel"].ToString(),
+                        duration = Decimal.Parse(con.result["duration"].ToString()),
+                        activity = con.result["activity"].ToString()
+                    });
+                }
+                con.Close();
+
+                con.query(query3);
+                while (con.result.Read())
+                {
+                    switch (con.result["name"].ToString())
+                    {
+                        case "Dollar":
+                            dollar = int.Parse(con.result["value"].ToString());
+                            break;
+                        case "Rupiah":
+                            rupiah = int.Parse(con.result["value"].ToString());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Response.Write(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+
+
+            foreach (var item in ya)
+            {
+                countDistance += item.distance; //Hitung jumlah jarak 
+            }
+
+            foreach (var item in ya)
+            {
+                for (int i = 0; i < tidak.Count; i++)
+                {
+                    switch (tidak[i].activity)
+                    {
+                        case "Standby":
+                            standby = tidak[i].duration / item.jml;
+                            break;
+                        case "Load":
+                            load = tidak[i].duration / item.jml;
+                            break;
+                        case "Steaming Time":
+                            steaming = tidak[i].duration * (item.distance / countDistance);
+                            break;
+                        case "Downtime":
+                            downTime = tidak[i].duration;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                //Response.Write("Standby = " + standby.ToString("n3") + " Load = " + load.ToString("n3") + " Steaming = " + steaming.ToString("n3") + "<br />");
+                Decimal hasil = Math.Round(standby, 3) + Math.Round(load, 3) + Math.Round(steaming, 3) + item.duration;
+                hasil = Math.Round(hasil, 3);
+
+                //Response.Write("Hasilnya adalah == " + hasil + "<br />");
+                //Response.Write("ini downtime : " + downTime +"<br/>");
+
+                Decimal duit1 = dollar * hasil / (24 - downTime), duit2 = rupiah * hasil / (24 - downTime);
+                //Response.Write(duit1.ToString("n3", CultureInfo.CreateSpecificCulture("en-US")) + " " +duit2.ToString("n3", CultureInfo.CreateSpecificCulture("id")) +"<br/>");
+
+                var qp = String.Format("insert into report_table ([vessel_id], [vessel_name], [date], [fuel_liter], [fuel_usd], [fuel_rp]) \n" +
+                    "VALUES ({0}, '{1}', '{2}', {3}, {4}, {5})"
+                    , item.vessel_id, item.vessel_name, nowDate, item.fuel, duit1.ToString("n3", CultureInfo.CreateSpecificCulture("en-US")), duit2.ToString("0", CultureInfo.InvariantCulture)
+                    );
+                con.queryExec(qp);
+            }
+
+            con.queryExec(kueriDelete);
+            Response.Write("true");
+        }
     }
 }

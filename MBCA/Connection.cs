@@ -8,30 +8,22 @@ namespace chevron
 {
     public class Connection
     {
+        Properties.Settings sett = Properties.Settings.Default;
+        
         private SqlCommand cmd;
-        private SqlConnection con = new SqlConnection("Data Source=.\\SQLEXPRESS;AttachDbFilename=|DataDirectory|\\Database.mdf;Initial Catalog=MBCA;Integrated Security=True;");
-
+        private static SqlConnection con;
+        public string q;
         public SqlDataReader result;
+
 
         public void get()
         {
-            con = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=MBCA;Integrated Security=True;User Id=Syahrul;Password=qpse");
-            try
-            {
-                con.Open();
-            }
-            catch (Exception ex)
-            {
-                System.Web.HttpContext.Current.Response.Write(ex.Message);
-            }
-            finally
-            {
-                con.Close();
-            }
+            con = new SqlConnection(sett.DbConnection);
         }
 
         public void select(String table, String column = "*", string where = "")
         {
+            this.get();
             var query = "";
             if (where == "")
             {
@@ -55,6 +47,7 @@ namespace chevron
 
         public void queryExec(string query)
         {
+            this.get();
             con.Open();
             try
             {
@@ -69,6 +62,22 @@ namespace chevron
             finally
             {
                 con.Close();
+            }
+        }
+
+        public void query(string query)
+        {
+            this.get();
+            con.Open();
+            try
+            {
+                cmd = new SqlCommand(query, con);
+                result = cmd.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                
+                throw new Exception(ex.Message);
             }
         }
 
