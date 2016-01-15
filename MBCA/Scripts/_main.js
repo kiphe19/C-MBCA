@@ -154,7 +154,10 @@ $(document).ready(function () {
         ],
         select: true,
         buttons: [
-            { extend: 'create', editor: unitEditor },
+            {
+                extend: 'create', editor: unitEditor,
+                text: "Add New Unit"
+            },
             { extend: 'edit', editor: unitEditor },
             { extend: 'remove', editor: unitEditor }
         ]
@@ -242,9 +245,9 @@ $(document).ready(function () {
         ajax: "api/hire",
         table: "#hireTable",
         fields: [
-            { label: "Vessel", name: "vessel_name", type: "select" },
-            { label: "Early Period", name: "s_period", type: "datetime", format: "M/D/YYY" },
-            { label: "End of Period", name: "f_period", type: "datetime", format: "M/D/YYY" }
+            { label: "Vessel", name: "vessel", type: "select" },
+            { label: "Early Period", name: "s_period", type: "datetime", format: "M/D/YYYY" },
+            { label: "End of Period", name: "f_period", type: "datetime", format: "M/D/YYYY" }
         ]
     })
 
