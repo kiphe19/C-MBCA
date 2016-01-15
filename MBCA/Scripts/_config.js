@@ -244,16 +244,17 @@ $(document).ready(function () {
             { data: "tgl" },
             {
                 data: null, render: function (data, type, row) {
-                    return "$ " + Number(data.cost_usd).toLocaleString();
+                    return "$" + Number(data.cost_usd).toLocaleString();
                 }
             },
             {
                 data: null, render: function (data, type, row) {
-                    return "Rp. "+Number(data.cost_rp).toLocaleString();
+                    return "Rp"+Number(data.cost_rp).toLocaleString();
                 }
             }
         ],
         select: true,
+        //order: [1, 'desc'],
         buttons: [
             //{ extend: "create", editor: editor, text: "Add new Daily Fuel" },
             {
@@ -262,7 +263,19 @@ $(document).ready(function () {
                     $("#modalFuel").modal({backdrop:false})
                 }
             },
-            { extend: "edit", editor: editor },
+            //{ extend: "edit", editor: editor },
+            {
+                text: "Edit",
+                action: function () {
+                    var a = fuelTable.rows('.selected').indexes();
+                    if (a.length !== 0) {
+                        $("#modalFuel").modal({ backdrop: false })
+                        var b = fuelTable.row(a).data();
+                        $("#modalFuel input[name='tgl']").val(b.tgl);
+                        $("#modalFuel input[name='cost']").val(b.cost_usd);
+                    }
+                }
+            },
             { extend: "remove", editor: editor }
         ]
     }).on('init', function () {
@@ -366,7 +379,7 @@ $(document).ready(function () {
         e.preventDefault();
     })
     $("#modalFuel form input[name='tgl']").datetimepicker({
-        format: "DD/MM/YYYY"
+        format: "MM/DD/YYYY"
     })
     $("#modalFuel form").submit(function (e) {
         var data = $(this).serialize();

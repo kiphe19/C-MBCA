@@ -205,7 +205,7 @@ namespace chevron.Controllers
         public String _dailyUpdate(FormCollection input)
         {
             var q = string.Format("name = '{0}'", input["daily_unit"]);
-            
+
             con.select("unit_table", "cat", q);
             con.result.Read();
             q = con.result["cat"].ToString();
@@ -250,20 +250,19 @@ namespace chevron.Controllers
 
             foreach (DailyActivityModel daily in dataDaily)
             {
-                var Query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) \n"+
+                var Query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) \n" +
                         "values('{0}', '{1}', '{2}', {3}, '{4}')",
                         daily.tgl, daily.vessel, daily.activity, daily.duration.ToString(CultureInfo.InvariantCulture), daily.unit
                     );
                 con.queryExec(Query);
-                //Response.Write(Query + "<br><hr>");
             }
 
             List<ReportModelCS> ya = new List<ReportModelCS>();
             List<ReportModelCS> tidak = new List<ReportModelCS>();
-            Decimal standby = 0, load = 0, steaming = 0, countDistance = 0, downTime = 0;
-            Decimal rupiah = 0, dollar = 0;
+            Decimal standby = 0, load = 0, steaming = 0, countDistance = 0,downTime = 0;
+            Decimal rupiah = 0, dollar = 0, totalFuel = 0;
 
-            var query = "select vt.id as vessel_id, da.vessel, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
+            var query = "select vt.id as vessel_id, da.vessel, da.unit, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
                                        "from daily_activity da \n" +
                                        "inner join vessel_table vt \n" +
                                        "on vt.name = da.vessel \n" +
@@ -278,7 +277,7 @@ namespace chevron.Controllers
                                        "on da.unit = ut.name \n" +
                                        "where da.unit_cat!=1";
 
-            var query3 = "select name, value from currency_cat";
+            var query3 = "select top 1 cost_usd, cost_rp from fuel_table";
 
             try
             {
@@ -292,7 +291,8 @@ namespace chevron.Controllers
                         duration = Decimal.Parse(con.result["duration"].ToString()),
                         distance = int.Parse(con.result["distance"].ToString()),
                         fuel = int.Parse(con.result["fuel"].ToString()),
-                        jml = int.Parse(con.result["jml"].ToString())
+                        jml = int.Parse(con.result["jml"].ToString()),
+                        unit = con.result["unit"].ToString()
                     });
                 }
                 con.Close();
@@ -305,7 +305,7 @@ namespace chevron.Controllers
                         vessel_id = int.Parse(con.result["vessel_id"].ToString()),
                         vessel_name = con.result["vessel"].ToString(),
                         duration = Decimal.Parse(con.result["duration"].ToString()),
-                        activity = con.result["activity"].ToString()
+                        activity = con.result["activity"].ToString(),
                     });
                 }
                 con.Close();
@@ -313,17 +313,8 @@ namespace chevron.Controllers
                 con.query(query3);
                 while (con.result.Read())
                 {
-                    switch (con.result["name"].ToString())
-                    {
-                        case "Dollar":
-                            dollar = int.Parse(con.result["value"].ToString());
-                            break;
-                        case "Rupiah":
-                            rupiah = int.Parse(con.result["value"].ToString());
-                            break;
-                        default:
-                            break;
-                    }
+                    dollar = Decimal.Parse(con.result["cost_usd"].ToString());
+                    rupiah = Decimal.Parse(con.result["cost_rp"].ToString());
                 }
             }
             catch (Exception ex)
@@ -365,23 +356,27 @@ namespace chevron.Controllers
                     }
                 }
 
-                //Response.Write("Standby = " + standby.ToString("n3") + " Load = " + load.ToString("n3") + " Steaming = " + steaming.ToString("n3") + "<br />");
-                Decimal hasil = Math.Round(standby, 3) + Math.Round(load, 3) + Math.Round(steaming, 3) + item.duration;
-                hasil = Math.Round(hasil, 3);
+                //Response.Write("Standby = " + standby.ToString("f2") + " Load = " + load.ToString("f2") + " Steaming = " + steaming.ToString("f2") + "<br />");
+                Decimal hasil = standby + load + steaming + item.duration;
+                //hasil = hasil;
 
-                //Response.Write("Hasilnya adalah == " + hasil + "<br />");
-                //Response.Write("ini downtime : " + downTime +"<br/>");
+                //Response.Write("Hasilnya adalah == " + hasil.ToString("f3") + "<br />");
+                //Response.Write("ini downtime : " + downTime + "<br/>");
 
-                Decimal duit1 = dollar * hasil / (24 - downTime), duit2 = rupiah * hasil / (24 - downTime);
-                //Response.Write(duit1.ToString("n3", CultureInfo.CreateSpecificCulture("en-US")) + " " +duit2.ToString("n3", CultureInfo.CreateSpecificCulture("id")) +"<br/>");
+                totalFuel = item.fuel / (24 - downTime);
 
-                var qp = String.Format("insert into report_table ([vessel_id], [vessel_name], [date], [fuel_liter], [fuel_usd], [fuel_rp]) \n" +
-                    "VALUES ({0}, '{1}', '{2}', {3}, {4}, {5})"
-                    , item.vessel_id, item.vessel_name, nowDate, item.fuel, duit1.ToString("n3", CultureInfo.CreateSpecificCulture("en-US")), duit2.ToString("0", CultureInfo.InvariantCulture)
+                Decimal duit1 = hasil * dollar * totalFuel,
+                        duit2 = hasil * rupiah * totalFuel;
+
+                var qp = String.Format("insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp]) \n" +
+                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6})"
+                    , item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture)
                     );
                 con.queryExec(qp);
+                //Response.Write(qp + "<br><hr>");
             }
 
+            //Response.Write("<hr><hr> $" + dollar + "<br>Rp" + rupiah);
             con.queryExec(kueriDelete);
             Response.Write("true");
         }

@@ -9,13 +9,14 @@
             var grid = new WebGrid(source: ViewBag.report);
         }
         @grid.GetHtml(
-        tableStyle: "table table-bordered",
+        tableStyle: "table table-bordered table-hover",
         htmlAttributes: new { id = "reportTable"},
         columns: grid.Columns(
-        grid.Column(null, "Date", format: (item) => item.date),
-        grid.Column(null, "Vessel", format: (item) => item.vessel_name),
-                   grid.Column(null, "Fuel Cost (USD)", format: (item) => item.fuel_usd.ToString("c", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
-                            grid.Column(null, "Fuel Cost (Rp)", format: (item) => item.fuel_rp.ToString("c", System.Globalization.CultureInfo.CreateSpecificCulture("en-Id")))
+                grid.Column(null, "Date", format: (item) => item.date),
+                grid.Column(null, "Vessel", format: (item) => item.vessel_name),
+                grid.Column(null, "Unit", format: (item) => item.unit ),
+                grid.Column(null, "Fuel Cost (USD)", format: (item) => item.fuel_usd.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
+                grid.Column(null, "Fuel Cost (Rp)", format: (item) => item.fuel_rp.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-Id")))
             )
         )
     </div>

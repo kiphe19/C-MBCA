@@ -22,8 +22,9 @@ namespace chevron.Controllers
                 {
                     vessel_id = int.Parse(con.result["vessel_id"].ToString()),
                     vessel_name = con.result["vessel_name"].ToString(),
+                    unit = con.result["unit"].ToString(),
                     date = DateTime.Parse(con.result["date"].ToString()).ToString("MM/dd/yyyy"),
-                    fuel_liter = int.Parse(con.result["fuel_liter"].ToString()),
+                    fuel_liter = Decimal.Parse(con.result["fuel_liter"].ToString()),
                     fuel_usd = Decimal.Parse(con.result["fuel_usd"].ToString()),
                     fuel_rp = Decimal.Parse(con.result["fuel_rp"].ToString())
                 });
