@@ -12,7 +12,6 @@ namespace chevron
         
         private SqlCommand cmd;
         private static SqlConnection con;
-        public string q;
         public SqlDataReader result;
 
 
