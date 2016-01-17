@@ -14,5 +14,9 @@ namespace chevron.Models
         public Decimal fuel_liter { get; set; }
         public Decimal fuel_usd { get; set; }
         public Decimal fuel_rp { get; set; }
+        public Decimal standby_time { get; set; }
+        public Decimal steaming_time { get; set; }
+        public Decimal load_time { get; set; }
+        public Decimal down_time { get; set; }
     }
 }

@@ -368,9 +368,10 @@ namespace chevron.Controllers
                 Decimal duit1 = hasil * dollar * totalFuel,
                         duit2 = hasil * rupiah * totalFuel;
 
-                var qp = String.Format("insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp]) \n" +
-                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6})"
-                    , item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture)
+                var qp = String.Format(
+                    "insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp], [standby_time], [load_time], [steaming_time], [down_time]) \n" +
+                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10})",
+                     item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture), downTime.ToString(CultureInfo.InvariantCulture)
                     );
                 con.queryExec(qp);
                 //Response.Write(qp + "<br><hr>");

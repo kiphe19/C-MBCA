@@ -15,6 +15,10 @@
                 grid.Column(null, "Date", format: (item) => item.date),
                 grid.Column(null, "Vessel", format: (item) => item.vessel_name),
                 grid.Column(null, "Unit", format: (item) => item.unit ),
+                grid.Column(null, "Standby", format: (item) => item.standby_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                grid.Column(null, "Load", format: (item) => item.load_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                grid.Column(null, "Steaming", format: (item) => item.steaming_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                grid.Column(null, "Downtime", format: (item) => item.down_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                 grid.Column(null, "Fuel Cost (USD)", format: (item) => item.fuel_usd.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
                 grid.Column(null, "Fuel Cost (Rp)", format: (item) => item.fuel_rp.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-Id")))
             )

@@ -21,6 +21,7 @@ namespace chevron.Controllers
         public ActionResult Index()
         {
             ViewBag.currency_cat = _getCurrency();
+            ViewBag.vessel = _getVessel1();
             return View();
         }
 
@@ -134,8 +135,6 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "hire_table")
                 .Model<HireModel>()
-                .Field(new Field("s_period").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy")))
-                .Field(new Field("e_period").GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy")))
                 .Process(request)
                 .Data();
 
@@ -220,6 +219,24 @@ namespace chevron.Controllers
             return currency;
         }
 
+        private List<SelectListItem> _getVessel1()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+            con.select("vessel_table", "name");
+
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["name"].ToString()
+                });
+            }
+
+            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+            return VesselSorted;
+        }
+
         [Route("cs/fuel")]
         [HttpPost]
         public String _FuelCustom(FormCollection input)
@@ -268,6 +285,58 @@ namespace chevron.Controllers
             catch (Exception ex)
             {
 
+                return ex.Message;
+            }
+        }
+
+        [Route("cs/charter")]
+        public String _Charter(FormCollection input)
+        {
+            List<CurrencyModel> curr = new List<CurrencyModel>();
+
+            con.select("currency_cat", "*");
+
+            while (con.result.Read())
+            {
+                curr.Add(new CurrencyModel
+                {
+                    id = int.Parse(con.result["id"].ToString()),
+                    value = int.Parse(con.result["value"].ToString())
+                });
+            }
+            con.Close();
+
+
+            var a = int.Parse(input["currency_cat"]);
+            var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
+            var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
+
+            Decimal hasilUSD = 0,
+                hasilRP = 0,
+                b = Decimal.Parse(input["cost"]);
+
+            switch (a)
+            {
+                case 1:
+                    hasilUSD = usd[0] * b;
+                    hasilRP = rp[0] * b;
+                    break;
+                case 2:
+                    hasilUSD = b / rp[0];
+                    hasilRP = b * usd[0];
+                    break;
+                default:
+                    break;
+            }
+
+            var query = String.Format("insert into hire_table ([vessel], [cost_usd], [cost_rp]) values ('{0}', {1}, {2})", input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
+            try
+            {
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
                 return ex.Message;
             }
         }

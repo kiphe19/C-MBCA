@@ -26,7 +26,11 @@ namespace chevron.Controllers
                     date = DateTime.Parse(con.result["date"].ToString()).ToString("MM/dd/yyyy"),
                     fuel_liter = Decimal.Parse(con.result["fuel_liter"].ToString()),
                     fuel_usd = Decimal.Parse(con.result["fuel_usd"].ToString()),
-                    fuel_rp = Decimal.Parse(con.result["fuel_rp"].ToString())
+                    fuel_rp = Decimal.Parse(con.result["fuel_rp"].ToString()),
+                    standby_time = Decimal.Parse(con.result["standby_time"].ToString()),
+                    load_time = Decimal.Parse(con.result["load_time"].ToString()),
+                    steaming_time = Decimal.Parse(con.result["steaming_time"].ToString()),
+                    down_time = Decimal.Parse(con.result["down_time"].ToString())
                 });
 
             }

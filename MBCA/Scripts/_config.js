@@ -282,21 +282,19 @@ $(document).ready(function () {
         i = 1;
     });
 
-    HireEditor = new $.fn.dataTable.Editor({
+    CharterEditor = new $.fn.dataTable.Editor({
         ajax: "api/hire",
         table: "#hireTable",
         fields: [
             { label: "Vessel", name: "vessel", type: "select" },
-            { label: "Early Period", name: "s_period", type: "datetime", format: "DD/MM/YYYY" },
-            { label: "End of Period", name: "e_period", type: "datetime", format: "DD/MM/YYYY" }
         ]
     })
 
-    HireEditor.one('preOpen', function () {
+    CharterEditor.one('preOpen', function () {
         getVessel();
     })
 
-    $("#hireTable").dataTable({
+    CharterTable = $("#hireTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/hire",
@@ -310,13 +308,27 @@ $(document).ready(function () {
                 }
             },
             { data: "vessel" },
-            { data: "s_period" },
-            { data: "e_period" }
+            {
+                data: null, render: function (data) {
+                    return "$"+Number(data.cost_usd).toLocaleString();
+                }
+            },
+            {
+                data: null, render: function (data) {
+                    return "Rp" + Number(data.cost_rp).toLocaleString();
+                }
+            }
         ],
         buttons: [
-            { extend: "create", editor: HireEditor, text: "Add new Hire" },
-            { extend: "edit", editor: HireEditor },
-            { extend: "remove", editor: HireEditor }
+            //{ extend: "create", editor: CharterEditor, text: "Add new Charter" },
+            {
+                text: "New",
+                action: function(){
+                    $("#modalCharter").modal({backdrop: false});
+                }
+            },
+            //{ extend: "edit", editor: CharterEditor },
+            { extend: "remove", editor: CharterEditor }
         ]
     }).on('init', function () {
         i = 1;
@@ -371,8 +383,20 @@ $(document).ready(function () {
         $.post("api/cs/currency", data, function (res) {
             if(res == "success"){
                 $("#modalCurrency").modal('hide');
-                currencyTable.ajax.reload();
+                CharterTable.ajax.reload();
             }else{
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
+    $("#modalCharter form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/charter", data, function (res) {
+            if (res == "success") {
+                $("#modalCharter").modal('hide');
+                CharterTable.ajax.reload();
+            } else {
                 alert(res);
             }
         })

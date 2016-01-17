@@ -166,7 +166,6 @@
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\FuelModel.cs" />
     <Compile Include="Models\HireModel.cs" />
-    <Compile Include="Models\KipheModel.cs" />
     <Compile Include="Models\MonthlyActivityModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportModelCS.cs" />

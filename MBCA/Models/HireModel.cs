@@ -8,7 +8,7 @@ namespace chevron.Models
     public class HireModel
     {
         public string vessel { get; set; }
-        public string s_period { get; set; }
-        public string e_period { get; set; }
+        public Decimal cost_usd { get; set; }
+        public Decimal cost_rp { get; set; }
     }
 }

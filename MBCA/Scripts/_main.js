@@ -1,6 +1,6 @@
 ﻿var editor,
     dailyTable,
-    path = "",
+    path = window.location.pathname,
     monthlyTable;
 
 //function getAV() {
@@ -62,7 +62,7 @@
     })
 
     dailyTable = $("#dailyTable").DataTable({
-        dom: '<"dailyButton"B<"floatright"f>>rtip',
+        dom: '<"dailyButton"B<"floatright">>rtip',
         ajax: {
             url: path + "/api/daily",
             method: "post"
@@ -164,8 +164,7 @@ $(document).ready(function () {
 
     $("#daily_date").datetimepicker({
         format: "MM/DD/YYYY",
-        maxDate: new Date(),
-        minDate: new Date()
+        maxDate: new Date()
     })
     $("#btnSaveDataDaily").click(function () {
         var data = dailyTable.data();
