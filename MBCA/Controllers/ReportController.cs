@@ -30,7 +30,11 @@ namespace chevron.Controllers
                     standby_time = Decimal.Parse(con.result["standby_time"].ToString()),
                     load_time = Decimal.Parse(con.result["load_time"].ToString()),
                     steaming_time = Decimal.Parse(con.result["steaming_time"].ToString()),
-                    down_time = Decimal.Parse(con.result["down_time"].ToString())
+                    down_time = Decimal.Parse(con.result["down_time"].ToString()),
+                    charter_usd = Decimal.Parse(con.result["charter_usd"].ToString()),
+                    charter_rp = Decimal.Parse(con.result["charter_rp"].ToString()),
+                    demob_rp = Decimal.Parse(con.result["demob_rp"].ToString()),
+                    demob_usd = Decimal.Parse(con.result["demob_usd"].ToString())
                 });
 
             }

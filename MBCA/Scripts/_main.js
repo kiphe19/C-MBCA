@@ -3,48 +3,6 @@
     path = window.location.pathname,
     monthlyTable;
 
-//function getAV() {
-//    $.post(path + "/api/dataa")
-//            .success(function (e) {
-//                var activity = new Array();
-//                for (var i in e.data) {
-//                    var qp = {
-//                        label: e.data[i].activity_name,
-//                        value: e.data[i].activity_name
-//                    }
-//                    activity.push(qp);
-//                }
-//                dailyEditor.field("daily_activity").update(activity);
-//                monthlyEditor.field("monthly_activity").update(activity);
-//            })
-//    $.post(path + "/api/datav")
-//            .success(function (e) {
-//                var vessel = new Array();
-//                for (var i in e.data) {
-//                    var qp = {
-//                        label: e.data[i].name,
-//                        value: e.data[i].name
-//                    }
-//                    vessel.push(qp);
-//                }
-//                dailyEditor.field("daily_vessel").update(vessel);
-//                monthlyEditor.field("monthly_vessel").update(vessel);
-//            })
-//    $.post(path + "/api/datau")
-//           .success(function (e) {
-//               var unit = new Array();
-//               for (var i in e.data) {
-//                   var qp = {
-//                       label: e.data[i].unit_name,
-//                       value: e.data[i].unit_name
-//                   }
-//                   unit.push(qp);
-//               }
-//               dailyEditor.field("daily_unit").update(unit);
-//               monthlyEditor.field("monthly_unit").update(unit);
-//           })
-//}
-
 (function () {
 
     dailyEditor = new $.fn.dataTable.Editor({
@@ -75,17 +33,19 @@
         ],
         select: true,
         buttons: [
-            //{ extend: "edit", editor: dailyEditor },
             {
                 text: "Edit",
                 action: function (e, dt, node, config) {
                     var a = dailyTable.rows('.selected').indexes()
                     if (a.length !== 0) {
                         var b = dailyTable.row(a).data();
+                        $('#inputDaily').collapse('show');
                         $("#daily_unit").val(b.daily_unit);
                         $("#daily_activity").val(b.daily_activity);
+                        $("#dailyForm input[name='daily_date']").val(b.daily_date);
                         $("#dailyForm input[name='daily_duration']").val(b.daily_duration);
-                        $("#dailyForm input[name='daily_type']").val(b.id);
+                        $("#dailyForm input[name='action']").val("update");
+                        $("#dailyForm input[name='id']").val(b.id);
                         $("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
                         $("#btnEditGroup").show();
                         $("#btnSaveGroup").hide();
@@ -110,12 +70,11 @@
     })
 
     monthlyTable = $("#monthlyTable").DataTable({
-        dom: 'B<"floatright"f>rtip',
+        dom: 'B<"floatright">rtip',
         ajax: {
             url: path + "/api/monthly",
             type: "post"
         },
-        serverSide: true,
         columns: [
             { data: "monthly_date" },
             { data: "monthly_vessel" },
@@ -125,8 +84,6 @@
         ],
         select: true,
         buttons: [
-            //{ extend: "edit", editor: monthlyEditor },
-            //{ extend: "remove", editor: monthlyEditor },
             {
                 extend: "collection",
                 text: "Export to ..",
@@ -140,29 +97,23 @@ $(document).ready(function () {
 
     $("#dailyForm").submit(function (e) {
         var data = $(this).serialize();
-        if ($("#dailyForm input[name='daily_type']").val() == "create") {
             $.post(path + "/api/cs/daily", data, function (res) {
                 if (res === "success") {
                     dailyTable.ajax.reload();
                     $("#dailyForm input[name='daily_duration']").val(null);
-                } else {
-                    alert(res);
-                }
-            })
-        } else {
-            $.post(path + "/api/cs/daily/up", data, function (res) {
-                if (res === "success") {
-                    dailyTable.ajax.reload();
                     dailyCancel.apply();
                 } else {
                     alert(res);
                 }
             })
-        }
         e.preventDefault();
     })
 
     $("#daily_date").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    })
+    $("#monthlyPanel input").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
     })
@@ -196,30 +147,38 @@ $(document).ready(function () {
 
                 var b = 24 - duration;
                 if (!downTime && duration < 24) {
-                    var c = confirm("Downtime can't be found. Do you want to add remaining time (" + b + " hours) for \"Downtime Activity\"?");
+                    var c = confirm("Activity \"Downtime\" tidak ditemukan. Apakah Anda ingin menambahkan waktu yang tersisa (" + b + " jam) untuk \"Downtime\"?");
                     if (c) {
                         $("#dailyForm input[name='daily_duration']").val(b);
                         $("#daily_activity").val("Downtime");
                         $("#daily_unit").val("Unit Kosong");
                     }
                 } else if (!downTime && duration > 24) {
-                    alert("Downtime Can't be found. Please check your duration")
+                    alert("Activity Downtime tidak ditemukan. Dan durasi Anda melebihi 24jam")
                 } else if (downTime && duration < 24) {
-                    alert("Your currently duration is less than 24 hours. Please check your data");
+                    alert("Durasi yang ada kurang dari 24jam. Silahkan periksa kembali data Anda!");
                 } else if (downTime && duration > 24) {
-                    alert("Your currently duration is more than 24 hours.")
+                    alert("Durasi yang ada melebihi 24jam. Silahkan periksa kembali data Anda!");
                 } else {
                     saveDaily.apply();
                 }
             }
         }
     })
+    $("#monthlyPanel form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/filter/monthly", data)
+        .done(function (res) {
+            $("#monthlyView").html(res);
+        })
+        e.preventDefault();
+    })
     var dailyCancel = function () {
         dailyTable.rows('.selected').deselect();
         $("#btnEditGroup").hide();
         $("#btnSaveGroup").show();
         $("#dailyForm input[name='daily_duration']").val(null);
-        $("#dailyForm input[name='daily_type']").val("create");
+        $("#dailyForm input[name='action']").val("create");
     }
     $("#btnCancelDaily").click(function () {
         dailyCancel.apply();

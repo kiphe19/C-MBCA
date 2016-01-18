@@ -17,20 +17,20 @@ var getNewDistance = function () {
             unitEditor.field("unit_distance").update(distance);
         })
 }
-var getVessel = function () {
-    $.post("api/getvessel")
-        .success(function (e) {
-            var vessel = Array();
-            for (var i in e.data) {
-                var qp = {
-                    label: e.data[i].name,
-                    value: e.data[i].name
-                }
-                vessel.push(qp);
-            }
-            HireEditor.field("vessel").update(vessel);
-        })
-}
+//var getVessel = function () {
+//    $.post("api/getvessel")
+//        .success(function (e) {
+//            var vessel = Array();
+//            for (var i in e.data) {
+//                var qp = {
+//                    label: e.data[i].name,
+//                    value: e.data[i].name
+//                }
+//                vessel.push(qp);
+//            }
+//            HireEditor.field("vessel").update(vessel);
+//        })
+//}
 
 $(document).ready(function () {
     editor = new $.fn.dataTable.Editor({
@@ -254,25 +254,25 @@ $(document).ready(function () {
             }
         ],
         select: true,
-        //order: [1, 'desc'],
         buttons: [
-            //{ extend: "create", editor: editor, text: "Add new Daily Fuel" },
             {
                 text: "New",
                 action: function(){
-                    $("#modalFuel").modal({backdrop:false})
+                    $("#modalFuel").modal({ backdrop: false })
+                    $("#modalFuel input[name='action']").val("create");
                 }
             },
-            //{ extend: "edit", editor: editor },
             {
                 text: "Edit",
                 action: function () {
                     var a = fuelTable.rows('.selected').indexes();
+                    var b = fuelTable.row(a).data();
                     if (a.length !== 0) {
                         $("#modalFuel").modal({ backdrop: false })
-                        var b = fuelTable.row(a).data();
                         $("#modalFuel input[name='tgl']").val(b.tgl);
                         $("#modalFuel input[name='cost']").val(b.cost_usd);
+                        $("#modalFuel input[name='action']").val("update");
+                        $("#modalFuel input[name='id']").val(b.id);
                     }
                 }
             },
@@ -290,10 +290,6 @@ $(document).ready(function () {
         ]
     })
 
-    CharterEditor.one('preOpen', function () {
-        getVessel();
-    })
-
     CharterTable = $("#hireTable").DataTable({
         dom: "Bfrtip",
         ajax: {
@@ -307,6 +303,7 @@ $(document).ready(function () {
                     return i++;
                 }
             },
+            { data: "tgl" },
             { data: "vessel" },
             {
                 data: null, render: function (data) {
@@ -320,21 +317,36 @@ $(document).ready(function () {
             }
         ],
         buttons: [
-            //{ extend: "create", editor: CharterEditor, text: "Add new Charter" },
             {
                 text: "New",
                 action: function(){
-                    $("#modalCharter").modal({backdrop: false});
+                    $("#modalCharter").modal({ backdrop: false });
+                    $("#modalCharter button[type='submit']").text("Add")
+                    $("#modalCharter input").val(null);
+                    $("#modalCharter input[name='action']").val("create");
                 }
             },
-            //{ extend: "edit", editor: CharterEditor },
+            {
+                text: "Edit",
+                action: function () {
+                    var a = CharterTable.rows('.selected').indexes();
+                    var b = CharterTable.row(a).data();
+                    if (a.length > 0) {
+                        $("#modalCharter").modal({ backdrop: false });
+                        $("#modalCharter input[name='tgl']").val(b.tgl);
+                        $("#modalCharter input[name='cost']").val(b.cost_usd);
+                        $("#modalCharter input[name='action']").val("update");
+                        $("#modalCharter input[name='id']").val(b.id);
+                        $("#modalCharter button[type='submit']").text("Update")
+                        $("#modalCharter select[id='vessel'").val(b.vessel)
+                    }
+                }
+            },
             { extend: "remove", editor: CharterEditor }
         ]
     }).on('init', function () {
         i = 1;
-    }).on('create', function () {
-        i = 1;
-    });
+    })
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/currency",
@@ -359,7 +371,6 @@ $(document).ready(function () {
         ],
         select: true,
         buttons: [
-            //{ extend: "create", editor: editor },
             {
                 text: "Edit", action: function (e, dt, node, config) {
                     var q = currencyTable.rows('.selected').indexes()
@@ -377,6 +388,69 @@ $(document).ready(function () {
             { extend: "remove", editor: editor }
         ]
     })
+
+    editor = new $.fn.dataTable.Editor({
+        ajax: "api/demob",
+        table: "#demobTable"
+    })
+
+   DemobTable =  $("#demobTable").DataTable({
+        dom: "Bfrtip",
+        ajax: {
+            url: "api/demob",
+            type: "post"
+        },
+        select: true,
+        columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
+            { data: "tgl" },
+            { data: "vessel" },
+            {
+                data: null, render: function (data) {
+                    return "$" + Number(data.cost_usd).toLocaleString();
+                }
+            },
+            {
+                data: null, render: function (data) {
+                    return "Rp" + Number(data.cost_rp).toLocaleString();
+                }
+            }
+        ],
+        buttons: [
+            {
+                text: "New",
+                action: function () {
+                    $("#modalDemob").modal({ backdrop: false });
+                    $("#modalDemob button[type='submit']").text("Add")
+                    $("#modalDemob input").val(null);
+                    $("#modalDemob input[name='action']").val("create");
+                }
+            },
+            {
+                text: "Edit",
+                action: function () {
+                    var a = DemobTable.rows('.selected').indexes();
+                    var b = DemobTable.row(a).data();
+                    if (a.length > 0) {
+                        $("#modalDemob").modal({ backdrop: false });
+                        $("#modalDemob input[name='tgl']").val(b.tgl);
+                        $("#modalDemob input[name='cost']").val(b.cost_usd);
+                        $("#modalDemob input[name='action']").val("update");
+                        $("#modalDemob input[name='id']").val(b.id);
+                        $("#modalDemob select[id='vessel'").val(b.vessel)
+                        $("#modalDemob button[type='submit']").text("Update")
+                    }
+                }
+            },
+            {extend: "remove", editor: editor}
+        ]
+    }).on('init', function () {
+        i = 1;
+    });
 
     $("#modalCurrency form").submit(function (e) {
         var data = $(this).serialize();
@@ -402,13 +476,31 @@ $(document).ready(function () {
         })
         e.preventDefault();
     })
+    $("#modalDemob form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/demob", data, function (res) {
+            if (res == "success") {
+                $("#modalDemob").modal('hide');
+                DemobTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
     $("#modalFuel form input[name='tgl']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalCharter form input[name='tgl']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalDemob form input[name='tgl']").datetimepicker({
         format: "MM/DD/YYYY"
     })
     $("#modalFuel form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/fuel", data, function (res) {
-            if (res=="true") {
+            if (res=="success") {
                 $("#modalFuel").modal('hide');
                 fuelTable.ajax.reload();
             } else {

@@ -18,5 +18,9 @@ namespace chevron.Models
         public Decimal steaming_time { get; set; }
         public Decimal load_time { get; set; }
         public Decimal down_time { get; set; }
+        public Decimal charter_usd { get; set; }
+        public Decimal charter_rp { get; set; }
+        public Decimal demob_usd { get; set; }
+        public Decimal demob_rp { get; set; }
     }
 }

@@ -163,6 +163,7 @@
     <Compile Include="Models\ActivityModel.cs" />
     <Compile Include="Models\CurrencyModel.cs" />
     <Compile Include="Models\DailyActivityModel.cs" />
+    <Compile Include="Models\DemobModel.cs" />
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\FuelModel.cs" />
     <Compile Include="Models\HireModel.cs" />
@@ -338,6 +339,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Home\_MonthlyGrid.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -11,6 +11,7 @@
             <li role="presentation"><a href="#distancePanel" role="tab" data-toggle="tab">Distance</a></li>
             <li role="presentation"><a href="#fuelPanel" role="tab" data-toggle="tab">Fuel Cost</a></li>
             <li role="presentation"><a href="#hirePanel" role="tab" data-toggle="tab">Charter Cost</a></li>
+            <li role="presentation"><a href="#demobPanel" role="tab" data-toggle="tab">Mob/demob Cost</a></li>
             <li role="presentation"><a href="#currencyPanel" role="tab" data-toggle="tab">Currency</a></li>
         </ul>
     </div>
@@ -84,6 +85,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Date</th>
                             <th>Vessel Name</th>
                             <th>Cost (USD)</th>
                             <th>Cost (Rp)</th>
@@ -103,6 +105,20 @@
                     </thead>
                 </table>
             </div>
+            <div role="tabpanel" class="tab-pane" id="demobPanel">
+                <table id="demobTable" class="display table table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Date</th>
+                            <th>Vessel Name</th>
+                            <th>Cost (USD)</th>
+                            <th>Cost (Rp)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
         </div>
     </div>
     <div class="panel-footer">
@@ -117,7 +133,7 @@
             <form class="form-horizontal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Add new Daily Fuel</h4>
+                    <h4 class="modal-title">Daily Fuel</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -136,12 +152,14 @@
                         <label class="col-sm-2 control-label">Cost</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="cost" />
+                            <input type="hidden" name="action" />
+                            <input type="hidden" name="id" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
                 </div>
             </form>
         </div>
@@ -188,6 +206,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">Date</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="tgl" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-2 control-label">Vessel</label>
                         <div class="col-sm-10">
                             @Html.DropDownList("vessel", null, new { @class = "form-control" })
@@ -203,12 +227,58 @@
                         <label class="col-sm-2 control-label">Cost</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="cost" />
+                            <input type="hidden" name="action" />
+                            <input type="hidden" name="id" />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDemob">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Mob/Demob Cost</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Date</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="tgl" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Vessel</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("vessel", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Currency</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("currency_cat", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Cost</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="cost" />
+                            <input type="hidden" name="action" />
+                            <input type="hidden" name="id" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </form>
         </div>

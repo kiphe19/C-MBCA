@@ -104,7 +104,7 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
-                .Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
+                //.Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl")
                     .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
@@ -187,30 +187,20 @@ namespace chevron.Controllers
             con.select("unit_table", "cat", q);
             con.result.Read();
             q = con.result["cat"].ToString();
-            var query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat]) values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6})", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q);
-            try
+
+
+            String query = "";
+            switch (input["action"])
             {
-                con.queryExec(query);
-                return "success";
+                case "create":
+                    query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat]) values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6})", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q);
+                    break;
+                case "update":
+                    query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["id"], q);
+                    break;
+                default:
+                    break;
             }
-            catch (Exception ex)
-            {
-
-                return ex.Message;
-            }
-        }
-
-        [Route("cs/daily/up")]
-        [HttpPost]
-        public String _dailyUpdate(FormCollection input)
-        {
-            var q = string.Format("name = '{0}'", input["daily_unit"]);
-
-            con.select("unit_table", "cat", q);
-            con.result.Read();
-            q = con.result["cat"].ToString();
-
-            var query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_type"], q);
             try
             {
                 con.queryExec(query);
@@ -260,7 +250,7 @@ namespace chevron.Controllers
             List<ReportModelCS> ya = new List<ReportModelCS>();
             List<ReportModelCS> tidak = new List<ReportModelCS>();
             Decimal standby = 0, load = 0, steaming = 0, countDistance = 0,downTime = 0;
-            Decimal rupiah = 0, dollar = 0, totalFuel = 0;
+            Decimal rupiah = 0, dollar = 0, totalFuel = 0, charter_usd = 0, charter_rp = 0, demob_usd = 0, demob_rp = 0;
 
             var query = "select vt.id as vessel_id, da.vessel, da.unit, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
                                        "from daily_activity da \n" +
@@ -278,6 +268,7 @@ namespace chevron.Controllers
                                        "where da.unit_cat!=1";
 
             var query3 = "select top 1 cost_usd, cost_rp from fuel_table";
+            var query4 = "";
 
             try
             {
@@ -297,6 +288,11 @@ namespace chevron.Controllers
                 }
                 con.Close();
 
+                query4 = string.Format("select top 1 tgl, cost_usd, cost_rp \n" +
+                    "from hire_table where vessel = '{0}' order by tgl desc", 
+                    ya[0].vessel_name
+                    );
+
                 con.query(query2);
                 while (con.result.Read())
                 {
@@ -307,6 +303,27 @@ namespace chevron.Controllers
                         duration = Decimal.Parse(con.result["duration"].ToString()),
                         activity = con.result["activity"].ToString(),
                     });
+                }
+                con.Close();
+
+                con.query(query4);
+                while (con.result.Read())
+                {
+                    charter_usd = Decimal.Parse(con.result["cost_usd"].ToString());
+                    charter_rp = Decimal.Parse(con.result["cost_rp"].ToString());
+                }
+                con.Close();
+
+                query4 = string.Format("select top 1 tgl, cost_usd, cost_rp \n" +
+                    "from demob_table where vessel = '{0}' order by tgl desc",
+                    ya[0].vessel_name
+                    );
+
+                con.query(query4);
+                while (con.result.Read())
+                {
+                    demob_usd = Decimal.Parse(con.result["cost_usd"].ToString());
+                    demob_rp = Decimal.Parse(con.result["cost_rp"].ToString());
                 }
                 con.Close();
 
@@ -354,10 +371,18 @@ namespace chevron.Controllers
                         default:
                             break;
                     }
+                    
                 }
 
                 //Response.Write("Standby = " + standby.ToString("f2") + " Load = " + load.ToString("f2") + " Steaming = " + steaming.ToString("f2") + "<br />");
                 Decimal hasil = standby + load + steaming + item.duration;
+                
+                Decimal hasil_charter_usd = (standby + load + steaming) * (charter_usd / 24);
+                Decimal hasil_charter_rp = (standby + load + steaming) * (charter_rp / 24);
+
+                Decimal hasil_demob_usd = (standby + load + steaming) * (demob_usd / 24);
+                Decimal hasil_demob_rp = (standby + load + steaming) * (demob_rp / 24);
+
                 //hasil = hasil;
 
                 //Response.Write("Hasilnya adalah == " + hasil.ToString("f3") + "<br />");
@@ -369,17 +394,50 @@ namespace chevron.Controllers
                         duit2 = hasil * rupiah * totalFuel;
 
                 var qp = String.Format(
-                    "insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp], [standby_time], [load_time], [steaming_time], [down_time]) \n" +
-                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10})",
-                     item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture), downTime.ToString(CultureInfo.InvariantCulture)
+                    "insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp], [standby_time], [load_time], [steaming_time], [down_time], [charter_usd], [charter_rp], [demob_usd], [demob_rp]) \n" +
+                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14})",
+                     item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture), downTime.ToString(CultureInfo.InvariantCulture),
+                     hasil_charter_usd.ToString(CultureInfo.InvariantCulture), hasil_charter_rp.ToString(CultureInfo.InvariantCulture), hasil_demob_usd.ToString(CultureInfo.InvariantCulture), hasil_demob_rp.ToString(CultureInfo.InvariantCulture)
                     );
                 con.queryExec(qp);
                 //Response.Write(qp + "<br><hr>");
             }
 
-            //Response.Write("<hr><hr> $" + dollar + "<br>Rp" + rupiah);
             con.queryExec(kueriDelete);
             Response.Write("true");
+        }
+
+        [Route("filter/monthly")]
+        [HttpPost]
+        public ActionResult _MonthlyGrid(FormCollection input)
+        {
+            List<MonthlyActivityModel> data = new List<MonthlyActivityModel>();
+            var tgl_e = input["tgl_e"];
+            var tgl_f = input["tgl_eop"];
+            var nowDate = DateTime.Today.ToString("MM/dd/yyyy");
+
+            if (string.IsNullOrEmpty(tgl_e) && string.IsNullOrEmpty(tgl_f))
+            {
+                tgl_e = nowDate;
+                tgl_f = nowDate;
+            }
+            var query = String.Format("select * from monthly_activity where tgl between '{0}' and '{1}'", tgl_e, tgl_f);
+            
+            con.query(query);
+            while (con.result.Read())
+            {
+                data.Add(new MonthlyActivityModel
+                {
+                    tgl = DateTime.Parse(con.result["tgl"].ToString()).ToString("MM/dd/yyyy"),
+                    activity = con.result["activity"].ToString(),
+                    duration = Decimal.Parse(con.result["duration"].ToString()),
+                    unit = con.result["unit"].ToString(),
+                    vessel = con.result["vessel"].ToString()
+                });
+            }
+
+            //ViewBag.data = data;
+            return PartialView("_MonthlyGrid", data);
         }
     }
 }
