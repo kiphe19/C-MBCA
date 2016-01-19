@@ -127,13 +127,61 @@
         </footer>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalBarge">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Barge Unit</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Unit Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="unit_name" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Unit Category</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="unit_cat">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Distance</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("distance", null, new {@class= "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="unit_desc" />
+                            <input type="hidden" name="action" />
+                            <input type="hidden" name="id" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" tabindex="-1" role="dialog" id="modalFuel">
     <div class="modal-dialog">
         <div class="modal-content">
             <form class="form-horizontal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Daily Fuel</h4>
+                    <h4 class="modal-title">Fuel Cost</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">

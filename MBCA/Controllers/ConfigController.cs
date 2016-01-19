@@ -21,7 +21,8 @@ namespace chevron.Controllers
         public ActionResult Index()
         {
             ViewBag.currency_cat = _getCurrency();
-            ViewBag.vessel = _getVessel1();
+            ViewBag.vessel = _getVessel();
+            ViewBag.distance = _getDistance();
             return View();
         }
 
@@ -180,33 +181,6 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("distanceValue")]
-        public ActionResult _distanceValue()
-        {
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "distance_table")
-                .Model<DistanceModel>()
-                .Process(Request.Form)
-                .Data();
-
-                return Json(response);
-            }
-        }
-
-        [Route("getvessel")]
-        public ActionResult _getVessel()
-        {
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "vessel_table")
-                .Model<VesselModel>()
-                .Process(Request.Form)
-                .Data();
-
-                return Json(response);
-            }
-        }
 
         [Route("cs/currency")]
         public String _updateCurrency(FormCollection input)
@@ -241,7 +215,7 @@ namespace chevron.Controllers
             return currency;
         }
 
-        private List<SelectListItem> _getVessel1()
+        private List<SelectListItem> _getVessel()
         {
             List<SelectListItem> vessel = new List<SelectListItem>();
             con.select("vessel_table", "name");
@@ -257,6 +231,59 @@ namespace chevron.Controllers
 
             var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
             return VesselSorted;
+        }
+
+        private List<SelectListItem> _getDistance()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+            con.select("distance_table", "name, distance");
+
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["distance"].ToString()
+                });
+            }
+
+            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+            return VesselSorted;
+        }
+
+        [Route("cs/barge")]
+        [HttpPost]
+        public String _BargeCustom(FormCollection input)
+        {
+            String query = "";
+
+            switch (input["action"])
+            {
+                case "create":
+                    query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
+                        "values ('{0}', '{1}', {2}, '{3}')",
+                        input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
+                        );
+                    break;
+                case "update":
+                    query = String.Format("update unit_table set name='{0}', cat='{1}', distance={2}, ket='{3}' where Id={4}",
+                            input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"], input["id"]
+                        );
+                    break;
+                default:
+                    break;
+            }
+            
+            try
+            {
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+
+                return ex.Message;
+            }
         }
 
         [Route("cs/fuel")]
@@ -310,7 +337,7 @@ namespace chevron.Controllers
                 default:
                     break;
             }
-            
+
             try
             {
                 con.queryExec(query);
