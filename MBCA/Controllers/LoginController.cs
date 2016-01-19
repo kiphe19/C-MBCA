@@ -29,6 +29,7 @@ namespace chevron.Controllers
                 if (con.result.HasRows)
                 {
                     Session["logged"] = "1";
+                    Session["userid"] = con.result["username"].ToString();
                     Response.Redirect(Url.Action("index", "home"), true);
                 }
                 else

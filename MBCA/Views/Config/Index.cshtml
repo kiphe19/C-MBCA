@@ -7,12 +7,13 @@
         <ul class="nav nav-pills" role="tablist">
             <li role="presentation" class="active"><a href="#vessel" role="tab" data-toggle="tab">Vessel</a></li>
             <li role="presentation"><a href="#activityPanel" role="tab" data-toggle="tab">Activity</a></li>
-            <li role="presentation"><a href="#userPanel" role="tab" data-toggle="tab">Barge Unit</a></li>
+            <li role="presentation"><a href="#bargePanel" role="tab" data-toggle="tab">Barge Unit</a></li>
             <li role="presentation"><a href="#distancePanel" role="tab" data-toggle="tab">Distance</a></li>
             <li role="presentation"><a href="#fuelPanel" role="tab" data-toggle="tab">Fuel Cost</a></li>
             <li role="presentation"><a href="#hirePanel" role="tab" data-toggle="tab">Charter Cost</a></li>
             <li role="presentation"><a href="#demobPanel" role="tab" data-toggle="tab">Mob/demob Cost</a></li>
             <li role="presentation"><a href="#currencyPanel" role="tab" data-toggle="tab">Currency</a></li>
+            <li role="presentation"><a href="#userPanel" role="tab" data-toggle="tab">User</a></li>
         </ul>
     </div>
     <div class="panel-body">
@@ -41,7 +42,7 @@
                 </table>
             </div>
 
-            <div role="tabpanel" class="tab-pane" id="userPanel">
+            <div role="tabpanel" class="tab-pane" id="bargePanel">
                 <table id="userTable" class="table display table-bordered" style="width:100%">
                     <thead>
                         <tr>
@@ -118,7 +119,16 @@
                     </thead>
                 </table>
             </div>
-
+            <div role="tabpanel" class="tab-pane" id="userPanel">
+                <table id="demobTable" class="display table table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div class="panel-footer">

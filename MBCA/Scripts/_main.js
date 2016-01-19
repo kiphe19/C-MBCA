@@ -27,6 +27,7 @@
         },
         serverSide: true,
         columns: [
+            { data: 'daily_date' },
             { data: 'daily_unit' },
             { data: "daily_activity" },
             { data: "daily_duration" }
