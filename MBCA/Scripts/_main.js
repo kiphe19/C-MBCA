@@ -1,283 +1,195 @@
 ﻿var editor,
-    unitEditor,
-    unitTable,
-    HireEditor,
-    i = 1;
-var getNewDistance = function () {
-    $.post("api/distancevalue")
-        .success(function (e) {
-            var distance = Array();
-            for (var i in e.data) {
-                var qp = {
-                    label: e.data[i].distance_name,
-                    value: e.data[i].distance
-                }
-                distance.push(qp);
-            }
-            unitEditor.field("unit_distance").update(distance);
-        })
-}
-var getVessel = function () {
-    $.post("api/getvessel")
-        .success(function (e) {
-            var vessel = Array();
-            for (var i in e.data) {
-                var qp = {
-                    label: e.data[i].name,
-                    value: e.data[i].name
-                }
-                vessel.push(qp);
-            }
-            HireEditor.field("vessel_name").update(vessel);
-        })
-}
+    dailyTable,
+    path ="",
+    monthlyTable;
 
-$(document).ready(function () {
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/vessel",
-        table: "#vesselTable",
+(function () {
+
+    dailyEditor = new $.fn.dataTable.Editor({
+        ajax: path + "/api/daily",
+        table: "#dailyTable",
         fields: [
-            {
-                label: "Vessel Name",
-                name: "name",
-            },
-            {
-                label: "Description",
-                name: "vs_desc"
-            }
+            { label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
+            { label: "Vessel", name: "daily_vessel", type: "select" },
+            { label: "Activity", name: "daily_activity", type: "select" },
+            { label: "User Unit", name: "daily_unit", type: "select" },
+            { label: "Duration", name: "daily_duration" }
         ]
-    });
-
-    $('#vesselTable').DataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/vessel",
-            type: 'post'
-        },
-        columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "name" },
-            { data: "vs_desc" }
-        ],
-        select: true,
-        buttons: [
-            { extend: 'create', editor: editor, text: "Add New Vessel" },
-            { extend: 'edit', editor: editor },
-            { extend: 'remove', editor: editor },
-        ]
-    }).on('init', function () {
-        i = 1;
+    }).on('preOpen', function () {
+        dailyEditor.title('Add new Daily Activity');
     })
 
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/activity",
-        table: "#activityTable",
-        fields: [
-            { label: "Activity Name", name: "activity_name" },
-            { label: "Description", name: "activity_ket" }
-        ]
-    });
-
-    $('#activityTable').DataTable({
-        dom: "Bfrtip",
+    dailyTable = $("#dailyTable").DataTable({
+        dom: '<"dailyButton"B<"floatright">>rtip',
         ajax: {
-            url: "api/activity",
-            type: 'post'
+            url: path + "/api/daily",
+            method: "post"
         },
+        serverSide: true,
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "activity_name" },
-            { data: "activity_ket" }
+            { data: 'daily_unit' },
+            { data: "daily_activity" },
+            { data: "daily_duration" }
         ],
         select: true,
         buttons: [
             {
-                extend: 'create',
-                editor: editor,
-                text: "Add New Activity",
-            },
-            {
-                extend: 'edit',
-                editor: editor
-            },
-            {
-                extend: 'remove',
-                editor: editor,
-            },
-        ]
-    }).on('init', function () {
-        i = 1;
-    });
-
-
-    unitEditor = new $.fn.dataTable.Editor({
-        ajax: "api/unit",
-        table: "#userTable",
-        fields: [
-            { name: "unit_name", label: "Unit Name" },
-            {
-                label: "Distance",
-                name: "unit_distance",
-                type: "select",
-                className: ""
-            },
-            { name: "unit_ket", label: "Description" }
-        ]
-    });
-    unitEditor.one('preOpen', function () {
-        getNewDistance();
-    })
-
-    unitTable = $("#userTable").DataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/unit",
-            type: 'post'
-        },
-        columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
+                text: "Edit",
+                action: function (e, dt, node, config) {
+                    var a = dailyTable.rows('.selected').indexes()
+                    if (a.length !== 0) {
+                        var b = dailyTable.row(a).data();
+                        $('#inputDaily').collapse('show');
+                        $("#daily_unit").val(b.daily_unit);
+                        $("#daily_activity").val(b.daily_activity);
+                        $("#dailyForm input[name='daily_date']").val(b.daily_date);
+                        $("#dailyForm input[name='daily_duration']").val(b.daily_duration);
+                        $("#dailyForm input[name='action']").val("update");
+                        $("#dailyForm input[name='id']").val(b.id);
+                        $("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
+                        $("#btnEditGroup").show();
+                        $("#btnSaveGroup").hide();
+                    }
                 }
             },
-            { data: "unit_name" },
-            { data: "unit_distance" },
-            { data: "unit_ket" }
-        ],
-        select: true,
-        buttons: [
-            {
-                extend: 'create', editor: unitEditor,
-                text: "Add New Unit"
-            },
-            { extend: 'edit', editor: unitEditor },
-            { extend: 'remove', editor: unitEditor }
+            { extend: "remove", editor: dailyEditor },
         ]
-    }).on('init', function () {
-        i = 1;
     });
 
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/distance",
-        table: "#distanceTable",
+
+    monthlyEditor = new $.fn.dataTable.Editor({
+        ajax: path + "/api/monthly",
+        table: "#monthlyTable",
         fields: [
-            { label: "Area Name", name: "distance_name" },
-            { label: "Distance", name: "distance" }
+            { label: "Date", name: "monthly_date", type: "datetime", format: "DD/MM/YYYY" },
+            { label: "Vessel", name: "monthly_vessel", type: "select" },
+            { label: "Activity", name: "monthly_activity", type: "select" },
+            { label: "User Unit", name: "monthly_unit", type: "select" },
+            { label: "Duration", name: "monthly_duration" }
         ]
     })
-    editor.on('edit', function () {
-        getNewDistance();
-    })
 
-    $("#distanceTable").DataTable({
-        dom: "Bfrtip",
+    monthlyTable = $("#monthlyTable").DataTable({
+        dom: 'B<"floatright">rtip',
         ajax: {
-            url: "api/distance",
-            type: 'post'
-        },
-        columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "distance_name" },
-            {
-                data: null, render: function (data, type, row) {
-                    return data.distance + " NMi";
-                }
-            }
-        ],
-        select: true,
-        buttons: [
-            { extend: "create", editor: editor, text: "Create new Area" },
-            { extend: "edit", editor: editor },
-            { extend: "remove", editor: editor }
-        ]
-    }).on('init', function () {
-        i = 1;
-    });
-
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/fuel",
-        table: "#fuelTable",
-        fields: [
-            { label: "Date", name: "tgl", type: "datetime", format: "MM/DD/YYYY" },
-            { label: "Cost", name: "cost" }
-        ]
-    })
-
-    $("#fuelTable").DataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/fuel",
+            url: path + "/api/monthly",
             type: "post"
         },
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "tgl" },
-            { data: "cost" }
+            { data: "monthly_date" },
+            { data: "monthly_vessel" },
+            { data: "monthly_activity" },
+            { data: "monthly_unit" },
+            { data: "monthly_duration" }
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: editor, text: "Add new Daily Fuel" },
-            { extend: "edit", editor: editor },
-            { extend: "remove", editor: editor }
-        ]
-    }).order(0, 'desc')
-        .on('init', function () {
-            i = 1;
-        });
-
-    HireEditor = new $.fn.dataTable.Editor({
-        ajax: "api/hire",
-        table: "#hireTable",
-        fields: [
-            { label: "Vessel", name: "vessel", type: "select" },
-            { label: "Early Period", name: "s_period", type: "datetime", format: "M/D/YYYY" },
-            { label: "End of Period", name: "f_period", type: "datetime", format: "M/D/YYYY" }
-        ]
-    })
-
-    HireEditor.one('preOpen', function () {
-        getVessel();
-    })
-
-    $("#hireTable").dataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/hire",
-            type: 'post'
-        },
-        select: true,
-        columns: [
             {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "vessel" },
-            { data: "s_period" },
-            { data: "f_period" }
-        ],
-        buttons: [
-            { extend: "create", editor: HireEditor, text: "Add new Hire" },
-            { extend: "edit", editor: HireEditor },
-            { extend: "remove", editor: HireEditor }
+                extend: "collection",
+                text: "Export to ..",
+                buttons: ['excel']
+            }
         ]
-    }).on('init', function () {
-        i = 1;
-    });
-});
+    })
+})(jQuery)
+
+$(document).ready(function () {
+
+    $("#dailyForm").submit(function (e) {
+        var data = $(this).serialize();
+            $.post(path + "/api/cs/daily", data, function (res) {
+                if (res === "success") {
+                    dailyTable.ajax.reload();
+                    $("#dailyForm input[name='daily_duration']").val(null);
+                    dailyCancel.apply();
+                } else {
+                    alert(res);
+                }
+            })
+        e.preventDefault();
+    })
+
+    $("#daily_date").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    })
+    $("#monthlyPanel input").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    })
+    $("#btnSaveDataDaily").click(function () {
+        var data = dailyTable.data();
+
+        var saveDaily = function () {
+            $.post(path + "/api/save/daily")
+            .success(function (res) {
+                if (res) {
+                    monthlyTable.ajax.reload();
+                    dailyTable.ajax.reload();
+                }
+            })
+        }
+
+        if (data.length == 0) {
+            alert("apa yang mau disimpen?");
+        } else {
+            var a = confirm("Are you sure, You want to save current data?");
+            if (a) {
+                var duration = 0,
+                    downTime = false;
+
+                for (var i = 0; i < data.length; i++) {
+                    duration += data[i].daily_duration;
+                    if (data[i].daily_activity == "Downtime") {
+                        downTime = true;
+                    }
+                }
+
+                var b = 24 - duration;
+                if (!downTime && duration < 24) {
+                    var c = confirm("Activity \"Downtime\" tidak ditemukan. Apakah Anda ingin menambahkan waktu yang tersisa (" + b + " jam) untuk \"Downtime\"?");
+                    if (c) {
+                        $("#dailyForm input[name='daily_duration']").val(b);
+                        $("#daily_activity").val("Downtime");
+                        $("#daily_unit").val("Unit Kosong");
+                    }
+                } else if (!downTime && duration > 24) {
+                    alert("Activity Downtime tidak ditemukan. Dan durasi Anda melebihi 24jam")
+                } else if (downTime && duration < 24) {
+                    alert("Durasi yang ada kurang dari 24jam. Silahkan periksa kembali data Anda!");
+                } else if (downTime && duration > 24) {
+                    alert("Durasi yang ada melebihi 24jam. Silahkan periksa kembali data Anda!");
+                } else {
+                    saveDaily.apply();
+                }
+            }
+        }
+    })
+    $("#monthlyPanel form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/filter/monthly", data)
+        .done(function (res) {
+            $("#monthlyView").html(res);
+        })
+        e.preventDefault();
+    })
+    var dailyCancel = function () {
+        dailyTable.rows('.selected').deselect();
+        $("#btnEditGroup").hide();
+        $("#btnSaveGroup").show();
+        $("#dailyForm input[name='daily_duration']").val(null);
+        $("#dailyForm input[name='action']").val("create");
+    }
+    $("#btnCancelDaily").click(function () {
+        dailyCancel.apply();
+    })
+
+    $("#accordion").on('hide.bs.collapse', function () {
+        $("#accordion h4 i").removeClass("glyphicon-chevron-down");
+        $("#accordion h4 i").addClass("glyphicon-chevron-up");
+    })
+    $("#accordion").on('show.bs.collapse', function () {
+        $("#accordion h4 i").removeClass("glyphicon-chevron-up");
+        $("#accordion h4 i").addClass("glyphicon-chevron-down");
+    })
+})
