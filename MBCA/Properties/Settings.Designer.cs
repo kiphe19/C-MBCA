@@ -34,8 +34,8 @@ namespace chevron.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLEXPRESS;AttachDbFilename=|DataDirectory|\\Database.mdf;Initial Ca" +
-            "talog=MBCA;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=JONO-LEKNOPO\\SQLEXPRESS;Initial Catalog=MBCA;Integrated Security=True" +
+            "")]
         public string DbConnection {
             get {
                 return ((string)(this["DbConnection"]));

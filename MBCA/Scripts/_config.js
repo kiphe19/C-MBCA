@@ -3,34 +3,6 @@
     unitTable,
     HireEditor,
     i = 1;
-var getNewDistance = function () {
-    $.post("api/distancevalue")
-        .success(function (e) {
-            var distance = Array();
-            for (var i in e.data) {
-                var qp = {
-                    label: e.data[i].distance_name,
-                    value: e.data[i].distance
-                }
-                distance.push(qp);
-            }
-            unitEditor.field("unit_distance").update(distance);
-        })
-}
-//var getVessel = function () {
-//    $.post("api/getvessel")
-//        .success(function (e) {
-//            var vessel = Array();
-//            for (var i in e.data) {
-//                var qp = {
-//                    label: e.data[i].name,
-//                    value: e.data[i].name
-//                }
-//                vessel.push(qp);
-//            }
-//            HireEditor.field("vessel").update(vessel);
-//        })
-//}
 
 $(document).ready(function () {
     editor = new $.fn.dataTable.Editor({
@@ -128,29 +100,8 @@ $(document).ready(function () {
 
     unitEditor = new $.fn.dataTable.Editor({
         ajax: "api/unit",
-        table: "#userTable",
-        fields: [
-            { name: "unit_name", label: "Unit Name" },
-            {
-                label: "Unit Category",
-                name: "unit_cat",
-                type: "select",
-                options: [
-                    { label: "0", value: "0" },
-                    { label: "1", value: "1" }
-                ]
-            },
-            {
-                label: "Distance",
-                name: "unit_distance",
-                type: "select",
-            },
-            { name: "unit_ket", label: "Description" }
-        ]
+        table: "#userTable"
     });
-    unitEditor.one('preOpen', function () {
-        getNewDistance();
-    })
 
     unitTable = $("#userTable").DataTable({
         dom: "Bfrtip",
@@ -171,8 +122,32 @@ $(document).ready(function () {
         ],
         select: true,
         buttons: [
-            { extend: 'create', editor: unitEditor },
-            { extend: 'edit', editor: unitEditor },
+            {
+                text: "New",
+                action: function () {
+                    $("#modalBarge").modal({ backdrop: false });
+                    $("#modalBarge button[type='submit']").text("Add")
+                    $("#modalBarge input").val(null);
+                    $("#modalBarge input[name='action']").val("create");
+                }
+            },
+            {
+                text: "Edit",
+                action: function () {
+                    var a = unitTable.rows('.selected').indexes();
+                    var b = unitTable.row(a).data()
+                    if (a.length > 0) {
+                        $("#modalBarge").modal({ backdrop: false })
+                        $("#modalBarge input[name='action']").val("update")
+                        $("#modalBarge button[type='submit']").text("Update")
+                        $("#modalBarge input[name='unit_name']").val(b.unit_name)
+                        $("#modalBarge input[name='id']").val(b.id)
+                        $("#modalBarge select[name='unit_cat'").val(b.unit_cat)
+                        $("#modalBarge select[id='distance'").val(b.unit_distance)
+                        $("#modalBarge input[name='unit_desc'").val(b.unit_ket)
+                    }
+                }
+            },
             { extend: 'remove', editor: unitEditor }
         ]
     }).on('init', function () {
@@ -222,11 +197,7 @@ $(document).ready(function () {
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/fuel",
-        table: "#fuelTable",
-        fields: [
-            { label: "Date", name: "tgl", type: "datetime", format: "DD/MM/YYYY" },
-            { label: "Cost", name: "cost" }
-        ]
+        table: "#fuelTable"
     })
 
     fuelTable = $("#fuelTable").DataTable({
@@ -249,7 +220,7 @@ $(document).ready(function () {
             },
             {
                 data: null, render: function (data, type, row) {
-                    return "Rp"+Number(data.cost_rp).toLocaleString();
+                    return "Rp" + Number(data.cost_rp).toLocaleString();
                 }
             }
         ],
@@ -257,7 +228,7 @@ $(document).ready(function () {
         buttons: [
             {
                 text: "New",
-                action: function(){
+                action: function () {
                     $("#modalFuel").modal({ backdrop: false })
                     $("#modalFuel input[name='action']").val("create");
                 }
@@ -284,10 +255,7 @@ $(document).ready(function () {
 
     CharterEditor = new $.fn.dataTable.Editor({
         ajax: "api/hire",
-        table: "#hireTable",
-        fields: [
-            { label: "Vessel", name: "vessel", type: "select" },
-        ]
+        table: "#hireTable"
     })
 
     CharterTable = $("#hireTable").DataTable({
@@ -307,7 +275,7 @@ $(document).ready(function () {
             { data: "vessel" },
             {
                 data: null, render: function (data) {
-                    return "$"+Number(data.cost_usd).toLocaleString();
+                    return "$" + Number(data.cost_usd).toLocaleString();
                 }
             },
             {
@@ -319,7 +287,7 @@ $(document).ready(function () {
         buttons: [
             {
                 text: "New",
-                action: function(){
+                action: function () {
                     $("#modalCharter").modal({ backdrop: false });
                     $("#modalCharter button[type='submit']").text("Add")
                     $("#modalCharter input").val(null);
@@ -350,11 +318,7 @@ $(document).ready(function () {
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/currency",
-        table: "#currencyTable",
-        fields: [
-            { label: "Name", name: "currency_name" },
-            { label: "Value", name: "currency_value" },
-        ]
+        table: "#currencyTable"
     })
 
     currencyTable = $("#currencyTable").DataTable({
@@ -394,7 +358,7 @@ $(document).ready(function () {
         table: "#demobTable"
     })
 
-   DemobTable =  $("#demobTable").DataTable({
+    DemobTable = $("#demobTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/demob",
@@ -446,19 +410,32 @@ $(document).ready(function () {
                     }
                 }
             },
-            {extend: "remove", editor: editor}
+            { extend: "remove", editor: editor }
         ]
     }).on('init', function () {
         i = 1;
     });
 
+    $("#modalBarge form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/barge", data, function (res) {
+            if (res == "success") {
+                $("#modalBarge").modal('hide');
+                unitTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
+
     $("#modalCurrency form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/currency", data, function (res) {
-            if(res == "success"){
+            if (res == "success") {
                 $("#modalCurrency").modal('hide');
                 CharterTable.ajax.reload();
-            }else{
+            } else {
                 alert(res);
             }
         })
@@ -500,7 +477,7 @@ $(document).ready(function () {
     $("#modalFuel form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/fuel", data, function (res) {
-            if (res=="success") {
+            if (res == "success") {
                 $("#modalFuel").modal('hide');
                 fuelTable.ajax.reload();
             } else {

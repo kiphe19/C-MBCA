@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    if (Session["logged"]==null)
+    {
+        Response.Redirect(Url.Action("index", "login"));
+    }
+}
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -19,6 +25,14 @@
                         <li><a href="@Url.Action("index", "report")">Report</a></li>
                         <li><a href="@Url.Action("index", "config")">Config</a></li>
                     </ul>
+                    @{
+                        if (Session["logged"] != null)
+                        {
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="@Url.Action("out","login")">Logout</a></li>
+                            </ul>
+                        }
+                    }
                 </div>
             </div>
         </nav>

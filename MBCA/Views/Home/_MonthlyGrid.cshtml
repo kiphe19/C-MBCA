@@ -1,0 +1,26 @@
+﻿@{
+    var grid = new WebGrid(source: Model, canPage: false);
+}
+@grid.GetHtml(
+    tableStyle: "table table-bordered table-hover",
+        htmlAttributes: new { id = "monthlyTableAjax"},
+        columns: grid.Columns(
+                grid.Column(null, "Date", format: (item) => item.tgl),
+                grid.Column(null, "Vessel Name", format: (item) => item.vessel),
+                grid.Column(null, "Activity", format: (item) => item.activity),
+                grid.Column(null, "Barge Unit", format: (item) => item.unit),
+                grid.Column(null, "Duration", format: (item) => item.duration)
+        )
+)
+<script>
+    $("#monthlyTableAjax").DataTable({
+        dom: 'B<"floatright">rtip',
+        buttons: [
+            {
+                extend: "collection",
+                text: "Export to ..",
+                buttons: ['excel']
+            }
+        ]
+    })
+</script>

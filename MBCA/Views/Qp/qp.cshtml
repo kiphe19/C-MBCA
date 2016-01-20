@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "qp";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+        </tr>
+    </thead>
+</table>
+
+<script>
+    qq = $("table").DataTable({
+        ajax: "http://localhost/MBCA/qp",
+        columns: [
+            { data: "a" },
+            { data: "b" },
+            { data: "c" },
+        ]
+    })
+</script>
