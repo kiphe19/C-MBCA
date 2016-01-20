@@ -25,11 +25,13 @@ namespace chevron.Controllers
             {
                 con.query(query);
                 con.result.Read();
-                
+
                 if (con.result.HasRows)
                 {
                     Session["logged"] = "1";
                     Session["userid"] = con.result["username"].ToString();
+                    Session["level"] = con.result["tingkat"].ToString();
+
                     Response.Redirect(Url.Action("index", "home"), true);
                 }
                 else
@@ -48,7 +50,7 @@ namespace chevron.Controllers
         public void Out()
         {
             Session.Clear();
-            Response.Redirect(@Url.Action("index", "login"));
+            Response.Redirect(Url.Action("index", "login"));
         }
     }
 }

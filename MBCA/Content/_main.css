@@ -1,0 +1,12 @@
+﻿body {
+    background-color: #E9EAED;
+    padding-top: 70px;
+}
+
+.navbar-default {
+    box-shadow: 0 2px 2px rgba(179, 173, 173, 0.83);
+}
+
+div.floatright {
+    float: right;
+}

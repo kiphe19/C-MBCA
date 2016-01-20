@@ -15,39 +15,58 @@ namespace chevron.Controllers
 
         Connection con = new Connection();
 
-        public void Index()
+        public String Index()
         {
             dynamic a = new JObject();
+            dynamic b = new JObject();
             JArray c = new JArray();
-            JArray d = new JArray();
+            JArray unit = new JArray();
+            JArray unit_data = new JArray();
+            JArray vessel = new JArray();
 
-            //con.query("select * from activity_table");
-            //while (con.result.Read())
-            //{
-            //    dynamic b = new JObject();
-            //    b.a = con.result["name"].ToString();
-            //    b.b = con.result["ket"].ToString();
-            //    b.c = con.result["ket"].ToString();
+            // Prosess Ngambil Unit
 
-            //    c.Add(b);
-            //}
-
-            //a.data = c;
-            //Response.Write(a);
-            con.select("unit_table", "name");
+            con.query("select name from unit_table where cat = 1");
             while (con.result.Read())
             {
-                d.Add(con.result["name"].ToString());
+                unit.Add(con.result["name"].ToString());
             }
             con.Close();
 
+            // End Pross
 
-            con.select("report_table", "*");
+            // Proses ngambil Vessel -> Di distinct biar ngga duplicat
+            con.query("select distinct(vessel_name) from report_table");
             while (con.result.Read())
             {
-                dynamic b = new JObject();
-
+                vessel.Add(con.result["vessel_name"].ToString());
             }
+            con.Close();
+            // End Proses
+
+            
+            for (int v = 0; v < vessel.Count; v++)
+            {
+                for (int i = 0; i < unit.Count; i++)
+                {
+                   var query = String.Format("select * from report_table where vessel_name='{0}' and unit='{1}'", vessel[v].ToString(), unit[i].ToString());
+                    
+                    con.query(query);
+                    while (con.result.Read())
+                    {
+                        b.date = con.result["date"].ToString();
+                        b.vessel = con.result["vessel_name"].ToString();
+
+                        c.Add(b);
+                    }
+
+                }
+            }
+            
+            a.data = c;
+            a.unit = unit;
+            
+            return Newtonsoft.Json.JsonConvert.SerializeObject(a);
         }
 
         public ActionResult qp()

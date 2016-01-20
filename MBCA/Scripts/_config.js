@@ -100,10 +100,10 @@ $(document).ready(function () {
 
     unitEditor = new $.fn.dataTable.Editor({
         ajax: "api/unit",
-        table: "#userTable"
+        table: "#bargeTable"
     });
 
-    unitTable = $("#userTable").DataTable({
+    unitTable = $("#bargeTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/unit",
@@ -416,6 +416,52 @@ $(document).ready(function () {
         i = 1;
     });
 
+    editor = new $.fn.dataTable.Editor({
+        ajax: "api/users",
+        table: "#userTable"
+    })
+
+    userTable = $("#userTable").DataTable({
+        dom: "Bfrtip",
+        ajax: {
+            url: "api/users",
+            type: "post"
+        },
+        select: true,
+        columns: [
+            { data: "username" },
+            { data: "tingkat" }
+        ],
+        buttons: [
+            {
+                text: "New",
+                action: function () {
+                    $("#modalUser").modal({ backdrop: false });
+                    $("#modalUser button[type='submit']").text("Add")
+                    $("#modalUser input").val(null);
+                    $("#modalUser input[name='action']").val("create");
+                }
+            },
+            {
+                text: "Edit",
+                action: function () {
+                    var a = userTable.rows('.selected').indexes();
+                    var b = userTable.row(a).data();
+                    if (a.length > 0) {
+                        $("#modalUser").modal({ backdrop: false });
+                        $("#modalUser input[name='action']").val("update");
+                        $("#modalUser input[name='username']").val(b.username);
+                        $("#modalUser input[name='id']").val(b.username);
+                        $("#modalUser input[name='password']").attr("placeholder", "New Password");
+                        $("#modalUser select[name='level'] option:selected").text(b.tingkat);
+                        $("#modalUser button[type='submit']").text("Update")
+                    }
+                }
+            },
+            { extend: "remove", editor: editor }
+        ]
+    })
+
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/barge", data, function (res) {
@@ -429,18 +475,6 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    $("#modalCurrency form").submit(function (e) {
-        var data = $(this).serialize();
-        $.post("api/cs/currency", data, function (res) {
-            if (res == "success") {
-                $("#modalCurrency").modal('hide');
-                CharterTable.ajax.reload();
-            } else {
-                alert(res);
-            }
-        })
-        e.preventDefault();
-    })
     $("#modalCharter form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/charter", data, function (res) {
@@ -465,6 +499,34 @@ $(document).ready(function () {
         })
         e.preventDefault();
     })
+
+    $("#modalCurrency form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/currency", data, function (res) {
+            if (res == "success") {
+                $("#modalCurrency").modal('hide');
+                CharterTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
+
+    $("#modalUser form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/users", data, function (res) {
+            if (res == "success") {
+                $("#modalUser").modal('hide');
+                $("#modalUser input").val(null);
+                userTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    })
+
     $("#modalFuel form input[name='tgl']").datetimepicker({
         format: "MM/DD/YYYY"
     })

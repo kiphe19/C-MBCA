@@ -104,7 +104,7 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "daily_activity")
                 .Model<DailyActivityModel>()
-                //.Where("tgl", DateTime.Now.ToString("yyyy-MM-dd"), "=")
+                .Where("user_log", Session["userid"], "=")
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Field(new Field("tgl")
                     .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
@@ -193,10 +193,15 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log]) values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6},'{7}')", input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q,Session["userid"]);
+                    query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n"+
+                             "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
+                             input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
+                             );
                     break;
                 case "update":
-                    query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5}, user_log = '{6}' where id={4}", input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["id"], q,Session["userid"]);
+                    query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}",
+                            input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["id"], q
+                            );
                     break;
                 default:
                     break;
@@ -221,7 +226,7 @@ namespace chevron.Controllers
             var kueriDelete = string.Format("delete from daily_activity where tgl= '{0}'", nowDate);
             List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
 
-            var where = string.Format("tgl = '{0}'", nowDate);
+            var where = string.Format("user_log='{0}' and tgl_input='{1}'", Session["userid"], nowDate);
             con.select("daily_activity", "tgl, vessel, activity, duration, unit", where);
 
             while (con.result.Read())
@@ -377,13 +382,9 @@ namespace chevron.Controllers
                 //Response.Write("Standby = " + standby.ToString("f2") + " Load = " + load.ToString("f2") + " Steaming = " + steaming.ToString("f2") + "<br />");
                 Decimal hasil = standby + load + steaming + item.duration;
                 
-                //Decimal hasil_charter_usd = (standby + load + steaming) * (charter_usd / 24);
                 Decimal hasil_charter_usd = hasil * (charter_usd / 24);
-                //Decimal hasil_charter_rp = (standby + load + steaming) * (charter_rp / 24);
                 Decimal hasil_charter_rp = hasil * (charter_rp / 24);
 
-                //Decimal hasil_demob_usd = (standby + load + steaming) * (demob_usd / 24);
-                //Decimal hasil_demob_rp = (standby + load + steaming) * (demob_rp / 24);
                 Decimal hasil_demob_usd = hasil * (demob_usd / 24);
                 Decimal hasil_demob_rp = hasil * (demob_rp / 24);
 
@@ -392,9 +393,8 @@ namespace chevron.Controllers
                 //Response.Write("Hasilnya adalah == " + hasil.ToString("f3") + "<br />");
                 //Response.Write("ini downtime : " + downTime + "<br/>");
 
-                totalFuel = hasil* item.fuel / (24 - downTime); //total fuel per vessel per unit dalam liter
+                totalFuel = hasil * item.fuel / (24 - downTime);
 
-                //harga fuel per currency // total cost fuel per vessel per unit dalam currency
                 Decimal duit1 = dollar * totalFuel,
                         duit2 = rupiah * totalFuel;
 

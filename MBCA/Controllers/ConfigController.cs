@@ -181,20 +181,19 @@ namespace chevron.Controllers
             }
         }
 
-
-        [Route("cs/currency")]
-        public String _updateCurrency(FormCollection input)
+        [Route("users")]
+        public ActionResult _ApiUsers()
         {
-            var query = String.Format("update currency_cat set name='{0}', value={1}, last_up='{2}' where id={3}", input["currency_name"], input["currency_value"], DateTime.Today.ToShortDateString(), input["currency_id"]);
-            try
+            var request = System.Web.HttpContext.Current.Request;
+            using (var db = new Database(setting.DbType, setting.DbConnection))
             {
-                con.queryExec(query);
-                return "success";
-            }
-            catch (Exception ex)
-            {
+                var response = new Editor(db, "users_table", "username")
+                .Model<UsersModel>()
+                .Field(new Field("tingkat").GetFormatter((val, data) => val.ToString() == "0" ? "Administrator" : "Operator"))
+                .Process(request)
+                .Data();
 
-                return ex.Message;
+                return Json(response, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -477,5 +476,56 @@ namespace chevron.Controllers
                 return ex.Message;
             }
         }
+
+        [Route("cs/currency")]
+        public String _updateCurrency(FormCollection input)
+        {
+            var query = String.Format("update currency_cat set name='{0}', value={1}, last_up='{2}' where id={3}", input["currency_name"], input["currency_value"], DateTime.Today.ToShortDateString(), input["currency_id"]);
+            try
+            {
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+
+                return ex.Message;
+            }
+        }
+
+        [Route("cs/users")]
+        public String _Users(FormCollection input)
+        {
+            String query = "";
+
+            switch (input["action"])
+            {
+                case "create":
+                    query = String.Format("insert into users_table \n" +
+                        "values ('{0}', '{1}', '{2}')",
+                        input["username"], input["password"], input["level"]
+                        );
+                    break;
+                case "update":
+                    query = String.Format("update users_table set username='{0}', password='{1}', tingkat={2} where username='{0}'",
+                            input["username"], input["password"], input["level"]
+                        );
+                    break;
+                default:
+                    break;
+            }
+
+            try
+            {
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+
+                return ex.Message;
+            }
+        }
+
     }
 }

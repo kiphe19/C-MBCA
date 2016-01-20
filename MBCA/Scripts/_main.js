@@ -1,7 +1,6 @@
 ﻿var editor,
     dailyTable,
-    path = "",
-    //path = window.location.pathname,
+    path = window.location.pathname,
     monthlyTable;
 
 (function () {
@@ -28,6 +27,7 @@
         },
         serverSide: true,
         columns: [
+            { data: 'daily_date' },
             { data: 'daily_unit' },
             { data: "daily_activity" },
             { data: "daily_duration" }
@@ -83,7 +83,6 @@
             { data: "monthly_unit" },
             { data: "monthly_duration" }
         ],
-        select: true,
         buttons: [
             {
                 extend: "collection",
@@ -134,7 +133,7 @@ $(document).ready(function () {
         if (data.length == 0) {
             alert("apa yang mau disimpen?");
         } else {
-            var a = confirm("Are you sure, You want to save current data?");
+            var a = confirm("Apakah Anda yakin ingin menyimpan Data ini?");
             if (a) {
                 var duration = 0,
                     downTime = false;

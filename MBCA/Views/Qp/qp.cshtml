@@ -1,25 +1,70 @@
 ﻿@{
-    ViewBag.Title = "qp";
+    ViewBag.Title = "TEST TABLE REPORT";
     Layout = "~/Views/_Layout.cshtml";
 }
 
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
-            <th>A</th>
-            <th>B</th>
-            <th>C</th>
+            <th>Date</th>
+            <th>Vessel</th>
         </tr>
     </thead>
 </table>
 
 <script>
-    qq = $("table").DataTable({
-        ajax: "http://localhost/MBCA/qp",
-        columns: [
-            { data: "a" },
-            { data: "b" },
-            { data: "c" },
-        ]
+    var a = {
+        "data": [
+            {
+                date: "01/19/2016",
+                vessel: "Vessel 1",
+                unit_data: ["128", "122", "0"]
+            },
+            {
+                date: "01/19/2016",
+                vessel: "Vessel 2",
+                unit_data: ["128", "0", "133"]
+            },
+            {
+                date: "01/20/2016",
+                vessel: "Vessel 1",
+                unit_data: ["0", "130", "133"]
+            }
+        ],
+        "unit": ["UNIT A", "UNIT B", "UNIT C"]
+    };
+
+
+    var countUnit = 0;
+
+    for (var index in a.unit) {
+        countUnit++;
+        $("table thead tr").append('<th>' + a.unit[index] + '</th>');
+    }
+
+    for (var index in a.data) {
+        var buka = '<tr>';
+        var isi = '<td>' + a.data[index].date + '</td>' +
+                    '<td>' + a.data[index].vessel + '</td>';
+        var tutup = '</tr>';
+
+        for (var i = 0; i < countUnit; i++) {
+            isi += '<td>' + a.data[index].unit_data[i] + '</td>';
+        };
+
+        $("table").append(buka + isi + tutup);
+    }
+
+    $(document).ready(function () {
+        $("table").DataTable({
+            dom: "Bfrtip",
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Export',
+                    buttons: ['excel']
+                }
+            ]
+        })
     })
 </script>

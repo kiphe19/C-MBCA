@@ -176,6 +176,7 @@
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportModelCS.cs" />
     <Compile Include="Models\UnitModel.cs" />
+    <Compile Include="Models\UsersModel.cs" />
     <Compile Include="Models\VesselModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -192,6 +193,7 @@
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\editor.dataTables.min.css" />
     <Content Include="Content\metro-bootstrap.min.css" />
+    <Content Include="Content\_main.css" />
     <Content Include="DataTables\Bootstrap-3.3.5\css\bootstrap-theme.css" />
     <Content Include="DataTables\Bootstrap-3.3.5\css\bootstrap-theme.min.css" />
     <Content Include="DataTables\Bootstrap-3.3.5\css\bootstrap.css" />
