@@ -507,7 +507,7 @@ namespace chevron.Controllers
                         );
                     break;
                 case "update":
-                    query = String.Format("update users_table set username='{0}', password='{1}', tingkat={2} where username={0}",
+                    query = String.Format("update users_table set username='{0}', password='{1}', tingkat={2} where username='{0}'",
                             input["username"], input["password"], input["level"]
                         );
                     break;

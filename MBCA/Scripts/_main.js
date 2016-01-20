@@ -133,7 +133,7 @@ $(document).ready(function () {
         if (data.length == 0) {
             alert("apa yang mau disimpen?");
         } else {
-            var a = confirm("Are you sure, You want to save current data?");
+            var a = confirm("Apakah Anda yakin ingin menyimpan Data ini?");
             if (a) {
                 var duration = 0,
                     downTime = false;
