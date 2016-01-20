@@ -7,10 +7,10 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/Scripts/main")
 </head>
-<body style="padding-top:40px;">
+<body>
     <div class="container">
         <div class="row">
-            <div class="col-md-4 col-md-offset-4">
+            <div class="col-md-4 col-md-offset-4" style="margin-top: 10%;">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Please sign in</h3>
@@ -19,7 +19,8 @@
                         <form accept-charset="UTF-8" role="form" action="@Url.Action("auth","login")" method="post">
                             <fieldset>
                                 @{
-                                    if(TempData["err_msg"]!=null){
+                                    if (TempData["err_msg"] != null)
+                                    {
                                         <div class="alert alert-danger alert-dismissible" role="alert">
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                             @TempData["err_msg"]
@@ -39,11 +40,11 @@
                                     </div>
                                 </div>
                                 @*<div class="checkbox">
-                                    <label>
-                                        <input name="remember" type="checkbox" value="Remember Me"> Remember Me
-                                    </label>
-                                </div>*@
-                                <button type="submit" class="btn btn-lg btn-success btn-block">Login <i class="glyphicon glyphicon-log-in pull-right"></i></button>
+                                <label>
+                                    <input name="remember" type="checkbox" value="Remember Me"> Remember Me
+                                </label>
+                            </div>*@
+                                <button type="submit" class="btn btn-success btn-block">Login <i class="glyphicon glyphicon-log-in pull-right"></i></button>
                             </fieldset>
                         </form>
                     </div>

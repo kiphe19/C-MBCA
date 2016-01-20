@@ -83,7 +83,6 @@
             { data: "monthly_unit" },
             { data: "monthly_duration" }
         ],
-        select: true,
         buttons: [
             {
                 extend: "collection",

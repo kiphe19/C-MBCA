@@ -22,7 +22,8 @@ namespace chevron
                     "~/DataTables/datatables.min.css",
                     "~/content/editor.dataTables.min.css",
                     "~/Content/bootstrap-datetimepicker.min.css",
-                    "~/content/metro-bootstrap.min.css"
+                    "~/content/metro-bootstrap.min.css",
+                    "~/content/_main.css"
                 ));
 
             bundles.Add(new ScriptBundle("~/Script/xdkJKAds").Include(
