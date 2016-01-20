@@ -21,6 +21,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,7 +60,7 @@
     </Reference>
     <Reference Include="DataTables, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Desktop\ai\DataTables.dll</HintPath>
+      <HintPath>..\..\Editor-NET-1.5.4\Editor-NET-1.5.4\DataTables.dll</HintPath>
     </Reference>
     <Reference Include="HtmlSanitizationLibrary">
       <HintPath>..\..\..\DLL\HtmlSanitizationLibrary.dll</HintPath>
