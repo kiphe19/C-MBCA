@@ -48,7 +48,7 @@
                         <tr>
                             <th>No</th>
                             <th>Name of Unit</th>
-                            <th>Unit Category</th>
+                            @*<th>Unit Category</th>*@
                             <th>Distance Area</th>
                             <th>Description</th>
                         </tr>
@@ -113,8 +113,8 @@
                             <th>No</th>
                             <th>Date</th>
                             <th>Vessel Name</th>
-                            <th>Cost (USD)</th>
-                            <th>Cost (Rp)</th>
+                            <th>Cost</th>
+                            <th>Cat</th>
                         </tr>
                     </thead>
                 </table>
@@ -188,18 +188,30 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="modalFuel">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form class="form-horizontal">
+            <form class="form-horizontal" id="form_fuel">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Fuel Cost</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">Date From</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Date To</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    @*<div class="form-group">
                         <label class="col-sm-2 control-label">Date</label>
                         <div class="col-sm-10">
                             <input type="text" name="tgl" class="form-control" autocomplete="off" />
                         </div>
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Currency</label>
                         <div class="col-sm-10">

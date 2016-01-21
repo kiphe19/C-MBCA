@@ -116,7 +116,7 @@ $(document).ready(function () {
                 }
             },
             { data: "unit_name" },
-            { data: "unit_cat" },
+            //{ data: "unit_cat" },
             { data: "unit_distance" },
             { data: "unit_ket" }
         ],
@@ -215,12 +215,18 @@ $(document).ready(function () {
             { data: "tgl" },
             {
                 data: null, render: function (data, type, row) {
-                    return "$" + Number(data.cost_usd).toLocaleString();
+                    return Number(data.cost_usd).toLocaleString();
                 }
             },
             {
                 data: null, render: function (data, type, row) {
-                    return "Rp" + Number(data.cost_rp).toLocaleString();
+                    if (data.currency_type === 1) {
+                        return "USD";
+                    }
+                    else {
+                        return "IDR";
+                    }
+                    //return "Rp" + Number(data.currency_type).toLocaleString();
                 }
             }
         ],
@@ -528,6 +534,13 @@ $(document).ready(function () {
     })
 
     $("#modalFuel form input[name='tgl']").datetimepicker({
+        format: "MM/DD/YYYY",
+        //setDate: new Date()
+    })
+    $("#modalFuel form input[name='tgl_from']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalFuel form input[name='tgl_to']").datetimepicker({
         format: "MM/DD/YYYY"
     })
     $("#modalCharter form input[name='tgl']").datetimepicker({
@@ -542,6 +555,7 @@ $(document).ready(function () {
             if (res == "success") {
                 $("#modalFuel").modal('hide');
                 fuelTable.ajax.reload();
+                $("#form_fuel")[0].reset();
             } else {
                 alert(res);
             }

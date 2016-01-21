@@ -116,6 +116,8 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "fuel_table")
                 .Model<FuelModel>()
+                .Where("tgl", DateTime.Today.ToString("yyyy-MM-dd"), "<=")
+                .Where("tgl", DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd"), ">=")
                 .Field(new Field("tgl")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
@@ -293,6 +295,18 @@ namespace chevron.Controllers
         [HttpPost]
         public String _FuelCustom(FormCollection input)
         {
+            DateTime tanggal1 = Convert.ToDateTime(input["tgl_from"]);
+            DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
+            TimeSpan ts = tanggal2.Subtract(tanggal1);
+            var jml = (int)ts.TotalDays;
+
+
+
+            //int hasil = int.Parse(ts.ToString());
+            //Lblpesan.Text = "selisih " + ts.Days + " hari";
+
+
+            /*
             List<CurrencyModel> curr = new List<CurrencyModel>();
 
             con.select("currency_cat", "*");
@@ -326,25 +340,52 @@ namespace chevron.Controllers
                     hasilRP = usd[0] * c;
                     break;
             }
+            */
 
             String query = "";
 
-            switch (input["ation"])
-            {
-                case "create":
-                    query = string.Format("insert into fuel_table ([tgl],[cost_usd], [cost_rp]) values('{0}', CAST('{1}' AS numeric(18,3)), CAST('{2}' AS numeric(18,3)) )", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
-                    break;
-                case "update":
-                    query = string.Format("update fuel_table set tgl='{0}', cost_usd={1}, cost_rp={2} where id={3}", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
-                    break;
-                default:
-                    break;
-            }
+            //switch (input["ation"])
+            //{
+            //    case "create":
+            //        for (int i = 0; i < jml; i++)
+            //        {
+            //            query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+            //        }
+            //        //query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
+            //        break;
+            //    case "update":
+            //        //query = string.Format("update fuel_table set tgl='{0}', cost_usd={1}, cost_rp={2} where id={3}", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
+            //        //break;
+            //    default:
+            //        break;
+            //}
 
             try
             {
-                con.queryExec(query);
+
+                //if (input["ation"] == "create")
+                //{
+                
+
+                for (int i = 0; i <= jml; i++)
+                {
+                    var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    con.select("fuel_table", "count(*)", tg);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    }
+                   
+                    query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+                   
+                    con.queryExec(query);
+                }
+                
                 return "success";
+                //return tanggal1.AddDays(1).ToString("yyyy-MM-dd");
+                //Response.Write(rp);
+
             }
             catch (Exception ex)
             {
