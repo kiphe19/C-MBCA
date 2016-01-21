@@ -176,6 +176,7 @@
     <Compile Include="Models\MonthlyActivityModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportModelCS.cs" />
+    <Compile Include="Models\TempDailyModel.cs" />
     <Compile Include="Models\UnitModel.cs" />
     <Compile Include="Models\UsersModel.cs" />
     <Compile Include="Models\VesselModel.cs" />

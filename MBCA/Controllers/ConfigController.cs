@@ -259,14 +259,18 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
-                        "values ('{0}', '{1}', {2}, '{3}')",
-                        input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
+                    //query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
+                    //    "values ('{0}', '{1}', {2}, '{3}')",
+                    //    input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
+                    //    );
+                    query = String.Format("insert into unit_table ([name], [distance], [ket]) \n" +
+                        "values ('{0}', {1}, '{2}')",
+                        input["unit_name"], input["distance"], input["unit_desc"]
                         );
                     break;
                 case "update":
-                    query = String.Format("update unit_table set name='{0}', cat='{1}', distance={2}, ket='{3}' where Id={4}",
-                            input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"], input["id"]
+                    query = String.Format("update unit_table set name='{0}', distance={1}, ket='{2}' where Id={3}",
+                            input["unit_name"], input["distance"], input["unit_desc"], input["id"]
                         );
                     break;
                 default:

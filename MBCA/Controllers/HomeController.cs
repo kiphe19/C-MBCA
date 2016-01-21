@@ -102,17 +102,18 @@ namespace chevron.Controllers
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
-                var response = new Editor(db, "daily_activity")
-                .Model<DailyActivityModel>()
+                //var response = new Editor(db, "daily_activity")
+                var response = new Editor(db, "temp_daily")
+                .Model<TempDailyModel>()
                 .Where("user_log", Session["userid"], "=")
-                .Field(new Field("duration").Validator(Validation.Numeric()))
-                .Field(new Field("tgl")
-                    .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
-                    .Validator(Validation.NotEmpty())
-                )
+                .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+                //.Field(new Field("duration").Validator(Validation.Numeric()))
+                //.Field(new Field("tgl")
+                //    .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
+                //    .Validator(Validation.NotEmpty())
+                //)
                 .Process(request)
                 .Data();
-
                 return Json(response);
             }
         }
@@ -184,19 +185,28 @@ namespace chevron.Controllers
         public String _dailyInsert(FormCollection input)
         {
             var q = string.Format("name = '{0}'", input["daily_unit"]);
-            con.select("unit_table", "cat", q);
-            con.result.Read();
-            q = con.result["cat"].ToString();
+            //Response.Write(input["dur"]);
+            //con.select("unit_table", "cat", q);
+            //con.result.Read();
+            //q = con.result["cat"].ToString();
 
 
             String query = "";
             switch (input["action"])
             {
                 case "create":
-                    query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n"+
-                             "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
-                             input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
-                             );
+                    //query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n"+
+                    //         "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
+                    //         input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
+                    //         );
+                    query = string.Format("insert into temp_daily ([user_unit],[duration],[user_log],[date_input]) values ('{0}',{1},'{2}',CAST('{3}' as DATE ))",
+                                             input["daily_unit"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"));
+
+
+                        //[tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n" +
+                        //     "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
+                        //     input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
+                        //     );
                     break;
                 case "update":
                     query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}",

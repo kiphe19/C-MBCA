@@ -10,10 +10,10 @@
         ajax: path + "/api/daily",
         table: "#dailyTable",
         fields: [
-            { label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
-            { label: "Vessel", name: "daily_vessel", type: "select" },
-            { label: "Activity", name: "daily_activity", type: "select" },
-            { label: "User Unit", name: "daily_unit", type: "select" },
+            //{ label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
+            //{ label: "Vessel", name: "daily_vessel", type: "select" },
+            //{ label: "Activity", name: "daily_activity", type: "select" },
+            { label: "User Unit", name: "user_unit", type: "select" },
             { label: "Duration", name: "daily_duration" }
         ]
     }).on('preOpen', function () {
@@ -28,10 +28,10 @@
         },
         serverSide: true,
         columns: [
-            { data: 'daily_date' },
-            { data: 'daily_unit' },
-            { data: "daily_activity" },
-            { data: "daily_duration" }
+            //{ data: 'daily_date' },
+            { data: 'user_unit' },
+            //{ data: "daily_activity" },
+            { data: "duration" }
         ],
         select: true,
         buttons: [
@@ -43,12 +43,12 @@
                         var b = dailyTable.row(a).data();
                         $('#inputDaily').collapse('show');
                         $("#daily_unit").val(b.daily_unit);
-                        $("#daily_activity").val(b.daily_activity);
-                        $("#dailyForm input[name='daily_date']").val(b.daily_date);
+                        //$("#daily_activity").val(b.daily_activity);
+                        //$("#dailyForm input[name='daily_date']").val(b.daily_date);
                         $("#dailyForm input[name='daily_duration']").val(b.daily_duration);
                         $("#dailyForm input[name='action']").val("update");
                         $("#dailyForm input[name='id']").val(b.id);
-                        $("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
+                        //$("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
                         $("#btnEditGroup").show();
                         $("#btnSaveGroup").hide();
                     }
@@ -118,6 +118,22 @@ $(document).ready(function () {
         format: "MM/DD/YYYY",
         maxDate: new Date()
     })
+
+    //var baru = 1;
+    //$("#addFormInput").click(function () {
+    //    var tambahinput = "#acti" + baru;
+    //    console.log(tambahinput);
+
+    //    $("#activitytimeat").append('<div><input type="text" name="mytext[]"/><input type="text" name="mytext1[]"/></div>'); //add input box
+    //    //$("#activitytimeat").append('<div class="col-sm-4">@Html.DropDownList("daily_unit", null, new { @class = "form-control" })</div>'); //add input box
+    //    //$("#activitytimeat").clone().appendTo("timebaru");
+
+    //    baru += 1;
+    //})
+
+    
+
+
     $("#btnSaveDataDaily").click(function () {
         var data = dailyTable.data();
 
