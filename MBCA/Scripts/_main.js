@@ -126,6 +126,8 @@ $(document).ready(function () {
                 if (res) {
                     monthlyTable.ajax.reload();
                     dailyTable.ajax.reload();
+                } else {
+                    alert(res);
                 }
             })
         }

@@ -15,5 +15,6 @@ namespace chevron.Models
         public string activity { get; set; }
         public Int32 jml { get; set; }
         public string unit { get; set; }
+        public String tgl { get; set; }
     }
 }

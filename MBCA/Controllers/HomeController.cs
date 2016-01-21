@@ -223,7 +223,7 @@ namespace chevron.Controllers
         public void saveDailytoMonthly()
         {
             var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-            var kueriDelete = string.Format("delete from daily_activity where tgl= '{0}'", nowDate);
+            var kueriDelete = string.Format("delete from daily_activity where tgl_input='{0}' and user_log='{1}'", nowDate, Session["userid"]);
             List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
 
             var where = string.Format("user_log='{0}' and tgl_input='{1}'", Session["userid"], nowDate);
@@ -237,7 +237,7 @@ namespace chevron.Controllers
                     duration = (decimal)con.result["duration"],
                     tgl = DateTime.Parse(con.result["tgl"].ToString()).ToString("MM/dd/yyy"),
                     vessel = con.result["vessel"].ToString(),
-                    unit = con.result["unit"].ToString(),
+                    unit = con.result["unit"].ToString()
                 });
             }
 
@@ -255,22 +255,22 @@ namespace chevron.Controllers
             List<ReportModelCS> ya = new List<ReportModelCS>();
             List<ReportModelCS> tidak = new List<ReportModelCS>();
             Decimal standby = 0, load = 0, steaming = 0, countDistance = 0,downTime = 0;
-            Decimal rupiah = 0, dollar = 0, totalFuel = 0, charter_usd = 0, charter_rp = 0, demob_usd = 0, demob_rp = 0;
+            Decimal rupiah = 0, dollar = 0, fuel = 0, charter_usd = 0, charter_rp = 0, demob_usd = 0, demob_rp = 0;
 
-            var query = "select vt.id as vessel_id, da.vessel, da.unit, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
+            var query = "select da.tgl, vt.id as vessel_id, da.vessel, da.unit, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
                                        "from daily_activity da \n" +
                                        "inner join vessel_table vt \n" +
                                        "on vt.name = da.vessel \n" +
                                        "inner join unit_table ut \n" +
                                        "on da.unit = ut.name \n" +
-                                       "where da.unit_cat=1 and da.tgl = '" + nowDate + "'";
+                                       "where da.unit_cat=1 and da.tgl_input = '" + nowDate + "' and user_log='"+ Session["userid"]+"'";
 
             var query2 = "select vt.id as vessel_id, da.vessel, da.activity, da.duration, da.fuel from daily_activity da \n" +
                                        "inner join vessel_table vt \n" +
                                        "on vt.name = da.vessel \n" +
                                        "inner join unit_table ut \n" +
                                        "on da.unit = ut.name \n" +
-                                       "where da.unit_cat!=1";
+                                       "where da.unit_cat=0 and da.tgl_input = '" + nowDate + "' and user_log='" + Session["userid"] + "'";
 
             var query3 = "select top 1 cost_usd, cost_rp from fuel_table";
             var query4 = "";
@@ -288,13 +288,14 @@ namespace chevron.Controllers
                         distance = int.Parse(con.result["distance"].ToString()),
                         fuel = int.Parse(con.result["fuel"].ToString()),
                         jml = int.Parse(con.result["jml"].ToString()),
-                        unit = con.result["unit"].ToString()
+                        unit = con.result["unit"].ToString(),
+                        tgl = DateTime.Parse(con.result["tgl"].ToString()).ToString("MM/dd/yyyy")
                     });
                 }
                 con.Close();
 
                 query4 = string.Format("select top 1 tgl, cost_usd, cost_rp \n" +
-                    "from hire_table where vessel = '{0}' order by tgl desc", 
+                    "from hire_table where vessel = '{0}' order by tgl desc",
                     ya[0].vessel_name
                     );
 
@@ -393,19 +394,20 @@ namespace chevron.Controllers
                 //Response.Write("Hasilnya adalah == " + hasil.ToString("f3") + "<br />");
                 //Response.Write("ini downtime : " + downTime + "<br/>");
 
-                totalFuel = hasil * item.fuel / (24 - downTime);
+                fuel = hasil * item.fuel / (24 - downTime);
 
-                Decimal duit1 = dollar * totalFuel,
-                        duit2 = rupiah * totalFuel;
+                Decimal duit1 = dollar * fuel,
+                        duit2 = rupiah * fuel;
 
                 var qp = String.Format(
                     "insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp], [standby_time], [load_time], [steaming_time], [down_time], [charter_usd], [charter_rp], [demob_usd], [demob_rp]) \n" +
-                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14})",
-                     item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture), downTime.ToString(CultureInfo.InvariantCulture),
-                     hasil_charter_usd.ToString(CultureInfo.InvariantCulture), hasil_charter_rp.ToString(CultureInfo.InvariantCulture), hasil_demob_usd.ToString(CultureInfo.InvariantCulture), hasil_demob_rp.ToString(CultureInfo.InvariantCulture)
+                    "VALUES ({0}, '{1}', '{2}', '{3}', CAST('{4}' AS numeric(18,3)), {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14})",
+                     item.vessel_id, item.vessel_name, item.unit, nowDate, Convert.ToDouble(fuel).ToString(CultureInfo.InvariantCulture),
+                     duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture),
+                     downTime.ToString(CultureInfo.InvariantCulture), hasil_charter_usd.ToString(CultureInfo.InvariantCulture), hasil_charter_rp.ToString(CultureInfo.InvariantCulture), hasil_demob_usd.ToString(CultureInfo.InvariantCulture), hasil_demob_rp.ToString(CultureInfo.InvariantCulture)
                     );
                 con.queryExec(qp);
-                //Response.Write(qp + "<br><hr>");
+                Response.Write(qp + "<br><hr>");
             }
 
             con.queryExec(kueriDelete);

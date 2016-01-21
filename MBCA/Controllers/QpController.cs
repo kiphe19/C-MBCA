@@ -15,7 +15,7 @@ namespace chevron.Controllers
 
         Connection con = new Connection();
 
-        public String Index()
+        public void Index()
         {
             dynamic a = new JObject();
             dynamic b = new JObject();
@@ -44,29 +44,41 @@ namespace chevron.Controllers
             con.Close();
             // End Proses
 
-            
-            for (int v = 0; v < vessel.Count; v++)
+            for (int i = 0; i < vessel.Count; i++)
             {
-                for (int i = 0; i < unit.Count; i++)
+                c.Add(b);
+                b.data = unit_data;
+
+                var query = String.Format("select distinct(date) from report_table where vessel_name='{0}'", vessel[i]);
+                con.query(query);
+
+                while (con.result.Read())
                 {
-                   var query = String.Format("select * from report_table where vessel_name='{0}' and unit='{1}'", vessel[v].ToString(), unit[i].ToString());
-                    
-                    con.query(query);
-                    while (con.result.Read())
+                    b.date = DateTime.Parse(con.result["date"].ToString()).ToString("MM/dd/yyyy");
+                    b.vessel = vessel[i];
+
+                    for (int u = 0; u < unit.Count; u++)
                     {
-                        b.date = con.result["date"].ToString();
-                        b.vessel = con.result["vessel_name"].ToString();
-
-                        c.Add(b);
+                        var query2 = String.Format("select fuel_liter from report_table where vessel_name='{0}' and unit='{1}'", vessel[i].ToString(), unit[u].ToString());
+                        con.query(query2);
+                        if (con.result.HasRows)
+                        {
+                            con.result.Read();
+                            unit_data.Add(con.result["fuel_liter"]);
+                        }
+                        else
+                        {
+                            unit_data.Add(0);
+                        }
                     }
-
                 }
             }
-            
+
+
             a.data = c;
             a.unit = unit;
-            
-            return Newtonsoft.Json.JsonConvert.SerializeObject(a);
+            Response.ContentType = "text/json";
+            Response.Write(a);
         }
 
         public ActionResult qp()
