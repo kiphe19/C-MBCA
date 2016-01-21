@@ -534,8 +534,7 @@ $(document).ready(function () {
     })
 
     $("#modalFuel form input[name='tgl']").datetimepicker({
-        format: "MM/DD/YYYY",
-        //setDate: new Date()
+        format: "MM/DD/YYYY"
     })
     $("#modalFuel form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
@@ -544,6 +543,12 @@ $(document).ready(function () {
         format: "MM/DD/YYYY"
     })
     $("#modalCharter form input[name='tgl']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalCharter form input[name='tgl_start']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalCharter form input[name='tgl_end']").datetimepicker({
         format: "MM/DD/YYYY"
     })
     $("#modalDemob form input[name='tgl']").datetimepicker({

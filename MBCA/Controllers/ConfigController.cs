@@ -397,60 +397,73 @@ namespace chevron.Controllers
         [Route("cs/charter")]
         public String _Charter(FormCollection input)
         {
-            List<CurrencyModel> curr = new List<CurrencyModel>();
+            DateTime tg1 = Convert.ToDateTime(input["tgl_start"]);
+            DateTime tg2 = Convert.ToDateTime(input["tgl_end"]);
+            TimeSpan lama = tg2.Subtract(tg1);
+            var jml = (int)lama.TotalDays + 1;
 
-            con.select("currency_cat", "*");
+            //List<CurrencyModel> curr = new List<CurrencyModel>();
 
-            while (con.result.Read())
-            {
-                curr.Add(new CurrencyModel
-                {
-                    id = int.Parse(con.result["id"].ToString()),
-                    value = int.Parse(con.result["value"].ToString())
-                });
-            }
-            con.Close();
+            //con.select("currency_cat", "*");
+
+            //while (con.result.Read())
+            //{
+            //    curr.Add(new CurrencyModel
+            //    {
+            //        id = int.Parse(con.result["id"].ToString()),
+            //        value = int.Parse(con.result["value"].ToString())
+            //    });
+            //}
+            //con.Close();
 
 
-            var a = int.Parse(input["currency_cat"]);
-            var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
-            var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
+            //var a = int.Parse(input["currency_cat"]);
+            //var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
+            //var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
 
-            Decimal hasilUSD = 0,
-                hasilRP = 0,
-                b = Decimal.Parse(input["cost"]);
+            //Decimal hasilUSD = 0,
+            //    hasilRP = 0,
+            //    b = Decimal.Parse(input["cost"]);
 
-            switch (a)
-            {
-                case 1:
-                    hasilUSD = usd[0] * b;
-                    hasilRP = rp[0] * b;
-                    break;
-                case 2:
-                    hasilUSD = b / rp[0];
-                    hasilRP = b * usd[0];
-                    break;
-                default:
-                    break;
-            }
+            //switch (a)
+            //{
+            //    case 1:
+            //        hasilUSD = usd[0] * b;
+            //        hasilRP = rp[0] * b;
+            //        break;
+            //    case 2:
+            //        hasilUSD = b / rp[0];
+            //        hasilRP = b * usd[0];
+            //        break;
+            //    default:
+            //        break;
+            //}
 
             String query = "";
-            switch (input["action"])
-            {
-                case "create":
-                    query = String.Format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
-                    break;
-                case "update":
-                    query = String.Format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}",input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
-                    break;
-                default:
-                    break;
-            }
-            
+            //switch (input["action"])
+            //{
+            //    case "create":
+            //        query = String.Format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
+            //        break;
+            //    case "update":
+            //        query = String.Format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}",input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
+            //        break;
+            //    default:
+            //        break;
+            //}
+
             try
             {
-                con.queryExec(query);
-                return "success";
+                if (input["action"] == "create")
+                {
+                    double rate = double.Parse(input["charter_cost"]) / jml;
+                    query = "halooo" + rate;
+                }
+
+                return query;
+                //return ;
+                //con.queryExec(query);
+                //return "success";
             }
             catch (Exception ex)
             {
