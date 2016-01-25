@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using DataTables;
 using chevron.Models;
 using System.Globalization;
+using AttributeRouting.Helpers;
 
 namespace chevron.Controllers
 {
@@ -184,40 +185,34 @@ namespace chevron.Controllers
         [HttpPost]
         public String _dailyInsert(FormCollection input)
         {
-            var q = string.Format("name = '{0}'", input["daily_unit"]);
-            //Response.Write(input["dur"]);
-            //con.select("unit_table", "cat", q);
-            //con.result.Read();
-            //q = con.result["cat"].ToString();
-
-
             String query = "";
             switch (input["action"])
             {
                 case "create":
-                    //query = string.Format("insert into daily_activity ([tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n"+
-                    //         "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
-                    //         input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
-                    //         );
-                    query = string.Format("insert into temp_daily ([user_unit],[duration],[user_log],[date_input]) values ('{0}',{1},'{2}',CAST('{3}' as DATE ))",
-                                             input["daily_unit"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"));
-
-
-                        //[tgl],[vessel],[activity],[duration], [unit], [fuel], [unit_cat], [user_log], [tgl_input]) \n" +
-                        //     "values (CAST('{0}' AS DATE),'{1}','{2}','{3}', '{4}', CAST('{5}' AS INT), {6}, '{7}', '{8}')",
-                        //     input["daily_date"], input["daily_vessel"], input["daily_activity"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["daily_unit"], input["daily_fuel"], q, Session["userid"], DateTime.Today.ToString("yyyy-MM-dd")
-                        //     );
+                    var val_unit = string.Format("date_input = '{0}' and user_log = '{1}' and user_unit = '{2}'", DateTime.Today.ToString("yyyy-MM-dd"),Session["userid"],input["daily_unit"]);
+                    con.select("temp_daily", "user_unit", val_unit);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        query = string.Format("update temp_daily set [duration] = {0} where date_input = CAST('{1}' as DATE) and user_log = '{2}' and user_unit = '{3}'"
+                                ,input["time_at_dur"].ToString(CultureInfo.InvariantCulture), DateTime.Today.ToString("yyyy-MM-dd"), Session["userid"], input["daily_unit"]);
+                    }
+                    else
+                    {
+                        query = string.Format("insert into temp_daily ([user_unit],[duration],[user_log],[date_input]) values ('{0}',{1},'{2}',CAST('{3}' as DATE ))"
+                                ,input["daily_unit"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"));
+                    }
                     break;
                 case "update":
-                    query = string.Format("update daily_activity set activity='{0}', unit='{1}', fuel={2}, duration={3}, unit_cat={5} where id={4}",
-                            input["daily_activity"], input["daily_unit"], input["daily_fuel"], input["daily_duration"].ToString(CultureInfo.InvariantCulture), input["id"], q
-                            );
+                    query = string.Format("update temp_daily set user_unit = '{0}', duration = {1} where user_log = '{2}' and date_input = '{3}' and id = {4}",
+                            input["daily_unit"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"), input["id"]);
                     break;
                 default:
                     break;
             }
             try
             {
+                //Response.Write(query);
                 con.queryExec(query);
                 return "success";
             }
@@ -230,10 +225,48 @@ namespace chevron.Controllers
 
         [Route("save/daily")]
         [HttpPost]
+        public void _saveDailyData(FormCollection input)
+        {
+            String query = "";
+
+            //query = string.Format("insert into",);
+            List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
+            var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+            var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], nowDate);
+            con.select("temp_daily", "*", where);
+            while (con.result.Read())
+            {
+                usernit.Add(new DailyUnitActivityModel
+                {
+                    user_unit = con.result["user_unit"].ToString(),
+                    dur = (decimal)con.result["duration"]
+                });
+            }
+            con.Close();
+
+            foreach (DailyUnitActivityModel unit in usernit)
+            {
+                //Response.Write(unit.user_unit + unit.dur);
+                query = string.Format("insert into daily_table (vessel,standby,loading,steaming,downtime,user_unit,user_unit_dur,fuel_tot,user_log,date_input)" +
+                    "values ('{0}',{1},{2},{3},{4},'{5}',{6},{7},'{8}','{9}')"
+                    ,input["daily_vessel"],input["standby"],input["load"],input["steaming"],input["downtime"]
+                    ,unit.user_unit,unit.dur,input["daily_fuel"],Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
+                Response.Write(query);
+            }
+
+            //Response.Write(usernit);
+            //return "SUCCESS";
+            //return usernit.ToString();
+            //return "success";
+        }
+
+        [Route("save/daily_")]
+        [HttpPost]
         public void saveDailytoMonthly()
         {
             var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
             var kueriDelete = string.Format("delete from daily_activity where tgl= '{0}'", nowDate);
+
             List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
 
             var where = string.Format("user_log='{0}' and tgl_input='{1}'", Session["userid"], nowDate);
@@ -252,6 +285,7 @@ namespace chevron.Controllers
             }
 
             con.Close();
+            //Response.Write(dataDaily);
 
             foreach (DailyActivityModel daily in dataDaily)
             {

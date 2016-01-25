@@ -363,8 +363,11 @@ namespace chevron.Controllers
                 for (int i = 0; i <= jml; i++)
                 {
                     var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    con.select("temp_daily", "*", tg);
+
                     con.select("fuel_table", "*", tg);
                     con.result.Read();
+                    //con.result.Read();
                     if (con.result.HasRows)
                     {
                         query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
@@ -400,7 +403,7 @@ namespace chevron.Controllers
             TimeSpan lama = tg2.Subtract(tg1);
             var jml = (int)lama.TotalDays + 1;
 
-            double charter_rate = double.Parse(input["charter_cost"]) / jml;
+            double charter_rate = double.Parse(input["charter_cost"]);
             double mob_rate = double.Parse(input["mob_cost"]) / jml;
 
             //List<CurrencyModel> curr = new List<CurrencyModel>();
@@ -445,8 +448,8 @@ namespace chevron.Controllers
             {
                 case "create":
                     //query = string.format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture));
-                    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[charter_rate],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
-                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8})", input["tgl_start"], input["tgl_end"], input["vessel"], input["charter_cost"], charter_rate, input["mob_cost"], mob_rate, input["currency_cat"], jml);
+                    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
+                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7})", input["tgl_start"], input["tgl_end"], input["vessel"], input["charter_cost"], input["mob_cost"], mob_rate, input["currency_cat"], jml);
                     break;
                 case "update":
                     //query = string.format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture), input["id"]);

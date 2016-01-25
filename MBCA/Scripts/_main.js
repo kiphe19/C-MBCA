@@ -21,7 +21,7 @@
     })
 
     dailyTable = $("#dailyTable").DataTable({
-        dom: '<"dailyButton"B<"floatright">>rtip',
+        dom: '<"dailyButton"B<"floatright">>rt',
         ajax: {
             url: path + "/api/daily",
             method: "post"
@@ -41,11 +41,12 @@
                     var a = dailyTable.rows('.selected').indexes()
                     if (a.length !== 0) {
                         var b = dailyTable.row(a).data();
+                        console.log(b);
                         $('#inputDaily').collapse('show');
-                        $("#daily_unit").val(b.daily_unit);
+                        $("#daily_unit").val(b.user_unit);
                         //$("#daily_activity").val(b.daily_activity);
                         //$("#dailyForm input[name='daily_date']").val(b.daily_date);
-                        $("#dailyForm input[name='daily_duration']").val(b.daily_duration);
+                        $("#dailyForm input[name='time_at_dur']").val(b.duration);
                         $("#dailyForm input[name='action']").val("update");
                         $("#dailyForm input[name='id']").val(b.id);
                         //$("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
@@ -96,12 +97,12 @@
 
 $(document).ready(function () {
 
-    $("#dailyForm").submit(function (e) {
+    $("#timeatForm").submit(function (e) {
         var data = $(this).serialize();
             $.post(path + "/api/cs/daily", data, function (res) {
                 if (res === "success") {
                     dailyTable.ajax.reload();
-                    $("#dailyForm input[name='daily_duration']").val(null);
+                    $("#timeatForm input[name='time_at_dur']").val(null);
                     dailyCancel.apply();
                 } else {
                     alert(res);
@@ -131,11 +132,20 @@ $(document).ready(function () {
     //    baru += 1;
     //})
 
-    
+    $("#btnSaveDailyAct").click(function () {
+        //alert("clik button save akticiti bro");
+        var isi_form = $("#activityForm").serialize();
+        console.log(isi_form);
+        $.post(path + "/api/save/daily", isi_form, function (res) {
+            console.log(res);
+        })
+
+    });
 
 
     $("#btnSaveDataDaily").click(function () {
         var data = dailyTable.data();
+        console.log(data);
 
         var saveDaily = function () {
             $.post(path + "/api/save/daily")
@@ -156,26 +166,31 @@ $(document).ready(function () {
                     downTime = false;
 
                 for (var i = 0; i < data.length; i++) {
-                    duration += data[i].daily_duration;
-                    if (data[i].daily_activity == "Downtime") {
-                        downTime = true;
-                    }
+                    duration += data[i].duration;
+                    //if (data[i].daily_activity == "Downtime") {
+                    //    downTime = true;
+                    //}
                 }
-
+                var stb = ($("#dailyForm input[name='standby']").val() === "") ? 0 : $("#dailyForm input[name='standby']").val();
+                var lod = ($("#dailyForm input[name='load']").val() === "") ? 0 : $("#dailyForm input[name='load']").val();
+                var stm = ($("#dailyForm input[name='steaming']").val() === "") ? 0 : $("#dailyForm input[name='steaming']").val();
+                var dtm = ($("#dailyForm input[name='downtime']").val() === "") ? 0 : $("#dailyForm input[name='downtime']").val();
+                //console.log(stb,lod,stm,dtm);
+                
+                duration += parseFloat(stb) + parseFloat(lod) + parseFloat(stm) + parseFloat(dtm);
+                console.log(duration);
                 var b = 24 - duration;
-                if (!downTime && duration < 24) {
-                    var c = confirm("Activity \"Downtime\" tidak ditemukan. Apakah Anda ingin menambahkan waktu yang tersisa (" + b + " jam) untuk \"Downtime\"?");
+                if (dtm <= 0 && duration < 24) {
+                    var c = confirm("Durasi Aktivitas kurang dari 24 jam, apakah "+b+" jam akan ditambahkan ke Downtime?");
                     if (c) {
-                        $("#dailyForm input[name='daily_duration']").val(b);
-                        $("#daily_activity").val("Downtime");
-                        $("#daily_unit").val("Unit Kosong");
+                        $("#dailyForm input[name='downtime']").val(b);
                     }
-                } else if (!downTime && duration > 24) {
-                    alert("Activity Downtime tidak ditemukan. Dan durasi Anda melebihi 24jam")
-                } else if (downTime && duration < 24) {
-                    alert("Durasi yang ada kurang dari 24jam. Silahkan periksa kembali data Anda!");
-                } else if (downTime && duration > 24) {
-                    alert("Durasi yang ada melebihi 24jam. Silahkan periksa kembali data Anda!");
+                } else if (dtm <=0 && duration > 24) {
+                    alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
+                } else if (dtm >=0 && duration < 24) {
+                    alert("Durasi Aktivitas kurang 24 Jam, Mohon di periksa kembali!");
+                } else if (dtm >= 0 && duration > 24) {
+                    alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
                 } else {
                     saveDaily.apply();
                 }

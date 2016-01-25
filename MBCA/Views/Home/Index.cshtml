@@ -24,111 +24,97 @@
                         </div>
                         <div id="inputDaily" class="panel-collapse " role="tabpanel" aria-labelledby="headingOne">
                             <div class="panel-body">
-                                <form class="form-horizontal" id="dailyForm">
-                                   <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="col-sm-1">Vessel</label>
-                                            <div class="col-sm-4"><input type="text" name="daily_date" class="form-control" id="daily_date" autocomplete="off" value="@DateTime.Today.ToString("dd/MM/yyyy")" placeholder="Date" /></div>
-                                            <div class="col-sm-4">@Html.DropDownList("daily_vessel", null, new { @class = "form-control" })</div>
-                                            <div class="col-sm-3"><input type="number" min="0" name="daily_fuel" class="form-control" placeholder="Fuel Total" /></div>
-                                        </div>
-                                    </div>
-                                    @*<div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-sm-2">Vessel</label>
-                                            <div class="col-sm-10">
-                                                @Html.DropDownList("daily_vessel", null, new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label class="col-sm-3">Fuel Total</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" min="0" name="daily_fuel" class="form-control" placeholder="Fuel Total" />
-                                            </div>
-                                        </div>
-                                    </div>*@
-
-                                    <div class="col-md-12">
-                                        <div class="form-group">                               
-                                            <label class="col-sm-1">Activity</label>
-                                            <div class="col-sm-3"><input type="number" min="0" name="standby" class="form-control" placeholder="StanBy Time" /></div>
-                                            <div class="col-sm-3"><input type="number" min="0" name="load" class="form-control" placeholder="Load/Disch Time" /></div>
-                                            <div class="col-sm-2"><input type="number" min="0" name="steaming" class="form-control" placeholder="Steaming Time" /></div>
-                                            <div class="col-sm-3"><input type="number" min="0" name="downtime" class="form-control" placeholder="Downtime Time"  /></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="col-sm-1">Time At</label>
-                                            <div class="col-sm-4">@Html.DropDownList("daily_unit", null, new { @class = "form-control" })</div>
-                                            <div class="col-sm-4"><input type="text" name="daily_duration" class="form-control" placeholder="Duration" autocomplete="off" /></div>
-                                            <input type="hidden" name="action" value="create" />
-                                            <input type="hidden" name="id" />
-                                            <div class="col-md-3">
-                                                <div class="button-group pull-right" role="group" id="btnSaveGroup">
-                                                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Add Activity</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                 
+                                @*<form class="form-horizontal" id="dailyForm">*@
                                     
-                                    @*<div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Activity</label>
-                                            <div class="col-sm-10">
-                                                @Html.DropDownList("daily_activity", null, new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">Unit</label>
-                                            <div class="col-sm-10">
-                                                @Html.DropDownList("daily_unit", null, new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">*@
-                                        @*<div class="form-group">
-                                            <label class="control-label col-sm-3">Duration</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" name="daily_duration" class="form-control" placeholder="Duration" autocomplete="off" />
-                                            </div>
-                                            <input type="hidden" name="action" value="create" />
-                                            <input type="hidden" name="id" />
-                                        </div>*@
-                                        @*<div class="button-group pull-right" role="group" id="btnSaveGroup">
-                                            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <form class="form-horizontal" id="activityForm">
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Date</label>
+                                                    <div class="col-sm-9"><input type="text" name="daily_date" class="form-control" id="daily_date" autocomplete="off" value="@DateTime.Today.ToString("dd/MM/yyyy")" placeholder="Date" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Vessel</label>
+                                                    <div class="col-sm-9">@Html.DropDownList("daily_vessel", null, new { @class = "form-control" })</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Fuel Total</label>
+                                                    <div class="col-sm-9"><input type="number" min="0" name="daily_fuel" class="form-control" placeholder="Fuel Total" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Standby</label>
+                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="standby" class="form-control" placeholder="Duration" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Load/Disch</label>
+                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="load" class="form-control" placeholder="Duration" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Steaming</label>
+                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="steaming" class="form-control" placeholder="Duration" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3">Downtime</label>
+                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="downtime" class="form-control" placeholder="Duration" /></div>
+                                                </div>
+                                                <div class="dailyButton">
+                                                    <div class="floatright">
+                                                        <button type="button" class="btn btn-success" id="btnSaveDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                            </form>
+                                            
 
-                                        </div>*@
+                                        </div>
+
+
+
+
+
+                                        <div class="col-md-6">
+                                            <form class="form-horizontal" id="timeatForm">
+                                                <div class="form-group">
+                                                    <input type="hidden" name="action" value="create" />
+                                                    <input type="hidden" name="id" />
+                                                    <label class="col-sm-2">Time At</label>
+                                                    <div class="col-sm-4">@Html.DropDownList("daily_unit", null, new { @class = "form-control" })</div>
+                                                    <div class="col-sm-4"><input type="text" name="time_at_dur" class="form-control" placeholder="Duration" autocomplete="off" required /></div>
+                                                    <div class="col-sm-1"></div>
+                                                    <div class="col-sm-1">
+                                                        <div class="button-group pull-right" role="group" id="btnSaveGroup">
+                                                            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            
+                                            <table id="dailyTable" class="table table-bordered responsive nowrap display" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>User Unit</th>
+                                                        <th>Duration</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div> 
                                         <div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
                                             <button type="submit" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Update</button>
                                             <button type="button" class="btn btn-default" id="btnCancelDaily"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
                                         </div>
-                                    @*</div>*@
-                                </form>
+                                        
+                                @*</form>*@
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="dailyButton">
+                @*<div class="dailyButton">
                     <div class="floatright">
-                        <button type="button" class="btn btn-success" id="btnSaveDataDaily"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
+                        <button type="submit" class="btn btn-success" id="btnSaveDataDaily"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
                     </div>
-                </div>
-                <table id="dailyTable" class="table table-bordered responsive nowrap display" style="width:100%">
-                    <thead>
-                        <tr>
-                            @*<th>Date</th>*@
-                            <th>User Unit</th>
-                            @*<th>Activity</th>*@
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                </table>
+                </div>*@
             </div>
             <div role="tabpanel" class="tab-pane" id="monthlyPanel">
                 <div class="panel-group" id="accordion1" role="tablist">
