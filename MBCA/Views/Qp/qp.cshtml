@@ -71,7 +71,7 @@
         //})
     //})
 
-    $.get('../qp')
+    $.get('vg')
 .success(function (res) {
     var a = res;
 
@@ -84,7 +84,7 @@
 
     for (var index in a.data) {
         var buka = '<tr>';
-        var isi = '<td>' + a.data[index].date + '</td>' +
+        var isi = '<td>' + a.data[index].tgl + '</td>' +
                     '<td>' + a.data[index].vessel + '</td>';
         var tutup = '</tr>';
 
