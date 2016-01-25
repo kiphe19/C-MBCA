@@ -137,7 +137,11 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "hire_table")
                 .Model<HireModel>()
-                .Field(new Field("tgl")
+                .Field(new Field("tgl_start")
+                    .Validator(Validation.DateFormat("MM/dd/yyyy"))
+                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                )
+                .Field(new Field("tgl_end")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                 )
@@ -299,13 +303,7 @@ namespace chevron.Controllers
             DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
             TimeSpan ts = tanggal2.Subtract(tanggal1);
             var jml = (int)ts.TotalDays;
-
-
-
-            //int hasil = int.Parse(ts.ToString());
-            //Lblpesan.Text = "selisih " + ts.Days + " hari";
-
-
+            
             /*
             List<CurrencyModel> curr = new List<CurrencyModel>();
 
@@ -362,26 +360,26 @@ namespace chevron.Controllers
 
             try
             {
-
-                //if (input["ation"] == "create")
-                //{
-                
-
                 for (int i = 0; i <= jml; i++)
                 {
                     var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                    con.select("fuel_table", "count(*)", tg);
+                    con.select("fuel_table", "*", tg);
                     con.result.Read();
                     if (con.result.HasRows)
                     {
                         query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     }
-                   
-                    query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
-                   
+                    else
+                    {
+                        query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+                    }
+                    
+                    //Response.Write(query);
                     con.queryExec(query);
+                    //return query;
                 }
-                
+
+                //return jml.ToString();
                 return "success";
                 //return tanggal1.AddDays(1).ToString("yyyy-MM-dd");
                 //Response.Write(rp);
@@ -401,6 +399,9 @@ namespace chevron.Controllers
             DateTime tg2 = Convert.ToDateTime(input["tgl_end"]);
             TimeSpan lama = tg2.Subtract(tg1);
             var jml = (int)lama.TotalDays + 1;
+
+            double charter_rate = double.Parse(input["charter_cost"]) / jml;
+            double mob_rate = double.Parse(input["mob_cost"]) / jml;
 
             //List<CurrencyModel> curr = new List<CurrencyModel>();
 
@@ -440,30 +441,33 @@ namespace chevron.Controllers
             //}
 
             String query = "";
-            //switch (input["action"])
-            //{
-            //    case "create":
-            //        query = String.Format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
-            //        break;
-            //    case "update":
-            //        query = String.Format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}",input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (input["action"])
+            {
+                case "create":
+                    //query = string.format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture));
+                    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[charter_rate],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
+                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8})", input["tgl_start"], input["tgl_end"], input["vessel"], input["charter_cost"], charter_rate, input["mob_cost"], mob_rate, input["currency_cat"], jml);
+                    break;
+                case "update":
+                    //query = string.format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture), input["id"]);
+                    break;
+                default:
+                    break;
+            }
 
             try
             {
-                if (input["action"] == "create")
-                {
-                    double rate = double.Parse(input["charter_cost"]) / jml;
-                    query = "halooo" + rate;
-                }
+                //if (input["action"] == "create")
+                //{
+                    
+                //    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[charter_rate],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
+                //                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8})",input["tgl_start"],input["tgl_end"],input["vessel"],input["charter_cost"], charter_rate, input["mob_cost"], mob_rate, input["currency_cat"],jml);
+                //}
 
-                return query;
+                //return query;
                 //return ;
-                //con.queryExec(query);
-                //return "success";
+                con.queryExec(query);
+                return "success";
             }
             catch (Exception ex)
             {

@@ -11,7 +11,7 @@
             <li role="presentation"><a href="#distancePanel" role="tab" data-toggle="tab">Distance</a></li>
             <li role="presentation"><a href="#fuelPanel" role="tab" data-toggle="tab">Fuel Cost</a></li>
             <li role="presentation"><a href="#hirePanel" role="tab" data-toggle="tab">Charter Cost</a></li>
-            <li role="presentation"><a href="#demobPanel" role="tab" data-toggle="tab">Mob/demob Cost</a></li>
+            @*<li role="presentation"><a href="#demobPanel" role="tab" data-toggle="tab">Mob/demob Cost</a></li>*@
             <li role="presentation"><a href="#currencyPanel" role="tab" data-toggle="tab">Currency</a></li>
             <li role="presentation"><a href="#userPanel" role="tab" data-toggle="tab">User</a></li>
         </ul>
@@ -86,10 +86,12 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Date</th>
+                            <th>Start</th>
+                            <th>End</th>
                             <th>Vessel Name</th>
-                            <th>Cost (USD)</th>
-                            <th>Cost (Rp)</th>
+                            <th>Charter Cost</th>
+                            <th>Mob/Demob Cost</th>
+                            <th>Currency</th>
                         </tr>
                     </thead>
                 </table>
@@ -295,22 +297,22 @@
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Cost</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <input type="text" class="form-control" name="charter_cost" />
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.DropDownList("currency_cat", null, new { @class = "form-control", @name = "charter_cur" })
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Mob/Demob</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <input type="text" class="form-control" name="mob_cost" />
+                        </div>                       
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Currency</label>
+                        <div class="col-sm-9">
+                            @Html.DropDownList("currency_cat", null, new { @class = "form-control" })
                         </div>
-                        <div class="col-sm-3">
-                            @Html.DropDownList("currency_cat", null, new { @class = "form-control", @name = "mob_cur" })
-                        </div>
-                        
+
                     </div>
                     <input type="hidden" name="action" />
                     <input type="hidden" name="id" />
