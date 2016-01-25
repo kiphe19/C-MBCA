@@ -231,8 +231,8 @@ namespace chevron.Controllers
 
             //query = string.Format("insert into",);
             List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
-            var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-            var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], nowDate);
+            var skr = DateTime.Now.ToString("yyyy-MM-dd");
+            var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], skr);
             con.select("temp_daily", "*", where);
             while (con.result.Read())
             {
@@ -247,13 +247,18 @@ namespace chevron.Controllers
             foreach (DailyUnitActivityModel unit in usernit)
             {
                 //Response.Write(unit.user_unit + unit.dur);
+                
                 query = string.Format("insert into daily_table (vessel,standby,loading,steaming,downtime,user_unit,user_unit_dur,fuel_tot,user_log,date_input)" +
                     "values ('{0}',{1},{2},{3},{4},'{5}',{6},{7},'{8}','{9}')"
                     ,input["daily_vessel"],input["standby"],input["load"],input["steaming"],input["downtime"]
                     ,unit.user_unit,unit.dur,input["daily_fuel"],Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
                 Response.Write(query);
+
+                
             }
 
+            var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
+            Response.Write(qdelete);
             //Response.Write(usernit);
             //return "SUCCESS";
             //return usernit.ToString();
