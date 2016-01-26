@@ -151,119 +151,67 @@ namespace chevron.Controllers
 
         public void vg()
         {
-
             dynamic a = new JObject();
             JArray b = new JArray();
-            dynamic c = new JObject();
-            
-            JArray data = new JArray();
-            var unit = new JArray();
-            var vessel = new JArray();
-            var date = new JArray();
 
-            con.select("unit_table", "name", "cat =1");
+            JArray unit = new JArray();
+            JArray vessel = new JArray();
+            JArray date = new JArray();
+
+            con.select("unit_table", "name", "cat=1");
             while (con.result.Read())
             {
-                unit.Add(new JValue(con.result["name"]));
+                unit.Add(con.result["name"]);
             }
+            con.Close();
 
             con.select("report_table", "distinct(vessel_name)");
             while (con.result.Read())
             {
-                vessel.Add(new JValue(con.result["vessel_name"]));
+                vessel.Add(con.result["vessel_name"]);
             }
+            con.Close();
 
             con.select("report_table", "distinct(date)");
             while (con.result.Read())
             {
-                date.Add(new JValue(con.result["date"]));
+                date.Add(con.result["date"]);
             }
+            con.Close();
 
-            foreach (var vs in vessel)
+            foreach (var vsl in vessel)
             {
-                c = new JObject(
-                    new JProperty("vessel", vs)
+                dynamic c = new JObject(
+                    new JProperty("vessel", vsl)
                     );
-                c.data = data;
+                JArray data = new JArray();
 
-                //data.Clear();
-                //foreach (var unt in unit)
-                //{
-                //    var query = String.Format("vessel_name='{0}' and unit='{1}'", vs, unt);
-                //    con.select("report_table", "distinct(date), fuel_liter", query);
-                //    con.result.Read();
-
-                //    if (con.result.HasRows)
-                //    {
-                //        c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
-                //        data.Add(new JValue(con.result["fuel_liter"]));
-                //    }
-                //    else
-                //    {
-                //        data.Add(0);
-                //    }
-
-                //}
-                foreach (var tgl in date)
+                foreach (var unt in unit)
                 {
-                    data.Clear();
-                    foreach (var unt in unit)
+                    var whr = String.Format("vessel_name='{0}' and unit='{1}'", vsl, unt);
+                    con.select("report_table", "distinct(date), fuel_liter", whr);
+
+                    con.result.Read();
+                    if (con.result.HasRows)
                     {
-                        var query = String.Format("vessel_name='{0}' and unit='{1}' and date='{2}'", vs, unt, DateTime.Parse(tgl.ToString()).ToString("yyyy-MM-dd"));
-                        con.select("report_table", "distinct(date), fuel_liter", query);
-                        con.result.Read();
-
-                        if (con.result.HasRows)
-                        {
-                            c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
-                            data.Add(new JValue(con.result["fuel_liter"]));
-                        }
-                        else
-                        {
-                            data.Add(0);
-                        }
-
+                        c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
+                        data.Add(new JValue(con.result["fuel_liter"]));
                     }
+                    else
+                    {
+                        data.Add(0);
+                    }
+                    c.data = data;
                 }
 
                 b.Add(c);
             }
-
-            //for (int v = 0; v < vessel.Count; v++)
-            //{
-            //    c = new JObject(
-            //        new JProperty("vessel", vessel[v])
-            //        );
-            //    b.Add(c);
-            //    //c.data = data;
-
-            //    data.Clear();
-
-            //    for (int i = 0; i < unit.Count; i++)
-            //    {
-            //        var query = String.Format("vessel_name='{0}' and unit='{1}'", vessel[v], unit[i]);
-            //        con.select("report_table", "distinct(date), fuel_liter", query);
-            //        con.result.Read();
-
-            //        if (con.result.HasRows)
-            //        {
-            //            c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
-            //            data.Add(new JValue(con.result["fuel_liter"]));
-            //        }
-            //        else
-            //        {
-            //            data.Add(0);
-            //        }
-            //    }
-            //    c.data = data;
-            //}
+            con.Close();
 
             a.data = b;
             a.unit = unit;
 
             Response.ContentType = "text/json";
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(a);
-            //return json;
             Response.Write(a);
         }
     }
