@@ -363,18 +363,17 @@ namespace chevron.Controllers
                 for (int i = 0; i <= jml; i++)
                 {
                     var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                    con.select("temp_daily", "*", tg);
+                    //con.select("temp_daily", "*", tg);
 
                     con.select("fuel_table", "*", tg);
                     con.result.Read();
-                    //con.result.Read();
                     if (con.result.HasRows)
                     {
                         query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     }
                     else
                     {
-                        query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+                        query = string.Format("insert into fuel_table (tgl,cost_usd, currency_type) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
                     }
                     
                     //Response.Write(query);
@@ -384,8 +383,6 @@ namespace chevron.Controllers
 
                 //return jml.ToString();
                 return "success";
-                //return tanggal1.AddDays(1).ToString("yyyy-MM-dd");
-                //Response.Write(rp);
 
             }
             catch (Exception ex)

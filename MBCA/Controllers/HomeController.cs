@@ -235,9 +235,28 @@ namespace chevron.Controllers
             var down    = (input["downtime"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["downtime"]);
             var fuel    = (input["daily_fuel"] == "") ? Convert.ToInt16(0) : Convert.ToInt32(input["daily_fuel"]);
 
-            var tanggal = Convert.ToDateTime(input["daily_date"]).ToString("yyyy-MM-dd");
+            var tanggal = (input["daily_date"] == "") ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") :  Convert.ToDateTime(input["daily_date"]).ToString("yyyy-MM-dd");
 
             //Response.Write(tanggal);
+
+            //buat variabel harga fuel
+            decimal harga = 0,curr_harga;
+            var cari_fuel = string.Format("tgl = '{0}'",tanggal);
+            con.select("fuel_table", "cost_usd, currency_type", cari_fuel);
+            con.result.Read();
+            if (con.result.HasRows)
+            {
+                harga = Convert.ToDecimal(con.result["cost_usd"]);
+                curr_harga = Convert.ToDecimal(con.result["currency_type"]);
+            }
+            else
+            {
+                harga = 0;
+                curr_harga = 0;
+            }
+            con.Close();
+
+
 
             List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
             var skr = DateTime.Now.ToString("yyyy-MM-dd");
@@ -263,6 +282,7 @@ namespace chevron.Controllers
                 });
             }
             con.Close();
+            //buat variabel total jarak, dan jumlah user_unit
             decimal total_jarak = 0, tot_hit = 0;
             foreach (DailyUnitActivityModel unit_jar in usernit) {
                 total_jarak += unit_jar.jarak;
@@ -270,7 +290,7 @@ namespace chevron.Controllers
             }
 
             //Response.Write(total_jarak + " total jarak "+tot_hit);
-            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0 ;
+            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0, fuel_price=0 ;
             if (fuel > 0)
             {
                 foreach (DailyUnitActivityModel unit in usernit)
@@ -287,10 +307,12 @@ namespace chevron.Controllers
                     t_steam = steam * (unit.jarak / total_jarak);
                     t_all = t_standby + t_load + t_steam + unit.durasi;
                     fuel_l = (t_all / (24 - down)) * fuel ;
+                    fuel_price = harga * fuel_l;
 
 
-                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9}); ",
-                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l
+
+                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11}); ",
+                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga
                         );
                     //Response.Write(q_rpt1);
                     con.queryExec(q_rpt1);
@@ -303,15 +325,11 @@ namespace chevron.Controllers
             }
 
 
-            //baca distance
 
-
+            //delete setelah input
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
             //Response.Write(qdelete);
             con.queryExec(qdelete);
-            //Response.Write(usernit);
-            //return "SUCCESS";
-            //return usernit.ToString();
             //return "success";
         }
 

@@ -124,11 +124,6 @@ $(document).ready(function () {
     $("#btnSaveDailyAct").click(function () {
         //alert("clik button save akticiti bro");
         var isi_form = $("#activityForm").serialize();
-        //console.log(isi_form);
-        //$.post(path + "/api/save/daily", isi_form, function (res) {
-        //    console.log(res);
-        //});
-
         var saveDaily = function () {
             $.post(path + "/api/save/daily", isi_form, function (res) {
                 //console.log($("#activityForm")[0]);
@@ -136,8 +131,6 @@ $(document).ready(function () {
                 dailyTable.ajax.reload();
             })
         }
-
-
         var data = dailyTable.data();
         //console.log(data);
 
@@ -184,14 +177,10 @@ $(document).ready(function () {
                         alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
                     } else {
                         saveDaily.apply();
-                        //console.log("simpann");
                     }
                 }
-                
-                
             }
         }
-
     });
 
 
