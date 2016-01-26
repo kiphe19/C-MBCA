@@ -111,7 +111,7 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    $("#daily_date").datetimepicker({
+    $("#daily_tgl").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
     })
@@ -120,25 +120,77 @@ $(document).ready(function () {
         maxDate: new Date()
     })
 
-    //var baru = 1;
-    //$("#addFormInput").click(function () {
-    //    var tambahinput = "#acti" + baru;
-    //    console.log(tambahinput);
-
-    //    $("#activitytimeat").append('<div><input type="text" name="mytext[]"/><input type="text" name="mytext1[]"/></div>'); //add input box
-    //    //$("#activitytimeat").append('<div class="col-sm-4">@Html.DropDownList("daily_unit", null, new { @class = "form-control" })</div>'); //add input box
-    //    //$("#activitytimeat").clone().appendTo("timebaru");
-
-    //    baru += 1;
-    //})
 
     $("#btnSaveDailyAct").click(function () {
         //alert("clik button save akticiti bro");
         var isi_form = $("#activityForm").serialize();
-        console.log(isi_form);
-        $.post(path + "/api/save/daily", isi_form, function (res) {
-            console.log(res);
-        })
+        //console.log(isi_form);
+        //$.post(path + "/api/save/daily", isi_form, function (res) {
+        //    console.log(res);
+        //});
+
+        var saveDaily = function () {
+            $.post(path + "/api/save/daily", isi_form, function (res) {
+                //console.log($("#activityForm")[0]);
+                $("#activityForm")[0].reset();
+                dailyTable.ajax.reload();
+            })
+        }
+
+
+        var data = dailyTable.data();
+        //console.log(data);
+
+        if (data.length == 0) {
+            alert("Belum ada data Durasi Time At, Periksa dulu input Time At");
+        } else {
+            var a = confirm("Apakah Anda yakin ingin menyimpan Data ini?");
+            if (a) {
+                var duration = 0;
+
+                for (var i = 0; i < data.length; i++) {
+                    duration += data[i].duration;
+                    //if (data[i].daily_activity == "Downtime") {
+                    //    downTime = true;
+                    //}
+                }
+                var stb = ($("#activityForm input[name='standby']").val() === "") ? 0 : $("#activityForm input[name='standby']").val();
+                var lod = ($("#activityForm input[name='load']").val() === "") ? 0 : $("#activityForm input[name='load']").val();
+                var stm = ($("#activityForm input[name='steaming']").val() === "") ? 0 : $("#activityForm input[name='steaming']").val();
+                var dtm = ($("#activityForm input[name='downtime']").val() === "") ? 0 : $("#activityForm input[name='downtime']").val();
+                //console.log(stb,lod,stm,dtm);
+
+                duration += parseFloat(stb) + parseFloat(lod) + parseFloat(stm) + parseFloat(dtm);
+                //console.log(duration);
+                var b = 24 - duration;
+                
+                //var fuel = parseInt($("#activityForm input[name='downtime']").val());
+
+                if ($("#activityForm input[name='daily_fuel']").val() === "") {
+                    alert("Total Fuel belum di Input")
+                }
+                else
+                {
+                    if (dtm <= 0 && duration < 24) {
+                        var c = confirm("Durasi Aktivitas kurang dari 24 jam, apakah " + b + " jam akan ditambahkan ke Downtime?");
+                        if (c) {
+                            $("#activityForm input[name='downtime']").val(b);
+                        }
+                    } else if (dtm <= 0 && duration > 24) {
+                        alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
+                    } else if (dtm >= 0 && duration < 24) {
+                        alert("Durasi Aktivitas kurang 24 Jam, Mohon di periksa kembali!");
+                    } else if (dtm >= 0 && duration > 24) {
+                        alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
+                    } else {
+                        saveDaily.apply();
+                        //console.log("simpann");
+                    }
+                }
+                
+                
+            }
+        }
 
     });
 

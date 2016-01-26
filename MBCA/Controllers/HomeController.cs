@@ -227,38 +227,88 @@ namespace chevron.Controllers
         [HttpPost]
         public void _saveDailyData(FormCollection input)
         {
-            String query = "";
+            //String qdailytable = "";
 
-            //query = string.Format("insert into",);
+            var stb     = (input["standby"] == "") ? Convert.ToInt16(0) :  Convert.ToDecimal(input["standby"]);
+            var load    = (input["load"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["load"]);
+            var steam   = (input["steaming"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["steaming"]);
+            var down    = (input["downtime"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["downtime"]);
+            var fuel    = (input["daily_fuel"] == "") ? Convert.ToInt16(0) : Convert.ToInt32(input["daily_fuel"]);
+
+            var tanggal = Convert.ToDateTime(input["daily_date"]).ToString("yyyy-MM-dd");
+
+            //Response.Write(tanggal);
+
             List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
             var skr = DateTime.Now.ToString("yyyy-MM-dd");
             var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], skr);
-            con.select("temp_daily", "*", where);
+            con.select("temp_daily", "count(user_unit) as jml", where);
+            con.result.Read();
+            var jml_unit = Convert.ToInt16(con.result["jml"]);
+            con.Close();
+            //Response.Write(jml_unit);
+
+            var qunit = string.Format("select td.user_unit,td.duration,ut.distance from temp_daily td "+
+                                            "inner join unit_table ut on ut.name = td.user_unit "+
+                                            "where td.user_log = '{0}' and td.date_input = '{1}'",Session["userid"],skr);
+            con.query(qunit);
             while (con.result.Read())
             {
                 usernit.Add(new DailyUnitActivityModel
                 {
                     user_unit = con.result["user_unit"].ToString(),
-                    dur = (decimal)con.result["duration"]
+                    durasi = (decimal)con.result["duration"],
+                    jarak = Convert.ToInt32(con.result["distance"]),
+                    hit = Convert.ToInt16(1)
                 });
             }
             con.Close();
-
-            foreach (DailyUnitActivityModel unit in usernit)
-            {
-                //Response.Write(unit.user_unit + unit.dur);
-                
-                query = string.Format("insert into daily_table (vessel,standby,loading,steaming,downtime,user_unit,user_unit_dur,fuel_tot,user_log,date_input)" +
-                    "values ('{0}',{1},{2},{3},{4},'{5}',{6},{7},'{8}','{9}')"
-                    ,input["daily_vessel"],input["standby"],input["load"],input["steaming"],input["downtime"]
-                    ,unit.user_unit,unit.dur,input["daily_fuel"],Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
-                Response.Write(query);
-
-                
+            decimal total_jarak = 0, tot_hit = 0;
+            foreach (DailyUnitActivityModel unit_jar in usernit) {
+                total_jarak += unit_jar.jarak;
+                tot_hit += unit_jar.hit;
             }
 
+            //Response.Write(total_jarak + " total jarak "+tot_hit);
+            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0 ;
+            if (fuel > 0)
+            {
+                foreach (DailyUnitActivityModel unit in usernit)
+                {
+                    //simpan ke daily_table    
+                    var qdailytable = string.Format("insert into daily_table (tgl,vessel,standby,loading,steaming,downtime,user_unit,duration,distance,fuel_tot,user_log,date_input) " +
+                        "values (cast('{0}' as DATE),'{1}',{2},{3},{4},{5},'{6}',{7},{8},{9},'{10}','{11}'); "
+                        ,input["daily_date"], input["daily_vessel"], stb, load, steam, down, unit.user_unit, unit.durasi, unit.jarak, fuel, Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
+                    //Response.Write(qdailytable);
+                    con.queryExec(qdailytable);
+
+                    t_standby = stb / tot_hit;
+                    t_load = load / tot_hit;
+                    t_steam = steam * (unit.jarak / total_jarak);
+                    t_all = t_standby + t_load + t_steam + unit.durasi;
+                    fuel_l = (t_all / (24 - down)) * fuel ;
+
+
+                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9}); ",
+                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l
+                        );
+                    //Response.Write(q_rpt1);
+                    con.queryExec(q_rpt1);
+                    
+
+
+
+
+                }
+            }
+
+
+            //baca distance
+
+
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
-            Response.Write(qdelete);
+            //Response.Write(qdelete);
+            con.queryExec(qdelete);
             //Response.Write(usernit);
             //return "SUCCESS";
             //return usernit.ToString();

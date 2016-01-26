@@ -60,7 +60,7 @@
     </Reference>
     <Reference Include="DataTables, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Editor-NET-1.5.4\Editor-NET-1.5.4\DataTables.dll</HintPath>
+      <HintPath>..\..\Editor-NET-1.5.4_baru_commerce\Editor-NET-1.5.4\DataTables.dll</HintPath>
     </Reference>
     <Reference Include="HtmlSanitizationLibrary">
       <HintPath>..\..\..\DLL\HtmlSanitizationLibrary.dll</HintPath>

@@ -12,9 +12,9 @@ namespace chevron.Models
 
         public string user_unit { get; set; }
 
-        public decimal dur { get; set; }
-        //public String user_log { get; set; }
-        //public DateTime date_input { get; set; }
+        public decimal durasi { get; set; }
+        public int jarak { get; set; }
+        public int hit { get; set; }
 
     }
 }
