@@ -175,38 +175,133 @@ namespace chevron.Controllers
             con.select("report_table", "distinct(date)");
             while (con.result.Read())
             {
+                //date.Add(Convert.ToDateTime(con.result["date"]).ToShortDateString());
                 date.Add(con.result["date"]);
             }
             con.Close();
 
             foreach (var vsl in vessel)
             {
+
+                foreach (var tgl in date)
+                {
+                    dynamic c = new JObject(
+                            new JProperty("vessel", vsl)
+                        );
+
+                    String whrrr = String.Format("vessel_name = '{0}' and date = '{1}'", vsl, Convert.ToDateTime(tgl.ToString()).ToString("yyyy-MM-dd"));
+                    con.select("report_table", "date", whrrr);
+
+                    if (con.result.HasRows)
+                    {
+                        JArray data = new JArray();
+                        foreach (var unt in unit)
+                        {
+                            var whrrrr = String.Format("vessel_name = '{0}' and date = '{1}' and unit = '{2}'", vsl, Convert.ToDateTime(tgl.ToString()).ToString("yyyy-MM-dd"), unt);
+                            con.select("report_table", "fuel_liter", whrrrr);
+                            con.result.Read();
+                            if (con.result.HasRows)
+                            {
+                                c.tgl = Convert.ToDateTime(tgl.ToString()).ToShortDateString();
+                                data.Add(con.result["fuel_liter"]);
+                            }
+                            else
+                            {
+                                data.Add(0);
+                            }
+                            c.data = data;
+                        }
+                        b.Add(c);
+                    }
+
+                }
+            }
+
+            a.data = b;
+            a.unit = unit;
+
+            Response.ContentType = "text/json";
+            Response.Write(a);
+        }
+
+        public void test()
+        {
+            DateTime dateNow = DateTime.Now;
+            DateTime date30 = DateTime.Now.AddMonths(-1);
+
+            TimeSpan diff = dateNow - date30;
+
+            int days = diff.Days;
+
+            dynamic a = new JObject();
+            JArray b = new JArray();
+
+            JArray unit = new JArray();
+            JArray vessel = new JArray();
+            JArray date = new JArray();
+
+            con.select("unit_table", "name", "cat=1");
+            while (con.result.Read())
+            {
+                unit.Add(con.result["name"]);
+            }
+            con.Close();
+
+            con.select("report_table", "distinct(vessel_name)");
+            while (con.result.Read())
+            {
+                vessel.Add(con.result["vessel_name"]);
+            }
+            con.Close();
+
+            con.select("report_table", "distinct(date)");
+            while (con.result.Read())
+            {
+                date.Add(con.result["date"]);
+            }
+            con.Close();
+
+
+            foreach (var vsl in vessel)
+            {
                 dynamic c = new JObject(
                     new JProperty("vessel", vsl)
                     );
-                JArray data = new JArray();
 
-                foreach (var unt in unit)
+                for (int i = 0; i < days; i++)
                 {
-                    var whr = String.Format("vessel_name='{0}' and unit='{1}'", vsl, unt);
-                    con.select("report_table", "distinct(date), fuel_liter", whr);
+                    JArray data = new JArray();
+                    DateTime tgl = DateTime.Now.AddDays(-i);
 
-                    con.result.Read();
+                    var whrrr = String.Format("vessel_name = '{0}' and date ='{1}'", vsl, tgl.ToString("MM-dd-yyyy"));
+                    con.select("report_table", "date", whrrr);
                     if (con.result.HasRows)
                     {
-                        c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
-                        data.Add(new JValue(con.result["fuel_liter"]));
+
+                        foreach (var unt in unit)
+                        {
+                            var whr = String.Format("vessel_name='{0}' and date='{2}' and unit='{1}'", vsl, unt, tgl.ToString("MM-dd-yyyy"));
+                            con.select("report_table", "date, fuel_liter", whr);
+
+                            con.result.Read();
+                            if (con.result.HasRows)
+                            {
+                                c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
+                                data.Add(con.result["fuel_liter"]);
+                            }
+                            else
+                            {
+                                data.Add(0);
+                            }
+                        }
+                        c.data = data;
+                        b.Add(c);
                     }
-                    else
-                    {
-                        data.Add(0);
-                    }
-                    c.data = data;
                 }
 
-                b.Add(c);
             }
             con.Close();
+
 
             a.data = b;
             a.unit = unit;
