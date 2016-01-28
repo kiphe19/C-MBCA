@@ -1,7 +1,7 @@
 ﻿var editor,
     dailyTable,
-    //path = '',
-    path = window.location.pathname,
+    path = '',
+    //path = window.location.pathname,
     monthlyTable;
 
 (function () {
