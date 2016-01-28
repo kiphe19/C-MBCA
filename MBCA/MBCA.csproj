@@ -173,6 +173,7 @@
     <Compile Include="Models\FuelModel.cs" />
     <Compile Include="Models\HireModel.cs" />
     <Compile Include="Models\MonthlyActivityModel.cs" />
+    <Compile Include="Models\QpModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportModelCS.cs" />
     <Compile Include="Models\UnitModel.cs" />

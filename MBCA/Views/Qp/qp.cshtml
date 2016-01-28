@@ -5,18 +5,39 @@
 
 <div class="panel panel-default">
     <div class="panel-body">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Vessel</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <label class="col-sm-5 control-label">Report By Vessel</label>
+                <div class="col-sm-7">
+                    @Html.DropDownList("vessel", null, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-sm-5 control-label">Report</label>
+                <div class="col-sm-7">
+                    <select class="form-control" name="ReportType">
+                        <option value="f" selected="selected">Fuel</option>
+                        <option value="c">Charter Cost</option>
+                        <option value="md">Mob/Demob Cost</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Vessel</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
+    var tablee;
     $.get('vg')
     .done(function (res) {
         var a = res;
@@ -42,8 +63,8 @@
         }
     })
     .always(function () {
-        $("table").DataTable({
-            dom: "Bfrtip",
+        tablee = $("table").DataTable({
+            dom: "Brtip",
             buttons: [
                 {
                     extend: 'collection',
@@ -52,6 +73,9 @@
                 }
             ]
         })
+    })
+    $("#vessel").change(function () {
+        tablee.search($(this).val()).draw();
     })
 
 </script>

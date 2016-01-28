@@ -15,6 +15,7 @@ namespace chevron.Controllers
         // GET: /Qp/
 
         Connection con = new Connection();
+        JArray vessel = new JArray();
 
         public void Index()
         {
@@ -84,6 +85,22 @@ namespace chevron.Controllers
 
         public ActionResult qp()
         {
+            this.getVessel();
+            List<SelectListItem> filterByVessel = new List<SelectListItem>();
+            filterByVessel.Add(new SelectListItem
+            {
+                Selected = true,
+                Text = "All",
+                Value = ""
+            });
+            foreach (var item in vessel)
+            {
+                filterByVessel.Add(new SelectListItem{
+                    Text = item.ToString(),
+                    Value = item.ToString()
+                });
+            }
+            ViewBag.vessel = filterByVessel;
             return View();
         }
 
@@ -155,7 +172,6 @@ namespace chevron.Controllers
             JArray b = new JArray();
 
             JArray unit = new JArray();
-            JArray vessel = new JArray();
             JArray date = new JArray();
 
             con.select("unit_table", "name", "cat=1");
@@ -163,22 +179,16 @@ namespace chevron.Controllers
             {
                 unit.Add(con.result["name"]);
             }
-            con.Close();
+            //con.Close();
 
-            con.select("report_table", "distinct(vessel_name)");
-            while (con.result.Read())
-            {
-                vessel.Add(con.result["vessel_name"]);
-            }
-            con.Close();
+            this.getVessel();
 
             con.select("report_table", "distinct(date)");
             while (con.result.Read())
             {
-                //date.Add(Convert.ToDateTime(con.result["date"]).ToShortDateString());
-                date.Add(con.result["date"]);
+                 date.Add(con.result["date"]);
             }
-            con.Close();
+            //con.Close();
 
             foreach (var vsl in vessel)
             {
@@ -221,93 +231,18 @@ namespace chevron.Controllers
             a.unit = unit;
 
             Response.ContentType = "text/json";
-            Response.Write(a);
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(a);
+
+            Response.Write(json);
         }
 
-        public void test()
+        private void getVessel()
         {
-            DateTime dateNow = DateTime.Now;
-            DateTime date30 = DateTime.Now.AddMonths(-1);
-
-            TimeSpan diff = dateNow - date30;
-
-            int days = diff.Days;
-
-            dynamic a = new JObject();
-            JArray b = new JArray();
-
-            JArray unit = new JArray();
-            JArray vessel = new JArray();
-            JArray date = new JArray();
-
-            con.select("unit_table", "name", "cat=1");
-            while (con.result.Read())
-            {
-                unit.Add(con.result["name"]);
-            }
-            con.Close();
-
             con.select("report_table", "distinct(vessel_name)");
             while (con.result.Read())
             {
                 vessel.Add(con.result["vessel_name"]);
             }
-            con.Close();
-
-            con.select("report_table", "distinct(date)");
-            while (con.result.Read())
-            {
-                date.Add(con.result["date"]);
-            }
-            con.Close();
-
-
-            foreach (var vsl in vessel)
-            {
-                dynamic c = new JObject(
-                    new JProperty("vessel", vsl)
-                    );
-
-                for (int i = 0; i < days; i++)
-                {
-                    JArray data = new JArray();
-                    DateTime tgl = DateTime.Now.AddDays(-i);
-
-                    var whrrr = String.Format("vessel_name = '{0}' and date ='{1}'", vsl, tgl.ToString("MM-dd-yyyy"));
-                    con.select("report_table", "date", whrrr);
-                    if (con.result.HasRows)
-                    {
-
-                        foreach (var unt in unit)
-                        {
-                            var whr = String.Format("vessel_name='{0}' and date='{2}' and unit='{1}'", vsl, unt, tgl.ToString("MM-dd-yyyy"));
-                            con.select("report_table", "date, fuel_liter", whr);
-
-                            con.result.Read();
-                            if (con.result.HasRows)
-                            {
-                                c.tgl = Convert.ToDateTime(con.result["date"]).ToShortDateString();
-                                data.Add(con.result["fuel_liter"]);
-                            }
-                            else
-                            {
-                                data.Add(0);
-                            }
-                        }
-                        c.data = data;
-                        b.Add(c);
-                    }
-                }
-
-            }
-            con.Close();
-
-
-            a.data = b;
-            a.unit = unit;
-
-            Response.ContentType = "text/json";
-            Response.Write(a);
         }
     }
 }
