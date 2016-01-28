@@ -58,7 +58,7 @@ namespace chevron.Controllers
             JArray unit = new JArray();
             JArray date = new JArray();
 
-            con.select("unit_table", "name", "cat=1");
+            con.select("unit_table", "name");
             while (con.result.Read())
             {
                 unit.Add(con.result["name"]);
