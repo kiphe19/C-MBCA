@@ -12,7 +12,7 @@ namespace chevron
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/dataTables.editor.min.js",
                     "~/Scripts/moment.min.js",
-                    "~/Scripts/bootstrap-datetimepicker.min.js",
+                    "~/Scripts/bootstrap-datetimepicker.min.js"
                     //"~/DataTables/pdfmake-0.1.18/build/pdfmake.min.js",
                     //"~/DataTables/JSZip-2.5.0/jszip.min.js",
                     //"~/DataTables/pdfmake-0.1.18/build/vfs_fonts.js"
