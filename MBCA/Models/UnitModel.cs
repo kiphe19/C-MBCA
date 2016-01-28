@@ -11,8 +11,8 @@ namespace chevron.Models
         public Int32 id { get; set; }
         [EditorHttpName("unit_name")]
         public string name { get; set; }
-        [EditorHttpName("unit_cat")]
-        public string cat { get; set; }
+        //[EditorHttpName("unit_cat")]
+        //public string cat { get; set; }
         [EditorHttpName("unit_distance")]
         public Int64 distance { get; set; }
         [EditorHttpName("unit_ket")]

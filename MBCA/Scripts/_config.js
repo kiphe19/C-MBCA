@@ -116,7 +116,7 @@ $(document).ready(function () {
                 }
             },
             { data: "unit_name" },
-            { data: "unit_cat" },
+            //{ data: "unit_cat" },
             { data: "unit_distance" },
             { data: "unit_ket" }
         ],
@@ -202,6 +202,7 @@ $(document).ready(function () {
 
     fuelTable = $("#fuelTable").DataTable({
         dom: "Bfrtip",
+        //"order": [[ 2, "desc" ]],
         ajax: {
             url: "api/fuel",
             type: "post"
@@ -215,15 +216,21 @@ $(document).ready(function () {
             { data: "tgl" },
             {
                 data: null, render: function (data, type, row) {
-                    return "$" + Number(data.cost_usd).toLocaleString();
+                    return Number(data.cost_usd).toLocaleString();
                 }
             },
             {
                 data: null, render: function (data, type, row) {
-                    return "Rp" + Number(data.cost_rp).toLocaleString();
+                    if (data.currency_type === 1) {
+                        return "USD";
+                    }
+                    else return "IDR";
+                    
+                    //return "Rp" + Number(data.currency_type).toLocaleString();
                 }
             }
         ],
+
         select: true,
         buttons: [
             {
@@ -233,20 +240,20 @@ $(document).ready(function () {
                     $("#modalFuel input[name='action']").val("create");
                 }
             },
-            {
-                text: "Edit",
-                action: function () {
-                    var a = fuelTable.rows('.selected').indexes();
-                    var b = fuelTable.row(a).data();
-                    if (a.length !== 0) {
-                        $("#modalFuel").modal({ backdrop: false })
-                        $("#modalFuel input[name='tgl']").val(b.tgl);
-                        $("#modalFuel input[name='cost']").val(b.cost_usd);
-                        $("#modalFuel input[name='action']").val("update");
-                        $("#modalFuel input[name='id']").val(b.id);
-                    }
-                }
-            },
+            //{
+            //    text: "Edit",
+            //    action: function () {
+            //        var a = fuelTable.rows('.selected').indexes();
+            //        var b = fuelTable.row(a).data();
+            //        if (a.length !== 0) {
+            //            $("#modalFuel").modal({ backdrop: false })
+            //            $("#modalFuel input[name='tgl']").val(b.tgl);
+            //            $("#modalFuel input[name='cost']").val(b.cost_usd);
+            //            $("#modalFuel input[name='action']").val("update");
+            //            $("#modalFuel input[name='id']").val(b.id);
+            //        }
+            //    }
+            //},
             { extend: "remove", editor: editor }
         ]
     }).on('init', function () {
@@ -271,18 +278,27 @@ $(document).ready(function () {
                     return i++;
                 }
             },
-            { data: "tgl" },
+            { data: "tgl_start" },
+            { data: "tgl_end" },
             { data: "vessel" },
+            { data: "cost_usd" },
+            { data: "mob_cost" },
             {
                 data: null, render: function (data) {
-                    return "$" + Number(data.cost_usd).toLocaleString();
-                }
-            },
-            {
-                data: null, render: function (data) {
-                    return "Rp" + Number(data.cost_rp).toLocaleString();
+                    if (data === 1)
+                    {
+                        return "USD"
+                    }
+                    else return "IDR"
+                    
                 }
             }
+            //,
+            //{
+            //    data: null, render: function (data) {
+            //        return "Rp" + Number(data.cost_rp).toLocaleString();
+            //    }
+            //}
         ],
         buttons: [
             {
@@ -527,10 +543,22 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    $("#modalFuel form input[name='tgl']").datetimepicker({
+    //$("#modalFuel form input[name='tgl']").datetimepicker({
+    //    format: "MM/DD/YYYY"
+    //})
+    $("#modalFuel form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
     })
-    $("#modalCharter form input[name='tgl']").datetimepicker({
+    $("#modalFuel form input[name='tgl_to']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    //$("#modalCharter form input[name='tgl']").datetimepicker({
+    //    format: "MM/DD/YYYY"
+    //})
+    $("#modalCharter form input[name='tgl_start']").datetimepicker({
+        format: "MM/DD/YYYY"
+    })
+    $("#modalCharter form input[name='tgl_end']").datetimepicker({
         format: "MM/DD/YYYY"
     })
     $("#modalDemob form input[name='tgl']").datetimepicker({
@@ -542,6 +570,7 @@ $(document).ready(function () {
             if (res == "success") {
                 $("#modalFuel").modal('hide');
                 fuelTable.ajax.reload();
+                $("#form_fuel")[0].reset();
             } else {
                 alert(res);
             }

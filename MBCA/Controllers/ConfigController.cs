@@ -116,6 +116,8 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "fuel_table")
                 .Model<FuelModel>()
+                .Where("tgl", DateTime.Today.ToString("yyyy-MM-dd"), "<=")
+                .Where("tgl", DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd"), ">=")
                 .Field(new Field("tgl")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
@@ -135,7 +137,11 @@ namespace chevron.Controllers
             {
                 var response = new Editor(db, "hire_table")
                 .Model<HireModel>()
-                .Field(new Field("tgl")
+                .Field(new Field("tgl_start")
+                    .Validator(Validation.DateFormat("MM/dd/yyyy"))
+                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                )
+                .Field(new Field("tgl_end")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                 )
@@ -259,14 +265,18 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
-                        "values ('{0}', '{1}', {2}, '{3}')",
-                        input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
+                    //query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
+                    //    "values ('{0}', '{1}', {2}, '{3}')",
+                    //    input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
+                    //    );
+                    query = String.Format("insert into unit_table ([name], [distance], [ket]) \n" +
+                        "values ('{0}', {1}, '{2}')",
+                        input["unit_name"], input["distance"], input["unit_desc"]
                         );
                     break;
                 case "update":
-                    query = String.Format("update unit_table set name='{0}', cat='{1}', distance={2}, ket='{3}' where Id={4}",
-                            input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"], input["id"]
+                    query = String.Format("update unit_table set name='{0}', distance={1}, ket='{2}' where Id={3}",
+                            input["unit_name"], input["distance"], input["unit_desc"], input["id"]
                         );
                     break;
                 default:
@@ -289,6 +299,12 @@ namespace chevron.Controllers
         [HttpPost]
         public String _FuelCustom(FormCollection input)
         {
+            DateTime tanggal1 = Convert.ToDateTime(input["tgl_from"]);
+            DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
+            TimeSpan ts = tanggal2.Subtract(tanggal1);
+            var jml = (int)ts.TotalDays;
+            
+            /*
             List<CurrencyModel> curr = new List<CurrencyModel>();
 
             con.select("currency_cat", "*");
@@ -322,25 +338,52 @@ namespace chevron.Controllers
                     hasilRP = usd[0] * c;
                     break;
             }
+            */
 
             String query = "";
 
-            switch (input["ation"])
-            {
-                case "create":
-                    query = string.Format("insert into fuel_table ([tgl],[cost_usd], [cost_rp]) values('{0}', CAST('{1}' AS numeric(18,3)), CAST('{2}' AS numeric(18,3)) )", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
-                    break;
-                case "update":
-                    query = string.Format("update fuel_table set tgl='{0}', cost_usd={1}, cost_rp={2} where id={3}", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
-                    break;
-                default:
-                    break;
-            }
+            //switch (input["ation"])
+            //{
+            //    case "create":
+            //        for (int i = 0; i < jml; i++)
+            //        {
+            //            query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+            //        }
+            //        //query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
+            //        break;
+            //    case "update":
+            //        //query = string.Format("update fuel_table set tgl='{0}', cost_usd={1}, cost_rp={2} where id={3}", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
+            //        //break;
+            //    default:
+            //        break;
+            //}
 
             try
             {
-                con.queryExec(query);
+                for (int i = 0; i <= jml; i++)
+                {
+                    var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    //con.select("temp_daily", "*", tg);
+
+                    con.select("fuel_table", "*", tg);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    }
+                    else
+                    {
+                        query = string.Format("insert into fuel_table (tgl,cost_usd, currency_type) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+                    }
+                    
+                    //Response.Write(query);
+                    con.queryExec(query);
+                    //return query;
+                }
+
+                //return jml.ToString();
                 return "success";
+
             }
             catch (Exception ex)
             {
@@ -352,58 +395,77 @@ namespace chevron.Controllers
         [Route("cs/charter")]
         public String _Charter(FormCollection input)
         {
-            List<CurrencyModel> curr = new List<CurrencyModel>();
+            DateTime tg1 = Convert.ToDateTime(input["tgl_start"]);
+            DateTime tg2 = Convert.ToDateTime(input["tgl_end"]);
+            TimeSpan lama = tg2.Subtract(tg1);
+            var jml = (int)lama.TotalDays + 1;
 
-            con.select("currency_cat", "*");
+            double charter_rate = double.Parse(input["charter_cost"]);
+            double mob_rate = double.Parse(input["mob_cost"]) / jml;
 
-            while (con.result.Read())
-            {
-                curr.Add(new CurrencyModel
-                {
-                    id = int.Parse(con.result["id"].ToString()),
-                    value = int.Parse(con.result["value"].ToString())
-                });
-            }
-            con.Close();
+            //List<CurrencyModel> curr = new List<CurrencyModel>();
+
+            //con.select("currency_cat", "*");
+
+            //while (con.result.Read())
+            //{
+            //    curr.Add(new CurrencyModel
+            //    {
+            //        id = int.Parse(con.result["id"].ToString()),
+            //        value = int.Parse(con.result["value"].ToString())
+            //    });
+            //}
+            //con.Close();
 
 
-            var a = int.Parse(input["currency_cat"]);
-            var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
-            var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
+            //var a = int.Parse(input["currency_cat"]);
+            //var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
+            //var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
 
-            Decimal hasilUSD = 0,
-                hasilRP = 0,
-                b = Decimal.Parse(input["cost"]);
+            //Decimal hasilUSD = 0,
+            //    hasilRP = 0,
+            //    b = Decimal.Parse(input["cost"]);
 
-            switch (a)
-            {
-                case 1:
-                    hasilUSD = usd[0] * b;
-                    hasilRP = rp[0] * b;
-                    break;
-                case 2:
-                    hasilUSD = b / rp[0];
-                    hasilRP = b * usd[0];
-                    break;
-                default:
-                    break;
-            }
+            //switch (a)
+            //{
+            //    case 1:
+            //        hasilUSD = usd[0] * b;
+            //        hasilRP = rp[0] * b;
+            //        break;
+            //    case 2:
+            //        hasilUSD = b / rp[0];
+            //        hasilRP = b * usd[0];
+            //        break;
+            //    default:
+            //        break;
+            //}
 
             String query = "";
             switch (input["action"])
             {
                 case "create":
-                    query = String.Format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
+                    //query = string.format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture));
+                    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
+                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7})", input["tgl_start"], input["tgl_end"], input["vessel"], input["charter_cost"], input["mob_cost"], mob_rate, input["currency_cat"], jml);
                     break;
                 case "update":
-                    query = String.Format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}",input["tgl"], input["vessel"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
+                    //query = string.format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture), input["id"]);
                     break;
                 default:
                     break;
             }
-            
+
             try
             {
+                //if (input["action"] == "create")
+                //{
+                    
+                //    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[charter_rate],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
+                //                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8})",input["tgl_start"],input["tgl_end"],input["vessel"],input["charter_cost"], charter_rate, input["mob_cost"], mob_rate, input["currency_cat"],jml);
+                //}
+
+                //return query;
+                //return ;
                 con.queryExec(query);
                 return "success";
             }

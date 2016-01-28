@@ -21,6 +21,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,7 +60,7 @@
     </Reference>
     <Reference Include="DataTables, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Desktop\ai\DataTables.dll</HintPath>
+      <HintPath>..\..\Editor-NET-1.5.4_baru_commerce\Editor-NET-1.5.4\DataTables.dll</HintPath>
     </Reference>
     <Reference Include="HtmlSanitizationLibrary">
       <HintPath>..\..\..\DLL\HtmlSanitizationLibrary.dll</HintPath>
@@ -168,14 +169,16 @@
     <Compile Include="Models\ActivityModel.cs" />
     <Compile Include="Models\CurrencyModel.cs" />
     <Compile Include="Models\DailyActivityModel.cs" />
+    <Compile Include="Models\DailyUnitActivityModel.cs" />
     <Compile Include="Models\DemobModel.cs" />
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\FuelModel.cs" />
     <Compile Include="Models\HireModel.cs" />
     <Compile Include="Models\MonthlyActivityModel.cs" />
-    <Compile Include="Models\QpModel.cs" />
+    <Compile Include="Models\ReportDailyModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportModelCS.cs" />
+    <Compile Include="Models\TempDailyModel.cs" />
     <Compile Include="Models\UnitModel.cs" />
     <Compile Include="Models\UsersModel.cs" />
     <Compile Include="Models\VesselModel.cs" />

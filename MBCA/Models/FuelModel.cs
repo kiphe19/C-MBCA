@@ -10,6 +10,6 @@ namespace chevron.Models
     {
         public String tgl { get; set; }
         public Decimal cost_usd { get; set; }
-        public Decimal cost_rp { get; set; }
+        public Decimal currency_type { get; set; }
     }
 }
