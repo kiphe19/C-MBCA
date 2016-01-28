@@ -22,12 +22,6 @@ namespace chevron.Controllers
         {
             this.getVessel();
             List<SelectListItem> filterByVessel = new List<SelectListItem>();
-            filterByVessel.Add(new SelectListItem
-            {
-                Selected = true,
-                Text = "All",
-                Value = ""
-            });
             foreach (var item in vessel)
             {
                 filterByVessel.Add(new SelectListItem{

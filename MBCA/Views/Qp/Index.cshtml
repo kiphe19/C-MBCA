@@ -7,7 +7,7 @@
     <div class="panel-body">
         <div class="col-md-12">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                <div class="panel panel-default">
+                <div class="panel panel" style="border-color: #ccc;">
                     <div class="panel-heading" role="tab" id="headingOne">
                         <h4 class="panel-title">
                             <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -20,27 +20,30 @@
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                         <div class="panel-body">
-                            <form class="form-horizontal">
+                            <form class="form-horizontal" id="formGenerate">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Vessel</label>
-                                        <div class="col-sm-9">
+                                        <label class="control-label col-sm-2">Vessel</label>
+                                        <div class="col-sm-10">
                                             @Html.DropDownList("vessel", null, new { @class = "form-control" })
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Periode</label>
-                                        <div class="col-sm-9">
-                                            @Html.DropDownList("vessel", null, new { @class = "form-control" })
+                                        <label class="control-label col-sm-2">Periode</label>
+                                        <div class="col-sm-5">
+                                            <input type="text" placeholder="Date From" class="form-control" name="dateFrom" />
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <input type="text" placeholder="Date To" class="form-control" name="dateTo" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Type</label>
-                                        <div class="col-sm-9">
+                                        <label class="control-label col-sm-2">Type</label>
+                                        <div class="col-sm-10">
                                             <select class="form-control" name="ReportType" id="ReportType">
                                                 <option value="fl" selected="selected">Fuel Litre</option>
                                                 <option value="fc">Fuel Cost</option>
@@ -50,7 +53,7 @@
                                         </div>
                                     </div>
                                     <footer class="text-right">
-                                        <button class="btn btn-success"><i class="glyphicon glyphicon-refresh"></i> Generate</button>
+                                        <button class="btn btn-success" type="submit"><i class="glyphicon glyphicon-refresh"></i> Generate</button>
                                     </footer>
                                 </div>
                             </form>
@@ -60,7 +63,7 @@
             </div>
         </div>
         <div class="col-md-12">
-            <table class="table table-hover">
+            <table class="table table-hover" style="display:none;">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -71,59 +74,4 @@
         </div>
     </div>
 </div>
-<script>
-    var aseliTable = $("table").html();
-    var tablee = tablee = $("table").DataTable();
-    function loadTableData(data) {
-        var buka = '<tr>';
-        var tutup = '</tr>';
-        $("table").html(null);
-        tablee.destroy();
-
-        $.get("@Url.Action("json", "qp")", { type: data })
-        .done(function (res) {
-            $("table").html(aseliTable);
-            var a = res;
-
-            var countUnit = 0;
-
-            for (var index in a.unit) {
-                countUnit++;
-                $("table thead tr").append('<th>' + a.unit[index] + '</th>');
-            }
-
-            for (var index in a.data) {
-                var isi = '<td>' + a.data[index].tgl + '</td>' +
-                '<td>' + a.data[index].vessel + '</td>';
-
-                for (var i = 0; i < countUnit; i++) {
-                    isi += '<td>' + a.data[index].data[i] + '</td>';
-                };
-
-                $("table").append(buka + isi + tutup);
-            }
-        })
-        .always(function () {
-            tablee = $("table").DataTable({
-                dom: "Brtip",
-                buttons: [
-                {
-                    extend: "excelHtml5",
-                    text: "Excel",
-                    filename: "Reporttt",
-                }
-                ]
-            })
-        })
-    }
-    $(document).ready(function () {
-        loadTableData($("#ReportType").val());
-        $("#vessel").change(function () {
-            tablee.search($(this).val()).draw();
-        })
-        $("#ReportType").change(function () {
-            loadTableData($(this).val());
-        })
-    });
-
-</script>
+@Scripts.Render("~/Script/report")
