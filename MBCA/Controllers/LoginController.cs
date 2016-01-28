@@ -45,6 +45,10 @@ namespace chevron.Controllers
 
                 Response.Write(ex.Message);
             }
+            finally
+            {
+                con.Close();
+            }
         }
 
         public void Out()

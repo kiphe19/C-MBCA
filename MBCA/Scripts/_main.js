@@ -194,6 +194,8 @@ $(document).ready(function () {
                 if (res) {
                     monthlyTable.ajax.reload();
                     dailyTable.ajax.reload();
+                } else {
+                    alert(res);
                 }
             })
         }
@@ -256,7 +258,6 @@ $(document).ready(function () {
     $("#btnCancelDaily").click(function () {
         dailyCancel.apply();
     })
-
     $("#accordion").on('hide.bs.collapse', function () {
         $("#accordion h4 i").removeClass("glyphicon-chevron-down");
         $("#accordion h4 i").addClass("glyphicon-chevron-up");

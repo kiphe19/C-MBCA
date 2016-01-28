@@ -61,7 +61,7 @@ namespace chevron.Controllers
                     
                 });
             }
-
+            con.Close();
 
             ViewBag.reportd = reportDaily;
             return View();
