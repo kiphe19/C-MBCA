@@ -221,6 +221,10 @@ namespace chevron.Controllers
 
                 return ex.Message;
             }
+            finally
+            {
+                con.Close();
+            }
         }
 
         [Route("save/daily")]
@@ -338,10 +342,6 @@ namespace chevron.Controllers
                         );
                     //Response.Write(q_rpt1);
                     con.queryExec(q_rpt1);
-                    
-
-
-
 
                 }
             }

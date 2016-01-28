@@ -216,7 +216,7 @@ namespace chevron.Controllers
                     Value = con.result["id"].ToString()
                 });
             }
-
+            con.Close();
             return currency;
         }
 
@@ -233,7 +233,7 @@ namespace chevron.Controllers
                     Value = con.result["name"].ToString()
                 });
             }
-
+            con.Close();
             var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
             return VesselSorted;
         }
@@ -251,7 +251,7 @@ namespace chevron.Controllers
                     Value = con.result["distance"].ToString()
                 });
             }
-
+            con.Close();
             var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
             return VesselSorted;
         }
@@ -375,6 +375,7 @@ namespace chevron.Controllers
                     {
                         query = string.Format("insert into fuel_table (tgl,cost_usd, currency_type) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
                     }
+                    con.Close();
                     
                     //Response.Write(query);
                     con.queryExec(query);
