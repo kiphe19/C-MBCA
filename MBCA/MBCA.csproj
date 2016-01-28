@@ -323,6 +323,7 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\_config.js" />
     <Content Include="Scripts\_main.js" />
+    <Content Include="Scripts\_report.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

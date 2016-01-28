@@ -31,6 +31,7 @@ namespace chevron
                 ));
 
             bundles.Add(new ScriptBundle("~/Script/cfgxYSa").Include("~/Scripts/_config.js"));
+            bundles.Add(new ScriptBundle("~/Script/report").Include("~/Scripts/_report.js"));
 
 
             BundleTable.EnableOptimizations = true;
