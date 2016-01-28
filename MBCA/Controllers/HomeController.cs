@@ -308,7 +308,7 @@ namespace chevron.Controllers
             }
 
             //Response.Write(total_jarak + " total jarak "+tot_hit);
-            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0, fuel_price=0,charter_price=0 ;
+            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0, fuel_price=0,charter_price=0, t_stb_mob=0, t_all_mob = 0,mob_price=0;
             if (fuel > 0)
             {
                 foreach (DailyUnitActivityModel unit in usernit)
@@ -328,10 +328,13 @@ namespace chevron.Controllers
                     fuel_price = harga * fuel_l;
                     charter_price = t_all * charter_rate / 24;
 
+                    t_stb_mob = stb * (t_load + t_steam + unit.durasi);
+                    t_all_mob = t_stb_mob + t_load + t_steam + unit.durasi;
+                    mob_price = t_all_mob *(mob_demob_rate/24);
+                    
 
-
-                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13}); ",
-                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga,charter_price,curr_charter
+                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}); ",
+                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga,charter_price,curr_charter,mob_price
                         );
                     //Response.Write(q_rpt1);
                     con.queryExec(q_rpt1);
