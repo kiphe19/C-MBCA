@@ -26,14 +26,15 @@
             var grid = new WebGrid(source: ViewBag.reportd);
         }
         @grid.GetHtml(
-        tableStyle: "table table-bordered table-hover",
-        htmlAttributes: new { id = "reportTable"},
-        columns: grid.Columns(
-            grid.Column(null, "Date", format: (item) => item.tanggal),
-            grid.Column(null, "Vessel", format: (item) => item.vessel),
-            grid.Column(null, "User", format: (item) => item.user_unit),
-            grid.Column(null, "Fuel (L)", format: (item) => item.fuel_litre),
-            grid.Column(null,"Fuel Cost",format:(item)=>item.fuel_price),
+     tableStyle: "table table-bordered table-hover",
+     htmlAttributes: new { id = "reportTable" },
+     columns: grid.Columns(
+         grid.Column(null, "Date", format: (item) => item.tanggal),
+         grid.Column(null, "Vessel", format: (item) => item.vessel),
+         grid.Column(null, "User", format: (item) => item.user_unit),
+         grid.Column(null, "Fuel (L)", format: (item) => item.fuel_litre + " L"),
+            grid.Column(null, "Fuel Cost", format: (item) => (item.fuel_curr == 1) ? item.fuel_price.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) : item.fuel_price.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("id-ID"))),
+
             grid.Column(null, "Charter Cost", format: (item) => item.charter_price),
             grid.Column(null, "Mob/Demob", format: (item) => item.mob_price)
 
