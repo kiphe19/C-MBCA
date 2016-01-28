@@ -9,7 +9,7 @@ function loadTableData(data) {
     $("table").html(null);
     tablee.destroy();
 
-    $.get(path + '/json', { type: data })
+    $.post(path + '/json', data)
         .done(function (res) {
             $("table").html(aseliTable);
             var a = res;
@@ -33,6 +33,8 @@ function loadTableData(data) {
             }
         })
         .always(function () {
+            $("table").show();
+            $("#collapseOne").collapse('hide')
             tablee = $("table").DataTable({
                 dom: "Brtip",
                 buttons: [
@@ -47,13 +49,12 @@ function loadTableData(data) {
 }
 
 $(document).ready(function () {
-    //loadTableData($("#ReportType").val());
-    $("#vessel").change(function () {
-        tablee.search($(this).val()).draw();
+    $("#formGenerate").submit(function (e) {
+        var data = $(this).serialize();
+        loadTableData(data);
+        e.preventDefault();
     })
-    $("#ReportType").change(function () {
-        loadTableData($(this).val());
-    })
+
     $("#formGenerate input[type='text']").datetimepicker({
         format: "MM/DD/YYYY"
     });

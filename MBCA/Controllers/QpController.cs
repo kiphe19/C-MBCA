@@ -36,9 +36,10 @@ namespace chevron.Controllers
         public void json(FormCollection input)
         {
             String column = "",
-                   type = Request["type"];
+                   type = input["type"],
+                   vsl = input["vessel"];
 
-            switch (type)
+            switch (vsl)
             {
                 case "fl":
                     column = "fuel_litre";
@@ -64,7 +65,7 @@ namespace chevron.Controllers
             }
             con.Close();
 
-            this.getVessel();
+            //this.getVessel();
 
             con.select("report_daily", "distinct(tgl)");
             while (con.result.Read())
@@ -73,8 +74,8 @@ namespace chevron.Controllers
             }
             con.Close();
 
-            foreach (var vsl in vessel)
-            {
+            //foreach (var vsl in vessel)
+            //{
 
                 foreach (var tgl in date)
                 {
@@ -97,7 +98,7 @@ namespace chevron.Controllers
                             {
                                 c.tgl = Convert.ToDateTime(tgl.ToString()).ToShortDateString();
                                 
-                                switch (type)
+                                switch (vsl)
                                 {
                                     case "fl":
                                         data.Add(con.result["fuel_litre"]);
@@ -127,7 +128,7 @@ namespace chevron.Controllers
                     }
 
                 }
-            }
+            //}
             con.Close();
 
             a.data = b;
