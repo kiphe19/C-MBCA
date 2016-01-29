@@ -11,9 +11,8 @@ namespace chevron
         Properties.Settings sett = Properties.Settings.Default;
         
         private SqlCommand cmd;
-        private static SqlConnection con;
+        private SqlConnection con;
         public SqlDataReader result;
-
 
         public void get()
         {
@@ -23,6 +22,7 @@ namespace chevron
         public void select(String table, String column = "*", string where = "")
         {
             this.get();
+            con.Open();
             var query = "";
             if (where == "")
             {
@@ -32,26 +32,37 @@ namespace chevron
             {
                 query = string.Format("select {0} from {1} where {2}", column, table, where);
             }
-            con.Open();
             try
             {
                 cmd = new SqlCommand(query, con);
+                cmd.CommandTimeout = 60;
                 result = cmd.ExecuteReader();
             }
             catch (Exception ex)
             {
+                con.Dispose();
                 System.Web.HttpContext.Current.Response.Write(ex.Message);
+            }
+            finally
+            {
+                SqlConnection.ClearPool(con);
             }
         }
 
         public void queryExec(string query)
         {
-            this.get();
-            con.Open();
             try
             {
-                cmd = new SqlCommand(query, con);
-                cmd.ExecuteNonQuery();
+                using (con = new SqlConnection(sett.DbConnection))
+                {
+                    con.Open();
+                    using (cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = query;
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -60,8 +71,9 @@ namespace chevron
             }
             finally
             {
-                con.Close();
+                SqlConnection.ClearPool(con);
             }
+
         }
 
         public void query(string query)
@@ -77,6 +89,10 @@ namespace chevron
             {
                 
                 throw new Exception(ex.Message);
+            }
+            finally
+            {
+                SqlConnection.ClearPool(con);
             }
         }
 

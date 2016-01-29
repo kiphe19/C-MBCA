@@ -33,8 +33,10 @@ function loadTableData(data) {
             }
         })
         .always(function () {
-            $("table").show();
-            $("#collapseOne").collapse('hide')
+            $("table").fadeIn(250, function () {
+                $("button").button("reset");
+                $("#collapseOne").collapse('hide');
+            });
             tablee = $("table").DataTable({
                 dom: "Brtip",
                 buttons: [
@@ -51,6 +53,7 @@ function loadTableData(data) {
 $(document).ready(function () {
     $("#formGenerate").submit(function (e) {
         var data = $(this).serialize();
+        $("button").button("loading")
         loadTableData(data);
         e.preventDefault();
     })

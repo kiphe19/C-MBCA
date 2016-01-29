@@ -24,7 +24,8 @@ namespace chevron.Controllers
             List<SelectListItem> filterByVessel = new List<SelectListItem>();
             foreach (var item in vessel)
             {
-                filterByVessel.Add(new SelectListItem{
+                filterByVessel.Add(new SelectListItem
+                {
                     Text = item.ToString(),
                     Value = item.ToString()
                 });
@@ -50,6 +51,12 @@ namespace chevron.Controllers
                     break;
                 case "fc":
                     column = "fuel_price, fuel_curr";
+                    break;
+                case "cc":
+                    column = "charter_price, charter_curr";
+                    break;
+                case "md":
+                    column = "mob_price";
                     break;
                 default:
                     column = "fuel_litre";
@@ -110,6 +117,19 @@ namespace chevron.Controllers
                                         data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
                                     }
                                     break;
+                                case "cc":
+                                    if (con.result["charter_curr"].ToString() == "1")
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["charter_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("en-US")));
+                                    }
+                                    else
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["charter_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
+                                    }
+                                    break;
+                                case "md":
+                                    data.Add(Convert.ToDecimal(con.result["mob_price"]).ToString("c0"));
+                                    break;
                                 default:
                                     data.Add(con.result["fuel_litre"]);
                                     break;
@@ -120,6 +140,7 @@ namespace chevron.Controllers
                             data.Add(0);
                         }
                         c.data = data;
+                        con.Close();
                     }
                     b.Add(c);
                 }
