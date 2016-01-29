@@ -49,6 +49,12 @@ namespace chevron.Controllers
                 case "fc":
                     column = "fuel_price, fuel_curr";
                     break;
+                case "ch":
+                    column = "charter_price, charter_curr";
+                    break;
+                case "mb":
+                    column = "mob_price, charter_curr";
+                    break;
                 default:
                     column = "fuel_litre";
                     break;
@@ -106,6 +112,26 @@ namespace chevron.Controllers
                                     else
                                     {
                                         data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
+                                    }
+                                    break;
+                                case "ch":
+                                    if (con.result["charter_curr"].ToString() == "1")
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["charter_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("en-US")));
+                                    }
+                                    else
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["charter_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
+                                    }
+                                    break;
+                                case "mb":
+                                    if (con.result["charter_curr"].ToString() == "1")
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["mob_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("en-US")));
+                                    }
+                                    else
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["mob_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
                                     }
                                     break;
                                 default:
