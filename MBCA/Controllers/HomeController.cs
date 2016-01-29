@@ -239,7 +239,7 @@ namespace chevron.Controllers
             var down    = (input["downtime"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["downtime"]);
             var fuel    = (input["daily_fuel"] == "") ? Convert.ToInt16(0) : Convert.ToInt32(input["daily_fuel"]);
 
-            var tanggal = (input["daily_date"] == "") ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") :  Convert.ToDateTime(input["daily_date"]).ToString("yyyy-MM-dd");
+            var tanggal = (input["daily_date"] == "") ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") :  DateTime.ParseExact(input["daily_date"], "yyyy-MM-dd", null).ToString();
 
             //Response.Write(tanggal);
 
