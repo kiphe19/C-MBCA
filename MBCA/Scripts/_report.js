@@ -4,12 +4,13 @@ var tablee = tablee = $("table").DataTable();
 $("#DataTables_Table_0_wrapper").hide();
 
 function loadTableData(data) {
+    console.log(data);
     var buka = '<tr>';
     var tutup = '</tr>';
     $("table").html(null);
     tablee.destroy();
 
-    $.post(path + '/json', data)
+    $.post(path + '/Reporting', data)
         .done(function (res) {
             $("table").html(aseliTable);
             var a = res;
