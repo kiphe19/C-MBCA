@@ -57,11 +57,11 @@
                                                     <label class="col-sm-3">Downtime</label>
                                                     <div class="col-sm-9"><input type="number" min="0" max="24" name="downtime" class="form-control" placeholder="Duration" /></div>
                                                 </div>
-                                                <div class="dailyButton">
+                                                @*<div class="dailyButton">
                                                     <div class="floatright">
                                                         <button type="button" class="btn btn-success" id="btnSaveDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
                                                     </div>
-                                                </div>
+                                                </div>*@
                                             </form>
                                         </div>
                                         <div class="col-md-6">
@@ -89,12 +89,18 @@
                                                     </tr>
                                                 </thead>
                                             </table>
+                                            <div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
+                                                <button type="submit" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Update</button>
+                                                <button type="button" class="btn btn-default" id="btnCancelDaily"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
+                                            </div>
+                                            <div class="dailyButton">
+                                                <div class="floatright">
+                                                    <button type="button" class="btn btn-success" id="btnSaveDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div> 
-                                        <div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
-                                            <button type="submit" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Update</button>
-                                            <button type="button" class="btn btn-default" id="btnCancelDaily"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
-                                        </div>
+                                
                                         
                                 @*</form>*@
                             </div>
