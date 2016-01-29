@@ -67,5 +67,15 @@ namespace chevron.Controllers
             return View();
         }
 
+        private void getVessel()
+        {
+            //con.select("report_daily", "distinct(vessel)");
+            //while (con.result.Read())
+            //{
+            //    //vessel.Add(con.result["vessel"]);
+            //}
+            //con.Close();
+        }
+
     }
 }

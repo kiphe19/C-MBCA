@@ -31,7 +31,7 @@
                                             <form class="form-horizontal" id="activityForm">
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Date</label>
-                                                    <div class="col-sm-9"><input type="text" name="daily_date" class="form-control" id="daily_tgl" autocomplete="off" value="@DateTime.Today.ToString("dd/MM/yyyy")" placeholder="Date" /></div>
+                                                    <div class="col-sm-9"><input type="text" name="daily_date" class="form-control" id="daily_tgl" autocomplete="off" value="@DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy")" placeholder="Date" /></div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Vessel</label>
