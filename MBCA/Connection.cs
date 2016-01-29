@@ -11,7 +11,7 @@ namespace chevron
         Properties.Settings sett = Properties.Settings.Default;
         
         private SqlCommand cmd;
-        private static SqlConnection con;
+        private SqlConnection con;
         public SqlDataReader result;
 
 
