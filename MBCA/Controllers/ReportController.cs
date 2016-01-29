@@ -4,15 +4,32 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using chevron.Models;
+using Newtonsoft.Json.Linq;
 
 namespace chevron.Controllers
 {
     public class ReportController : Controller
     {
         Connection con = new Connection();
+        JArray vessel = new JArray();
 
         public ActionResult Index()
         {
+            this.getVessel();
+            List<SelectListItem> filterByVessel = new List<SelectListItem>();
+            foreach (var item in vessel)
+            {
+                filterByVessel.Add(new SelectListItem
+                {
+                    Text = item.ToString(),
+                    Value = item.ToString()
+
+                });
+            }
+            ViewBag.vessel = filterByVessel;
+
+
+
             //List<ReportModel> report = new List<ReportModel>();
 
             //con.select("report_table", "*");
@@ -40,42 +57,43 @@ namespace chevron.Controllers
             //}
 
 
-            List<ReportDailyModel> reportDaily = new List<ReportDailyModel>();
+            //List<ReportDailyModel> reportDaily = new List<ReportDailyModel>();
 
-            con.select("report_daily", "*");
-            while (con.result.Read())
-            {
-                reportDaily.Add(new ReportDailyModel
-                {
-                    tanggal = Convert.ToDateTime(con.result["tgl"]).ToString("dd/MM/yyyy"),
-                    vessel  = con.result["vessel"].ToString(),
-                    user_unit   = con.result["user_unit"].ToString(),
-                    fuel_litre  =  decimal.Round(Convert.ToDecimal(con.result["fuel_litre"]),2) ,
-                    fuel_price  = decimal.Round(Convert.ToDecimal(con.result["fuel_price"]),2),
-                    fuel_curr   = Convert.ToInt16(con.result["fuel_curr"]),
-                    charter_price = decimal.Round(Convert.ToDecimal(con.result["charter_price"]),2),
-                    mob_price   = decimal.Round(Convert.ToDecimal(con.result["mob_price"]),2),
-                    charter_curr = Convert.ToInt16(con.result["charter_curr"])
+            //con.select("report_daily", "*");
+            //while (con.result.Read())
+            //{
+            //    reportDaily.Add(new ReportDailyModel
+            //    {
+            //        tanggal = Convert.ToDateTime(con.result["tgl"]).ToString("dd/MM/yyyy"),
+            //        vessel  = con.result["vessel"].ToString(),
+            //        user_unit   = con.result["user_unit"].ToString(),
+            //        fuel_litre  =  decimal.Round(Convert.ToDecimal(con.result["fuel_litre"]),2) ,
+            //        fuel_price  = decimal.Round(Convert.ToDecimal(con.result["fuel_price"]),2),
+            //        fuel_curr   = Convert.ToInt16(con.result["fuel_curr"]),
+            //        charter_price = decimal.Round(Convert.ToDecimal(con.result["charter_price"]),2),
+            //        mob_price   = decimal.Round(Convert.ToDecimal(con.result["mob_price"]),2),
+            //        charter_curr = Convert.ToInt16(con.result["charter_curr"])
 
 
                     
-                });
-            }
-            con.Close();
+            //    });
+            //}
+            //con.Close();
 
-            ViewBag.reportd = reportDaily;
+            //ViewBag.reportd = reportDaily;
             return View();
         }
 
         private void getVessel()
         {
-            //con.select("report_daily", "distinct(vessel)");
-            //while (con.result.Read())
-            //{
-            //    //vessel.Add(con.result["vessel"]);
-            //}
-            //con.Close();
+            con.select("report_daily", "distinct(vessel)");
+            while (con.result.Read())
+            {
+                vessel.Add(con.result["vessel"]);
+            }
+            con.Close();
         }
+
 
     }
 }
