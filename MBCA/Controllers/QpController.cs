@@ -39,7 +39,11 @@ namespace chevron.Controllers
                    type = input["type"],
                    vsl = input["vessel"];
 
-            switch (vsl)
+            DateTime dateFrom = (input["dateFrom"] == "") ? DateTime.Now.AddDays(-1) : DateTime.ParseExact(input["dateFrom"], "MM/dd/yyyy", null);
+            DateTime dateTo = (input["dateTo"] == "") ? DateTime.Now : DateTime.ParseExact(input["dateTo"], "MM/dd/yyyy", null);
+            TimeSpan ambilTanggal = dateTo - dateFrom;
+
+            switch (type)
             {
                 case "fl":
                     column = "fuel_litre";
@@ -65,70 +69,62 @@ namespace chevron.Controllers
             }
             con.Close();
 
-            //this.getVessel();
-
-            con.select("report_daily", "distinct(tgl)");
-            while (con.result.Read())
+            for (int i = 0; i <= ambilTanggal.TotalDays; i++)
             {
-                 date.Add(con.result["tgl"]);
+                date.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
             }
-            con.Close();
 
-            //foreach (var vsl in vessel)
-            //{
+            foreach (var tgl in date)
+            {
+                dynamic c = new JObject(
+                        new JProperty("vessel", vsl)
+                    );
 
-                foreach (var tgl in date)
+                String whrrr = String.Format("vessel = '{0}' and tgl = '{1}'", vsl, tgl);
+                con.select("report_daily", "tgl", whrrr);
+
+                if (con.result.HasRows)
                 {
-                    dynamic c = new JObject(
-                            new JProperty("vessel", vsl)
-                        );
-
-                    String whrrr = String.Format("vessel = '{0}' and tgl = '{1}'", vsl, Convert.ToDateTime(tgl.ToString()).ToString("yyyy-MM-dd"));
-                    con.select("report_daily", "tgl", whrrr);
-
-                    if (con.result.HasRows)
+                    JArray data = new JArray();
+                    foreach (var unt in unit)
                     {
-                        JArray data = new JArray();
-                        foreach (var unt in unit)
+                        var whrrrr = String.Format("vessel = '{0}' and tgl = '{1}' and user_unit = '{2}'", vsl, tgl, unt);
+                        con.select("report_daily", column, whrrrr);
+                        con.result.Read();
+                        if (con.result.HasRows)
                         {
-                            var whrrrr = String.Format("vessel = '{0}' and tgl = '{1}' and user_unit = '{2}'", vsl, Convert.ToDateTime(tgl.ToString()).ToString("yyyy-MM-dd"), unt);
-                            con.select("report_daily", column, whrrrr);
-                            con.result.Read();
-                            if (con.result.HasRows)
-                            {
-                                c.tgl = Convert.ToDateTime(tgl.ToString()).ToShortDateString();
-                                
-                                switch (vsl)
-                                {
-                                    case "fl":
-                                        data.Add(con.result["fuel_litre"]);
-                                        break;
-                                    case "fc":
-                                        if (con.result["fuel_curr"].ToString() == "1")
-                                        {
-                                            data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("en-US")));
-                                        }
-                                        else
-                                        {
-                                            data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
-                                        }
-                                        break;
-                                    default:
-                                        data.Add(con.result["fuel_litre"]);
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                data.Add(0);
-                            }
-                            c.data = data;
-                        }
-                        b.Add(c);
-                    }
+                            c.tgl = Convert.ToDateTime(tgl.ToString()).ToShortDateString();
 
+                            switch (type)
+                            {
+                                case "fl":
+                                    data.Add(con.result["fuel_litre"]);
+                                    break;
+                                case "fc":
+                                    if (con.result["fuel_curr"].ToString() == "1")
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("en-US")));
+                                    }
+                                    else
+                                    {
+                                        data.Add(Convert.ToDecimal(con.result["fuel_price"]).ToString("c0", CultureInfo.CreateSpecificCulture("id-ID")));
+                                    }
+                                    break;
+                                default:
+                                    data.Add(con.result["fuel_litre"]);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            data.Add(0);
+                        }
+                        c.data = data;
+                    }
+                    b.Add(c);
                 }
-            //}
+
+            }
             con.Close();
 
             a.data = b;
@@ -136,7 +132,6 @@ namespace chevron.Controllers
 
             Response.ContentType = "text/json";
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(a);
-
             Response.Write(json);
         }
 
