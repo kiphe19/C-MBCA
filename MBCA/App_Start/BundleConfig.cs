@@ -8,7 +8,7 @@ namespace chevron
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/Scripts/main").Include(
-                    "~/DataTables/datatables.min.js",
+                    "~/Scripts/datatables.min.js",
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/dataTables.editor.min.js",
                     "~/Scripts/moment.min.js",
@@ -19,7 +19,7 @@ namespace chevron
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                    "~/DataTables/datatables.min.css",
+                    "~/content/datatables.min.css",
                     "~/content/editor.dataTables.min.css",
                     "~/Content/bootstrap-datetimepicker.min.css",
                     "~/content/metro-bootstrap.min.css",
