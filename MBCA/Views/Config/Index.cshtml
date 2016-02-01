@@ -199,10 +199,10 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Date Periode</label>
                         <div class="col-sm-5">
-                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" placeholder="From" />
+                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" placeholder="From" required />
                         </div>
                         <div class="col-sm-5">
-                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To"/>
+                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To" required/>
                         </div>
                     </div>
                     @*<div class="form-group">
@@ -220,7 +220,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Cost</label>
                         <div class="col-sm-7">
-                            <input type="text" class="form-control" name="cost" />
+                            <input type="number" class="form-control" name="cost" min="0" required/>
                             <input type="hidden" name="action" />
                             <input type="hidden" name="id" />
                         </div>
@@ -294,31 +294,31 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Charter Start</label>
                         <div class="col-sm-9">
-                            <input type="text" name="tgl_start" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" />
+                            <input type="text" name="tgl_start" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" required />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Charter End</label>
                         <div class="col-sm-9">
-                            <input type="text" name="tgl_end" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" />
+                            <input type="text" name="tgl_end" class="form-control" autocomplete="off" placeholder="MM/DD/YYYY" required/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Cost</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="charter_cost" />
+                            <input type="number" class="form-control" name="charter_cost" min="0" required />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Mob/Demob</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="mob_cost" />
+                            <input type="number" class="form-control" name="mob_cost" min="0" />
                         </div>                       
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Currency</label>
                         <div class="col-sm-9">
-                            @Html.DropDownList("currency_cat", null, new { @class = "form-control" })
+                            @Html.DropDownList("currency_cat", null, new { @class = "form-control", @id="curr_cat" })
                         </div>
 
                     </div>

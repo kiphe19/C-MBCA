@@ -4,6 +4,16 @@
     HireEditor,
     i = 1;
 
+function SetSelectedIndex(dropdownlist, sVal) {
+    var a = $(dropdownlist)[0];
+
+    for (i = 0; i < a.options.length; i++) {
+        if (a.options[i].value == sVal) {
+            a.selectedIndex = i;
+        }
+    }
+}
+
 $(document).ready(function () {
     editor = new $.fn.dataTable.Editor({
         ajax: "api/vessel",
@@ -315,10 +325,20 @@ $(document).ready(function () {
                 action: function () {
                     var a = CharterTable.rows('.selected').indexes();
                     var b = CharterTable.row(a).data();
+                    console.log(b);
+                    var aa = $("#curr_cat");
+                    //a.options[i].value
+                    console.log(aa[0].options.length);
                     if (a.length > 0) {
                         $("#modalCharter").modal({ backdrop: false });
-                        $("#modalCharter input[name='tgl']").val(b.tgl);
-                        $("#modalCharter input[name='cost']").val(b.cost_usd);
+                        $("#modalCharter input[name='tgl_start']").val(b.tgl_start);
+                        $("#modalCharter input[name='tgl_end']").val(b.tgl_end);
+                        $("#modalCharter input[name='charter_cost']").val(b.cost_usd);
+                        $("#modalCharter input[name='mob_cost']").val(b.mob_cost);
+                        SetSelectedIndex("#curr_cat", b.curency_cat);
+
+                        //(b.curency_cat === 1) ? $("#modalCharter select[name='currency_cat'] option:selected").text("USD") : $("#modalCharter select[name='currency_cat'] option:selected").text("IDR");
+                        //$("#modalCharter select[name='currency_cat'] option:selected").text(b.curency_cat);
                         $("#modalCharter input[name='action']").val("update");
                         $("#modalCharter input[name='id']").val(b.id);
                         $("#modalCharter button[type='submit']").text("Update")

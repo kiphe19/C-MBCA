@@ -8,6 +8,7 @@ using DataTables;
 using AttributeRouting.Web.Mvc;
 using AttributeRouting;
 using System.Globalization;
+using AttributeRouting.Helpers;
 
 namespace chevron.Controllers
 {
@@ -265,10 +266,6 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    //query = String.Format("insert into unit_table ([name], [cat], [distance], [ket]) \n"+
-                    //    "values ('{0}', '{1}', {2}, '{3}')",
-                    //    input["unit_name"], input["unit_cat"], input["distance"], input["unit_desc"]
-                    //    );
                     query = String.Format("insert into unit_table ([name], [distance], [ket]) \n" +
                         "values ('{0}', {1}, '{2}')",
                         input["unit_name"], input["distance"], input["unit_desc"]
@@ -303,60 +300,7 @@ namespace chevron.Controllers
             DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
             TimeSpan ts = tanggal2.Subtract(tanggal1);
             var jml = (int)ts.TotalDays;
-            
-            /*
-            List<CurrencyModel> curr = new List<CurrencyModel>();
-
-            con.select("currency_cat", "*");
-
-            while (con.result.Read())
-            {
-                curr.Add(new CurrencyModel
-                {
-                    id = int.Parse(con.result["id"].ToString()),
-                    value = int.Parse(con.result["value"].ToString())
-                });
-            }
-            con.Close();
-
-
-            var a = int.Parse(input["currency_cat"]);
-            var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
-            var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
-            Decimal hasilUSD = 0,
-                hasilRP = 0,
-                c = Decimal.Parse(input["cost"]);
-
-            switch (a)
-            {
-                case 1:
-                    hasilUSD = usd[0] * c;
-                    hasilRP = rp[0] * c;
-                    break;
-                case 2:
-                    hasilUSD = c / rp[0];
-                    hasilRP = usd[0] * c;
-                    break;
-            }
-            */
-
-            String query = "";
-
-            //switch (input["ation"])
-            //{
-            //    case "create":
-            //        for (int i = 0; i < jml; i++)
-            //        {
-            //            query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
-            //        }
-            //        //query = string.Format("insert into fuel_table ([tgl],[cost_usd], [currency_type]) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture));
-            //        break;
-            //    case "update":
-            //        //query = string.Format("update fuel_table set tgl='{0}', cost_usd={1}, cost_rp={2} where id={3}", input["tgl"], hasilUSD.ToString(CultureInfo.InvariantCulture), hasilRP.ToString(CultureInfo.InvariantCulture), input["id"]);
-            //        //break;
-            //    default:
-            //        break;
-            //}
+            string query = "";
 
             try
             {
@@ -406,77 +350,53 @@ namespace chevron.Controllers
         [Route("cs/charter")]
         public String _Charter(FormCollection input)
         {
+            //Double mob_rate,charter_rate;
             DateTime tg1 = Convert.ToDateTime(input["tgl_start"]);
             DateTime tg2 = Convert.ToDateTime(input["tgl_end"]);
             TimeSpan lama = tg2.Subtract(tg1);
-            var jml = (int)lama.TotalDays + 1;
+            decimal jml = (decimal)lama.TotalDays + 1;
 
-            double charter_rate = double.Parse(input["charter_cost"]);
-            double mob_rate = double.Parse(input["mob_cost"]) / jml;
+            var charter_rate = (input["charter_cost"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["charter_cost"]);
+            var mob_cost = (input["mob_cost"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["mob_cost"]);
+            var mob_rate = Convert.ToDecimal(mob_cost) / Convert.ToDecimal(jml);
 
-            //List<CurrencyModel> curr = new List<CurrencyModel>();
-
-            //con.select("currency_cat", "*");
-
-            //while (con.result.Read())
-            //{
-            //    curr.Add(new CurrencyModel
-            //    {
-            //        id = int.Parse(con.result["id"].ToString()),
-            //        value = int.Parse(con.result["value"].ToString())
-            //    });
-            //}
-            //con.Close();
-
-
-            //var a = int.Parse(input["currency_cat"]);
-            //var usd = (from curcat in curr where curcat.id == 1 select curcat.value).ToList();
-            //var rp = (from curcat in curr where curcat.id == 2 select curcat.value).ToList();
-
-            //Decimal hasilUSD = 0,
-            //    hasilRP = 0,
-            //    b = Decimal.Parse(input["cost"]);
-
-            //switch (a)
-            //{
-            //    case 1:
-            //        hasilUSD = usd[0] * b;
-            //        hasilRP = rp[0] * b;
-            //        break;
-            //    case 2:
-            //        hasilUSD = b / rp[0];
-            //        hasilRP = b * usd[0];
-            //        break;
-            //    default:
-            //        break;
-            //}
-
+            //Response.Write(mob_rate +" "+charter_rate);
+           
             String query = "";
             switch (input["action"])
             {
                 case "create":
                     //query = string.format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture));
-                    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
-                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7})", input["tgl_start"], input["tgl_end"], input["vessel"], input["charter_cost"], input["mob_cost"], mob_rate, input["currency_cat"], jml);
+                    query = string.Format("insert into hire_table (tgl_start,tgl_end,vessel,cost_usd,mob_cost,mob_rate,curency_cat,periode) " +
+                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7})",
+                                        Convert.ToDateTime(input["tgl_start"]).ToString("yyyy-MM-dd"),
+                                        Convert.ToDateTime(input["tgl_end"]).ToString("yyyy-MM-dd"),
+                                        input["vessel"],
+                                        charter_rate,
+                                        mob_cost,
+                                        mob_rate,
+                                        input["currency_cat"],
+                                        jml);
                     break;
                 case "update":
                     //query = string.format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture), input["id"]);
+                    query = string.Format("update hire_table set tgl_start = '{0}', tgl_end='{1}', vessel = '{2}', cost_usd = {3}, mob_cost={4}, mob_rate={5},curency_cat={6}, periode = {7} where id={8}",
+                                        input["tgl_start"], 
+                                        input["tgl_end"], 
+                                        input["vessel"], 
+                                        charter_rate, 
+                                        mob_cost, 
+                                        mob_rate, 
+                                        input["currency_cat"], 
+                                        jml, 
+                                        input["id"]);
                     break;
                 default:
                     break;
             }
-
             try
             {
-                //if (input["action"] == "create")
-                //{
-                    
-                //    query = string.Format("insert into hire_table ([tgl_start],[tgl_end],[vessel],[cost_usd],[charter_rate],[mob_cost],[mob_rate],[curency_cat],[periode]) " +
-                //                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8})",input["tgl_start"],input["tgl_end"],input["vessel"],input["charter_cost"], charter_rate, input["mob_cost"], mob_rate, input["currency_cat"],jml);
-                //}
-
-                //return query;
-                //return ;
+                //Response.Write(query);
                 con.queryExec(query);
                 return "success";
             }
