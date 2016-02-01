@@ -93,6 +93,28 @@
             }
         ]
     })
+
+    dailylogTable = $("#dailyLogTable").DataTable({
+        dom: 'B<"floatright">rtip',
+        ajax: {
+            url: path + "/api/daily_log",
+            type : "post"
+        },
+        columns: [
+            { data: "tgl" },
+            { data: "vessel" },
+            { data: "fuel_tot" },
+            { data: "user_unit" },
+            { data: "duration" },
+        ],
+        buttons: [
+            {
+                extend: "collection",
+                text: "Export to ..",
+                buttons: ['excel']
+            }
+        ]
+    })
 })(jQuery)
 
 $(document).ready(function () {
@@ -129,6 +151,7 @@ $(document).ready(function () {
                 //console.log($("#activityForm")[0]);
                 $("#activityForm")[0].reset();
                 dailyTable.ajax.reload();
+                dailylogTable.ajax.reload();
             })
         }
         var data = dailyTable.data();

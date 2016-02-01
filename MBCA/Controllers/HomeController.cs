@@ -119,6 +119,31 @@ namespace chevron.Controllers
             }
         }
 
+        [Route("daily_log")]
+        public ActionResult _LogDaily()
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            using (var db = new Database(setting.DbType, setting.DbConnection))
+            {
+                var response = new Editor(db, "daily_table")
+                    .Model<DailyTableModel>()
+                    .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+                    .Where("user_log", Session["userid"], "=")
+                    .Field(new Field("tgl")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Field(new Field("date_input")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Process(request)
+                    .Data();
+                return Json(response);
+            }
+
+        }
+
         [Route("monthly")]
         public ActionResult _ApiMonthly()
         {

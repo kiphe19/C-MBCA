@@ -1,4 +1,5 @@
 ﻿var path = window.location.pathname;
+//var path = "";
 var aseliTable = $("table").html();
 var tablee = tablee = $("table").DataTable();
 $("#DataTables_Table_0_wrapper").hide();
