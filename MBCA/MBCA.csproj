@@ -200,6 +200,7 @@
     <Content Include="Content\metro-bootstrap.min.css" />
     <Content Include="Content\_main.css" />
     <Content Include="Content\datatables.min.css" />
+    <Content Include="images\chevron.jpg" />
     <Content Include="Scripts\datatables.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
