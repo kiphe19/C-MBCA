@@ -87,6 +87,29 @@ namespace chevron.Controllers
             }
         }
 
+        [Route("mainunit")]
+        public ActionResult _ApiMainUnit()
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            using (var db = new Database(setting.DbType, setting.DbConnection))
+            {
+                var response = new Editor(db, "mainunit_table")
+                .Model<MainUnitModel>()
+                .Field(new Field("nama")
+                    .Validator(Validation.NotEmpty())
+                )
+                //.Field(new Field("distance")
+                //    .Validator(Validation.NotEmpty())
+                //    .Validator(Validation.Numeric())
+                //)
+                .Process(request)
+                .Data();
+
+                return Json(response);
+            }
+        }
+
+
         [Route("distance")]
         public ActionResult _ApiDistance()
         {

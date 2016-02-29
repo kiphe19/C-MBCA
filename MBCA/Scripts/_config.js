@@ -164,6 +164,31 @@ $(document).ready(function () {
         i = 1;
     });
 
+    mainunittable = $('#mainunitTable').DataTable({
+        dom: "Bfrtip",
+        ajax: {
+            url: "api/mainunit",
+            type: "post"
+        },
+        columns: [
+            {
+                data: null, render: function (data, type, row) {
+                    return i++;
+                }
+            },
+            {data:"nama"}
+        ],
+        select: true,
+        buttons: [
+            { extend: "create", editor: editor, text: "Create new Main User" },
+            { extend: "edit", editor: editor },
+            { extend: "remove", editor: editor }
+        ]
+    }).on('init', function () {
+        i = 1;
+    });
+
+
     editor = new $.fn.dataTable.Editor({
         ajax: "api/distance",
         table: "#distanceTable",
