@@ -45,6 +45,16 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="bargePanel">
+                <div class="col-sm-3 col-md-offset-9">
+                    <div class="input-group">
+                        <input type="text" id="tgl_cari" class="form-control" placeholder="Date">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="tbl_cari"><i class="glyphicon glyphicon-search"></i></button>
+                        </span>
+                    </div>
+                </div>
+                
+                
                 <table id="bargeTable" class="table display table-bordered" style="width:100%">
                     <thead>
                         <tr>
@@ -154,6 +164,15 @@
                         <label class="col-sm-2 control-label">Unit Name</label>
                         <div class="col-sm-10">
                             <input type="text" name="unit_name" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Date Periode</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" placeholder="From" required />
+                        </div>
+                        <div class="col-sm-5">
+                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To" required />
                         </div>
                     </div>
                     @*<div class="form-group">

@@ -483,7 +483,8 @@ $(document).ready(function () {
     })
 
     userTable = $("#userTable").DataTable({
-        dom: "Bfrtip",
+        //dom: "<'top'Bf>rt<'bottom'lp><'clear'>",
+        dom : "Brftip",
         ajax: {
             url: "api/users",
             type: "post"
@@ -588,27 +589,30 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    //$("#modalFuel form input[name='tgl']").datetimepicker({
-    //    format: "MM/DD/YYYY"
-    //})
+    $("#modalBarge form input[name='tgl_from']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+    $("#modalBarge form input[name='tgl_to']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
     $("#modalFuel form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
-    })
+    });
     $("#modalFuel form input[name='tgl_to']").datetimepicker({
         format: "MM/DD/YYYY"
-    })
-    //$("#modalCharter form input[name='tgl']").datetimepicker({
-    //    format: "MM/DD/YYYY"
-    //})
+    });
+    $("#tgl_cari").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
     $("#modalCharter form input[name='tgl_start']").datetimepicker({
         format: "MM/DD/YYYY"
-    })
+    });
     $("#modalCharter form input[name='tgl_end']").datetimepicker({
         format: "MM/DD/YYYY"
-    })
+    });
     $("#modalDemob form input[name='tgl']").datetimepicker({
         format: "MM/DD/YYYY"
-    })
+    });
     $("#modalFuel form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/fuel", data, function (res) {
