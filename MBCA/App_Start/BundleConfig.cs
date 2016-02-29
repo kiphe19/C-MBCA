@@ -8,6 +8,7 @@ namespace chevron
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/Scripts/main").Include(
+                    "~/Scripts/jquery-1.10.2.min.js",
                     "~/Scripts/datatables.min.js",
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/dataTables.editor.min.js",
@@ -25,7 +26,7 @@ namespace chevron
                     "~/content/metro-bootstrap.min.css",
                     "~/content/_main.css"
                 ));
-
+           
             bundles.Add(new ScriptBundle("~/Script/xdkJKAds").Include(
                     "~/Scripts/_main.js"
                 ));

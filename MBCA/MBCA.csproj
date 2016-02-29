@@ -201,6 +201,7 @@
     <Content Include="Content\_main.css" />
     <Content Include="Content\datatables.min.css" />
     <Content Include="images\chevron.jpg" />
+    <Content Include="images\chevron2.png" />
     <Content Include="Scripts\datatables.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -220,6 +221,7 @@
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\dataTables.editor.min.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\_config.js" />
     <Content Include="Scripts\_main.js" />
