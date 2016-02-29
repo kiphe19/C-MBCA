@@ -13,16 +13,18 @@ namespace chevron
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/dataTables.editor.min.js",
                     "~/Scripts/moment.min.js",
-                    "~/Scripts/bootstrap-datetimepicker.min.js"
-                    //"~/DataTables/pdfmake-0.1.18/build/pdfmake.min.js",
-                    //"~/DataTables/JSZip-2.5.0/jszip.min.js",
-                    //"~/DataTables/pdfmake-0.1.18/build/vfs_fonts.js"
+                    "~/Scripts/bootstrap-datetimepicker.min.js",
+                    "~/Scripts/bootstrap-timepicker.min.js"
+                //"~/DataTables/pdfmake-0.1.18/build/pdfmake.min.js",
+                //"~/DataTables/JSZip-2.5.0/jszip.min.js",
+                //"~/DataTables/pdfmake-0.1.18/build/vfs_fonts.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                     "~/content/datatables.min.css",
                     "~/content/editor.dataTables.min.css",
                     "~/Content/bootstrap-datetimepicker.min.css",
+                    "~/Content/bootstrap-timepicker.min.css",
                     "~/content/metro-bootstrap.min.css",
                     "~/content/_main.css"
                 ));

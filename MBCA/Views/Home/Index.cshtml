@@ -114,35 +114,32 @@
                                 <div class="panel-body">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <h3>Drill and Completion</h3>
+                                            @*<h3>Drill and Completion</h3>*@
                                             <form class="form-horizontal" id="activityForm">
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Date</label>
-                                                    <div class="col-sm-9"><input type="text" name="daily_date" class="form-control" id="daily_tgl" autocomplete="off" value="@DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy")" placeholder="Date" /></div>
+                                                    <div class="col-sm-9"><input type="text" name="drill_date" class="form-control" id="drill_date" autocomplete="off" value="@DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy")" placeholder="Date" /></div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-3">Vessel</label>
-                                                    <div class="col-sm-9">@Html.DropDownList("daily_vessel", null, new { @class = "form-control" })</div>
+                                                    <label class="col-sm-3">Well</label>
+                                                    @*<div class="col-sm-9">@Html.DropDownList("well", null, new { @class = "form-control" })</div>*@
+                                                    <div class="col-sm-9"><input type="text" name="well" class="form-control" placeholder="Well" required /></div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-3">Fuel Total</label>
-                                                    <div class="col-sm-9"><input type="number" min="0" name="daily_fuel" class="form-control" placeholder="Fuel Total" required /></div>
+                                                    <label class="col-sm-3">AFE</label>
+                                                    <div class="col-sm-9"><input type="text" name="afe" class="form-control" placeholder="AFE #" required /></div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-3">Standby</label>
-                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="standby" class="form-control" placeholder="Duration" /></div>
+                                                    <label class="col-sm-3">PSC Number</label>
+                                                    <div class="col-sm-9"><input type="text" name="psc" class="form-control" placeholder="PSC #" /></div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-3">Load/Disch</label>
-                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="load" class="form-control" placeholder="Duration" /></div>
+                                                    <label class="col-sm-3">Time Commenced</label>
+                                                    <div class="col-sm-9"><input type="text" name="t_start" id="t_start" class="form-control" placeholder="Time Commenced" /></div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label class="col-sm-3">Steaming</label>
-                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="steaming" class="form-control" placeholder="Duration" /></div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-sm-3">Downtime</label>
-                                                    <div class="col-sm-9"><input type="number" min="0" max="24" name="downtime" class="form-control" placeholder="Duration" /></div>
+                                                    <label class="col-sm-3">Time Completed</label>
+                                                    <div class="col-sm-9"><input type="text" name="t_end" id="t_end" class="form-control" placeholder="Time Complete" /></div>
                                                 </div>
                                             </form>
                                         </div>

@@ -136,11 +136,23 @@ $(document).ready(function () {
     $("#daily_tgl").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
-    })
+    });
+    $("#drill_date").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    });
     $("#monthlyPanel input").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
-    })
+    });
+    $('#t_start').timepicker({
+        minuteStep: 1,
+        showMeridian: false
+    });
+    $('#t_end').timepicker({
+        minuteStep: 1,
+        showMeridian: false 
+    });
 
 
     $("#btnSaveDailyAct").click(function () {
