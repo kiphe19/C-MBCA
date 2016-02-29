@@ -285,6 +285,44 @@ namespace chevron.Controllers
         public String _BargeCustom(FormCollection input)
         {
             String query = "";
+            //var tg_from = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+            DateTime tanggal1 = Convert.ToDateTime(input["tgl_from"]);
+            DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
+            TimeSpan ts = tanggal2.Subtract(tanggal1);
+            var jml = (int)ts.TotalDays;
+
+            for (int i = 0; i <= jml; i++)
+            {
+                var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                //con.select("temp_daily", "*", tg);
+
+                //con.select("fuel_table", "*", tg);
+                //con.result.Read();
+                //if (con.result.HasRows)
+                //{
+                //    query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                //}
+                //else
+                //{
+                //    query = string.Format("insert into fuel_table (tgl,cost_usd, currency_type) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
+                //}
+                //con.Close();
+
+                ////Response.Write(query);
+                //con.queryExec(query);
+                //return query;
+
+                con.select("report_daily", "fuel_litre,fuel_curr", tg);
+                while (con.result.Read())
+                {
+                    var f_harga = Convert.ToDecimal(con.result["fuel_litre"]) * Convert.ToDecimal(input["cost"]);
+                    string q_updfuel = string.Format("update report_daily set fuel_price = {0}, fuel_curr = {1} where tgl = '{2}'", f_harga, input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    //Response.Write("query => "+ q_updfuel+"\n");
+                    con.queryExec(q_updfuel);
+                }
+                con.Close();
+            }
+
 
             switch (input["action"])
             {
@@ -305,8 +343,10 @@ namespace chevron.Controllers
             
             try
             {
-                con.queryExec(query);
-                return "success";
+                //con.queryExec(query);
+                return input["tgl_from"].ToString();
+                //return query;
+                //return "success";
             }
             catch (Exception ex)
             {

@@ -526,6 +526,8 @@ $(document).ready(function () {
 
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
+        console.log(data);
+
         $.post("api/cs/barge", data, function (res) {
             if (res == "success") {
                 $("#modalBarge").modal('hide');
