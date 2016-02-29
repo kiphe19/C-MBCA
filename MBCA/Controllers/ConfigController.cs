@@ -282,77 +282,128 @@ namespace chevron.Controllers
 
         [Route("cs/barge")]
         [HttpPost]
-        public String _BargeCustom(FormCollection input)
+        public string _BargeCustom(FormCollection input)
         {
             String query = "";
-            //var tg_from = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
             DateTime tanggal1 = Convert.ToDateTime(input["tgl_from"]);
             DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
             TimeSpan ts = tanggal2.Subtract(tanggal1);
             var jml = (int)ts.TotalDays;
 
-            for (int i = 0; i <= jml; i++)
-            {
-                var tg = string.Format("tgl = '{0}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                //con.select("temp_daily", "*", tg);
 
-                //con.select("fuel_table", "*", tg);
-                //con.result.Read();
-                //if (con.result.HasRows)
-                //{
-                //    query = string.Format("update fuel_table set cost_usd = {0},currency_type = {1} where tgl = '{2}' ", input["cost"], input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                //}
-                //else
-                //{
-                //    query = string.Format("insert into fuel_table (tgl,cost_usd, currency_type) values('{0}', CAST('{1}' AS numeric(18,3)), '{2}')", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["cost"], input["currency_cat"]);
-                //}
-                //con.Close();
-
-                ////Response.Write(query);
-                //con.queryExec(query);
-                //return query;
-
-                con.select("report_daily", "fuel_litre,fuel_curr", tg);
-                while (con.result.Read())
-                {
-                    var f_harga = Convert.ToDecimal(con.result["fuel_litre"]) * Convert.ToDecimal(input["cost"]);
-                    string q_updfuel = string.Format("update report_daily set fuel_price = {0}, fuel_curr = {1} where tgl = '{2}'", f_harga, input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                    //Response.Write("query => "+ q_updfuel+"\n");
-                    con.queryExec(q_updfuel);
-                }
-                con.Close();
-            }
-
-
-            switch (input["action"])
-            {
-                case "create":
-                    query = String.Format("insert into unit_table ([name], [distance], [ket]) \n" +
-                        "values ('{0}', {1}, '{2}')",
-                        input["unit_name"], input["distance"], input["unit_desc"]
-                        );
-                    break;
-                case "update":
-                    query = String.Format("update unit_table set name='{0}', distance={1}, ket='{2}' where Id={3}",
-                            input["unit_name"], input["distance"], input["unit_desc"], input["id"]
-                        );
-                    break;
-                default:
-                    break;
-            }
-            
+            //Response.Write(jml);
             try
             {
-                //con.queryExec(query);
-                return input["tgl_from"].ToString();
-                //return query;
-                //return "success";
+                switch (input["action"])
+                {
+                    case "create":
+                        for (int i = 0; i <= jml; i++)
+                        {
+                            query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+
+                            Response.Write(query);
+                            //con.queryExec(query);
+
+                        }
+                            break;
+                    case "update":
+                        for (int i = 0; i <= jml; i++)
+                        {
+                            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                            //con.select("unit_table", "*", cari);
+                            //con.result.Read();
+                            //if (con.result.HasRows)
+                            //{
+                            //    query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                            //}
+                            //else
+                            //{
+                            //    query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                            //}
+
+                            //con.Close();
+
+                            Response.Write(cari);
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+
+                
+                return "success";
             }
             catch (Exception ex)
             {
-
                 return ex.Message;
             }
+
+
+
+            
+
+
+            //switch (input["action"])
+            //{
+            //    case "create":
+            //        query = String.Format("insert into unit_table ([name], [distance], [ket]) \n" +
+            //            "values ('{0}', {1}, '{2}')",
+            //            input["unit_name"], input["distance"], input["unit_desc"]
+            //            );
+            //        break;
+            //    case "update":
+            //        query = String.Format("update unit_table set name='{0}', distance={1}, ket='{2}' where Id={3}",
+            //                input["unit_name"], input["distance"], input["unit_desc"], input["id"]
+            //            );
+            //        break;
+            //    default:
+            //        break;
+            //}
+            
+            //try
+            //{
+            //    for (int i = 0; i <= jml; i++)
+            //    {
+            //        //var cari = string.Format("tgl = '{0}', name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+            //        ////con.select("temp_daily", "*", tg);
+
+            //        //con.select("unit_table", "*", cari);
+            //        //con.result.Read();
+            //        //if (con.result.HasRows)
+            //        //{
+            //        //    query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+            //        //}
+            //        //else
+            //        //{
+            //        //    query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+            //        //}
+            //        //con.Close();
+
+            //        Response.Write(i.ToString());
+            //        //con.queryExec(query);
+            //        //return query.ToString();
+
+            //        //con.select("report_daily", "fuel_litre,fuel_curr", tg);
+            //        //while (con.result.Read())
+            //        //{
+            //        //    var f_harga = Convert.ToDecimal(con.result["fuel_litre"]) * Convert.ToDecimal(input["cost"]);
+            //        //    string q_updfuel = string.Format("update report_daily set fuel_price = {0}, fuel_curr = {1} where tgl = '{2}'", f_harga, input["currency_cat"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+            //        //    //Response.Write("query => "+ q_updfuel+"\n");
+            //        //    con.queryExec(q_updfuel);
+            //        //}
+            //        //con.Close();
+            //    }
+            //    //con.queryExec(query);
+            //    //return query.ToString();
+            //    //return query;
+            //    //return "success";
+            //}
+            //catch (Exception ex)
+            //{
+
+            //    return ex.Message;
+            //}
         }
 
         [Route("cs/fuel")]
