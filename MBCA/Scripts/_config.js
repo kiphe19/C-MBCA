@@ -140,23 +140,23 @@ $(document).ready(function () {
                     $("#modalBarge input").val(null);
                     $("#modalBarge input[name='action']").val("create");
                 }
-            },
-            {
-                text: "Edit",
-                action: function () {
-                    var a = unitTable.rows('.selected').indexes();
-                    var b = unitTable.row(a).data()
-                    if (a.length > 0) {
-                        $("#modalBarge").modal({ backdrop: false })
-                        $("#modalBarge input[name='action']").val("update")
-                        $("#modalBarge button[type='submit']").text("Update")
-                        $("#modalBarge input[name='unit_name']").val(b.unit_name)
-                        $("#modalBarge input[name='id']").val(b.id)
-                        $("#modalBarge select[name='unit_cat'").val(b.unit_cat)
-                        $("#modalBarge select[id='distance'").val(b.unit_distance)
-                        $("#modalBarge input[name='unit_desc'").val(b.unit_ket)
-                    }
-                }
+            //},
+            //{
+            //    text: "Edit",
+            //    action: function () {
+            //        var a = unitTable.rows('.selected').indexes();
+            //        var b = unitTable.row(a).data()
+            //        if (a.length > 0) {
+            //            $("#modalBarge").modal({ backdrop: false })
+            //            $("#modalBarge input[name='action']").val("update")
+            //            $("#modalBarge button[type='submit']").text("Update")
+            //            $("#modalBarge input[name='unit_name']").val(b.unit_name)
+            //            $("#modalBarge input[name='id']").val(b.id)
+            //            $("#modalBarge select[name='unit_cat'").val(b.unit_cat)
+            //            $("#modalBarge select[id='distance'").val(b.unit_distance)
+            //            $("#modalBarge input[name='unit_desc'").val(b.unit_ket)
+            //        }
+            //    }
             },
             { extend: 'remove', editor: unitEditor }
         ]
@@ -527,7 +527,7 @@ $(document).ready(function () {
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
         console.log(data);
-
+        
         $.post("api/cs/barge", data, function (res) {
             if (res == "success") {
                 $("#modalBarge").modal('hide');
@@ -575,7 +575,25 @@ $(document).ready(function () {
             }
         })
         e.preventDefault();
-    })
+    });
+    $('#tbl_cari').click(function () {
+        console.log('pencet tombol cari');
+        var data = $('#tgl_cari').val();
+        console.log($('#tgl_cari').val());
+        $.get("api/unit_f", {tg:$('#tgl_cari').val()}, function (data, status, xhr) {
+            console.log(data);
+            console.log(status);
+            
+            //if (res == "success") {
+
+            //    //$("#modalCurrency").modal('hide');
+            //    //CharterTable.ajax.reload();
+            //} else {
+            //    alert(res);
+            //}
+        })
+        //e.preventDefault();
+    });
 
     $("#modalUser form").submit(function (e) {
         var data = $(this).serialize();

@@ -80,11 +80,21 @@ namespace chevron.Controllers
                     .Validator(Validation.NotEmpty())
                     .Validator(Validation.Numeric())
                 )
+                .Where("tgl", DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"), "=")
                 .Process(request)
                 .Data();
 
                 return Json(response);
             }
+        }
+
+        [Route("unit_f")]
+        [HttpGet]
+        public ActionResult _ApiUserUnitParam(DateTime tg)
+        {
+
+            return Json(new { tanggal = tg.ToString()},
+                        JsonRequestBehavior.AllowGet);
         }
 
         [Route("mainunit")]
@@ -294,57 +304,54 @@ namespace chevron.Controllers
             //Response.Write(jml);
             try
             {
-                switch (input["action"])
+
+                for (int i = 0; i <= jml; i++)
                 {
-                    case "create":
-                        for (int i = 0; i <= jml; i++)
-                        {
-                            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                            con.select("unit_table", "*", cari);
-                            con.result.Read();
-                            if (con.result.HasRows)
-                            {
-                                query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                            }
-                            else
-                            {
-                                query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                            }
-
-                            con.Close();
-
-                            //query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-
-                            //Response.Write(query);
-                            con.queryExec(query);
-
-                        }
-                            break;
-                    case "update":
-                        for (int i = 0; i <= jml; i++)
-                        {
-                            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                            con.select("unit_table", "*", cari);
-                            con.result.Read();
-                            if (con.result.HasRows)
-                            {
-                                query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                            }
-                            else
-                            {
-                                query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                            }
-
-                            con.Close();
-
-                            //Response.Write(query);
-                            con.queryExec(query);
-                        }
-                        break;
-                    default:
-                        break;
-
+                    var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                    con.select("unit_table", "*", cari);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                    }
+                    else
+                    {
+                        query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    }
+                    con.Close();
+                    //query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    //Response.Write(query);
+                    con.queryExec(query);
                 }
+
+                //switch (input["action"])
+                //{
+                //    case "create":
+                        
+                //            break;
+                //    case "update":
+                //        for (int i = 0; i <= jml; i++)
+                //        {
+                //            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                //            con.select("unit_table", "*", cari);
+                //            con.result.Read();
+                //            if (con.result.HasRows)
+                //            {
+                //                query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                //            }
+                //            else
+                //            {
+                //                query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                //            }
+                //            con.Close();
+                //            //Response.Write(query);
+                //            con.queryExec(query);
+                //        }
+                //        break;
+                //    default:
+                //        break;
+
+                //}
 
                 
                 return "success";
