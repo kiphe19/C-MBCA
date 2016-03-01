@@ -299,7 +299,21 @@ namespace chevron.Controllers
                     case "create":
                         for (int i = 0; i <= jml; i++)
                         {
-                            query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                            con.select("unit_table", "*", cari);
+                            con.result.Read();
+                            if (con.result.HasRows)
+                            {
+                                query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                            }
+                            else
+                            {
+                                query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                            }
+
+                            con.Close();
+
+                            //query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
 
                             //Response.Write(query);
                             con.queryExec(query);
