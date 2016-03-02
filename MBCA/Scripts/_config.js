@@ -201,7 +201,7 @@ $(document).ready(function () {
                     }
                 }
             },
-            { extend: 'remove', editor: unitEditor }
+            { extend: 'remove', text: 'Delete Unit',editor: unitEditor }
         ]
     }).on('init', function () {
         i = 1;
