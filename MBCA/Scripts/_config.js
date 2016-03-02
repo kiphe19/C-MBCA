@@ -112,12 +112,21 @@ $(document).ready(function () {
         ajax: "api/unit",
         table: "#bargeTable"
     });
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = ((today.getMonth()+1)<10)? "0"+(today.getMonth()+1) :(today.getMonth()+1) ;
+    var dd  = (today.getDate() <10)? "0"+today.getDate() : today.getDate();
+    var hari = yyyy+"-"+mm+"-"+dd; 
+
+    //table.ajax.url('newData.json').load()
 
     unitTable = $("#bargeTable").DataTable({
         dom: "Bfrtip",
         ajax: {
-            url: "api/unit",
-            type: 'post'
+            //url: "api/unit",
+            url: "api/unit/" + hari,
+
+            type: "post",
         },
         columns: [
             {
@@ -125,38 +134,59 @@ $(document).ready(function () {
                     return i++;
                 }
             },
-            { data: "unit_name" },
-            //{ data: "unit_cat" },
-            { data: "unit_distance" },
-            { data: "unit_ket" }
+            //{ data: "unit_name" },
+            { data: "unit_table.name" },
+
+            
+            //{ data: "unit_distance" },
+            { data: "unit_table.ket" }
+            //{ data: "unit_tgl" }
         ],
         select: true,
         buttons: [
             {
-                text: "New",
+                text: "New Unit",
                 action: function () {
                     $("#modalBarge").modal({ backdrop: false });
                     $("#modalBarge button[type='submit']").text("Add")
                     $("#modalBarge input").val(null);
                     $("#modalBarge input[name='action']").val("create");
                 }
-            //},
-            //{
-            //    text: "Edit",
-            //    action: function () {
-            //        var a = unitTable.rows('.selected').indexes();
-            //        var b = unitTable.row(a).data()
-            //        if (a.length > 0) {
-            //            $("#modalBarge").modal({ backdrop: false })
-            //            $("#modalBarge input[name='action']").val("update")
-            //            $("#modalBarge button[type='submit']").text("Update")
-            //            $("#modalBarge input[name='unit_name']").val(b.unit_name)
-            //            $("#modalBarge input[name='id']").val(b.id)
-            //            $("#modalBarge select[name='unit_cat'").val(b.unit_cat)
-            //            $("#modalBarge select[id='distance'").val(b.unit_distance)
-            //            $("#modalBarge input[name='unit_desc'").val(b.unit_ket)
-            //        }
-            //    }
+            },
+            {
+                text: "Distance",
+                action: function () {
+                    $("#modalUnitDistance").modal({ backdrop: false });
+                    $("#modalUnitDistance button[type='submit']").text("Add Distance");
+                    $("#modalUnitDistance input").val(null);
+                    //var a = unitTable.rows('.selected').data(), b = a[0];
+                    //if (a.length > 0) {
+                    //    $("#modalUnitDistance input").val(null);
+                    //    $("#modalUnitDistance input[name='userunit']").val(null);
+
+                    //}
+                    //else {
+                        
+                    //}
+                }
+            
+            },
+            {
+                extend : 'edit',
+                text: "Edit",
+                action: function () {
+                    var a = unitTable.rows('.selected').data(),b = a[0];
+                    if (a.length > 0) {
+                        $("#modalBarge").modal({ backdrop: false })
+                        $("#modalBarge input[name='action']").val("update")
+                        $("#modalBarge button[type='submit']").text("Update")
+                        $("#modalBarge input[name='unit_name']").val(b.unit_name)
+                        $("#modalBarge input[name='unit_afe']").val(b.unit_afe)
+
+                        $("#modalBarge input[name='id']").val(b.id)
+                        $("#modalBarge input[name='unit_desc'").val(b.ket)
+                    }
+                }
             },
             { extend: 'remove', editor: unitEditor }
         ]
@@ -526,9 +556,9 @@ $(document).ready(function () {
 
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
-        console.log(data);
-        
-        $.post("api/cs/barge", data, function (res) {
+        //console.log(data);
+
+        $.post("api/cs/unit", data, function (res) {
             if (res == "success") {
                 $("#modalBarge").modal('hide');
                 unitTable.ajax.reload();
@@ -537,7 +567,20 @@ $(document).ready(function () {
             }
         })
         e.preventDefault();
-    })
+    });
+    $("#modalUnitDistance form").submit(function (e) {
+        var data = $(this).serialize();
+        $.post("api/cs/unitdist", data, function (res) {
+            if (res == "success") {
+                $("#modalUnitDistance").modal('hide');
+            //    //        unitTable.ajax.reload();
+            //    //console.log("masukkk");
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    });
 
     $("#modalCharter form").submit(function (e) {
         var data = $(this).serialize();
@@ -576,25 +619,14 @@ $(document).ready(function () {
         })
         e.preventDefault();
     });
+    /*
     $('#tbl_cari').click(function () {
-        console.log('pencet tombol cari');
-        var data = $('#tgl_cari').val();
-        console.log($('#tgl_cari').val());
-        $.get("api/unit_f", {tg:$('#tgl_cari').val()}, function (data, status, xhr) {
-            console.log(data);
-            console.log(status);
-            
-            //if (res == "success") {
-
-            //    //$("#modalCurrency").modal('hide');
-            //    //CharterTable.ajax.reload();
-            //} else {
-            //    alert(res);
-            //}
-        })
-        //e.preventDefault();
+        var sss = new Date($('#tgl_cari').val());
+        var carii = sss.getFullYear() + "-" + (sss.getMonth() + 1) + "-" + sss.getDate();
+        //console.log(sss.getFullYear(), sss.getMonth()+1, sss.getDate());
+        unitTable.ajax.url('api/unit/' + carii).load();
     });
-
+    */
     $("#modalUser form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/users", data, function (res) {
@@ -609,10 +641,10 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    $("#modalBarge form input[name='tgl_from']").datetimepicker({
+    $("#modalUnitDistance form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
     });
-    $("#modalBarge form input[name='tgl_to']").datetimepicker({
+    $("#modalUnitDistance form input[name='tgl_to']").datetimepicker({
         format: "MM/DD/YYYY"
     });
     $("#modalFuel form input[name='tgl_from']").datetimepicker({

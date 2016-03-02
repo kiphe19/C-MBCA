@@ -24,6 +24,7 @@ namespace chevron.Controllers
             ViewBag.currency_cat = _getCurrency();
             ViewBag.vessel = _getVessel();
             ViewBag.distance = _getDistance();
+            ViewBag.userunit = _getUserUnit();
             return View();
         }
 
@@ -65,6 +66,48 @@ namespace chevron.Controllers
             }
         }
 
+        [Route("unit/{tg}")]
+        [HttpPost]
+        public ActionResult _ApiUserUnitParam(string tg)
+        {
+            //DateTime date = (DateTime.Equals(null))
+            //var skr = DateTime.Today.ToString("yyyy-mm-dd");
+            //var tttt = (Request["tg"] != null) ? Request["tg"] : skr;
+
+            //DateTime tanggal = (Request["tg"] != null) ? Request["tg"] : skr;
+
+            var request = System.Web.HttpContext.Current.Request;
+            using (var db = new Database(setting.DbType, setting.DbConnection))
+            {
+                var response = new Editor(db, "unit_table")
+                .Model<UnitDistanceDailyModel>()
+                .Field(new Field("unit_table.name")
+                    .Validator(Validation.NotEmpty())
+                )
+                .Field(new Field("unit_distance_table.distance")
+                    .Validator(Validation.NotEmpty())
+                    .Validator(Validation.Numeric())
+                )
+                .Field(new Field("unit_distance_table.tgl")
+                    .Validator(Validation.DateFormat("MM/dd/yyyy"))
+                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    )
+                .LeftJoin("unit_distance_table", "unit_distance_table.id_unit", "=", "unit_table.id")
+                .Where("unit_distance_table.tgl", tg, "=")
+                .Process(request)
+                .Data();
+
+                return Json(response);
+                //return Json(new { response }, JsonRequestBehavior.AllowGet);
+
+            }
+            //return Json(new { a }, JsonRequestBehavior.AllowGet);
+            //DateTime tgl = Convert.ToDateTime(tg);
+
+            //return Json(new { date = tgl.ToString() },
+            //            JsonRequestBehavior.AllowGet);
+        }
+
         [Route("unit")]
         public ActionResult _ApiUserUnit()
         {
@@ -72,29 +115,33 @@ namespace chevron.Controllers
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "unit_table")
-                .Model<UnitModel>()
+                .Model<UnitDistanceDailyModel>()
                 .Field(new Field("name")
                     .Validator(Validation.NotEmpty())
                 )
-                .Field(new Field("distance")
-                    .Validator(Validation.NotEmpty())
-                    .Validator(Validation.Numeric())
-                )
-                .Where("tgl", DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"), "=")
+                //.Field(new Field("distance")
+                //    .Validator(Validation.NotEmpty())
+                //    .Validator(Validation.Numeric())
+                //)
+                //.Field(new Field("tgl")
+                //    .Validator(Validation.DateFormat("MM/dd/yyyy"))
+                //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                //    )
+                //.Where("tgl", tg.ToString("yyyy-MM-dd"), "=")
                 .Process(request)
                 .Data();
 
                 return Json(response);
             }
-        }
+            //DateTime yy = tg.ToString("yyyy-mm-dd");
 
-        [Route("unit_f")]
-        [HttpGet]
-        public ActionResult _ApiUserUnitParam(DateTime tg)
-        {
-
-            return Json(new { tanggal = tg.ToString()},
-                        JsonRequestBehavior.AllowGet);
+            //string a = "successssss";
+            ////string query = string.Format("ini pada tgl = {0}", tg.ToString("yyyy-mm-dd"));
+            ////Response.Write(query);
+            ////return Json(new { tanggal = tg.ToString() },
+            ////            JsonRequestBehavior.AllowGet);
+            ////Response.Write(yy.ToString());
+            //return a;
         }
 
         [Route("mainunit")]
@@ -290,7 +337,56 @@ namespace chevron.Controllers
             return VesselSorted;
         }
 
-        [Route("cs/barge")]
+        private List<SelectListItem> _getUserUnit()
+        {
+            List<SelectListItem> unit = new List<SelectListItem>();
+
+            con.select("unit_table", "id, name");
+            while (con.result.Read())
+            {
+                unit.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["id"].ToString()
+                });
+            }
+            con.Close();
+
+            var unitSorted = (from li in unit orderby li.Text select li).ToList();
+
+            return unitSorted;
+        }
+
+
+
+        [Route("cs/unit")]
+        [HttpPost]
+        public string _BargeCreate(FormCollection input)
+        {
+            String query = "";
+            try
+            {
+                switch (input["action"])
+                {
+                    case "create":
+                        query = string.Format("insert into unit_table(name,afe, ket) values('{0}','{1}','{2}')", input["unit_name"], input["unit_afe"], input["unit_desc"]);
+                        break;
+                    case "update":
+                        query = string.Format("update unit_table set name='{0}', afe='{1}', ket='{2}' where id = {3}", input["unit_name"], input["unit_afe"], input["unit_desc"], input["id"]);
+                        break;
+                    default:
+                        break;
+                }
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [Route("cs/unitdist")]
         [HttpPost]
         public string _BargeCustom(FormCollection input)
         {
@@ -301,25 +397,24 @@ namespace chevron.Controllers
             var jml = (int)ts.TotalDays;
 
 
-            //Response.Write(jml);
+            Response.Write(jml);
             try
             {
 
                 for (int i = 0; i <= jml; i++)
                 {
-                    var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                    con.select("unit_table", "*", cari);
+                    var cari = string.Format("id_unit={1} and tgl = '{1}'", input["userunit"],  tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    con.select("unit_distance_table", "*", cari);
                     con.result.Read();
                     if (con.result.HasRows)
                     {
-                        query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
+                        query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     }
                     else
                     {
-                        query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        query = string.Format("insert into unit_distance_table (id_unit,distance,tgl) values({0},{1},'{2}')", input["userunit"], input["distance"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     }
                     con.Close();
-                    //query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     //Response.Write(query);
                     con.queryExec(query);
                 }
@@ -327,7 +422,7 @@ namespace chevron.Controllers
                 //switch (input["action"])
                 //{
                 //    case "create":
-                        
+
                 //            break;
                 //    case "update":
                 //        for (int i = 0; i <= jml; i++)
@@ -353,7 +448,7 @@ namespace chevron.Controllers
 
                 //}
 
-                
+                //Response.Write(input);
                 return "success";
             }
             catch (Exception ex)

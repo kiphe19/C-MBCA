@@ -184,7 +184,7 @@ namespace chevron.Controllers
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "unit_table")
-                .Model<UnitModel>()
+                .Model<UnitDistanceDailyModel>()
                 .Process(Request.Form)
                 .Data();
 
