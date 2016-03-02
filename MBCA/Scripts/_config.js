@@ -173,18 +173,19 @@ $(document).ready(function () {
             },
             {
                 extend : 'edit',
-                text: "Edit",
+                text: "Edit Unit",
                 action: function () {
-                    var a = unitTable.rows('.selected').data(),b = a[0];
+                    var a = unitTable.rows('.selected').data(), b = a[0];
+                    console.log(b);
                     if (a.length > 0) {
                         $("#modalBarge").modal({ backdrop: false })
                         $("#modalBarge input[name='action']").val("update")
                         $("#modalBarge button[type='submit']").text("Update")
-                        $("#modalBarge input[name='unit_name']").val(b.unit_name)
-                        $("#modalBarge input[name='unit_afe']").val(b.unit_afe)
+                        $("#modalBarge input[name='unit_name']").val(b.unit_table.name)
+                        $("#modalBarge input[name='unit_afe']").val(b.unit_table.afe)
 
-                        $("#modalBarge input[name='id']").val(b.id)
-                        $("#modalBarge input[name='unit_desc'").val(b.ket)
+                        $("#modalBarge input[name='id']").val(b.unit_table.id)
+                        $("#modalBarge input[name='unit_desc'").val(b.unit_table.ket)
                     }
                 }
             },
