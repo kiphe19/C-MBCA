@@ -108,18 +108,30 @@ $(document).ready(function () {
     });
 
 
-    unitEditor = new $.fn.dataTable.Editor({
-        ajax: "api/unit",
-        table: "#bargeTable"
-    });
+    
     var today = new Date();
     var yyyy = today.getFullYear();
     var mm = ((today.getMonth()+1)<10)? "0"+(today.getMonth()+1) :(today.getMonth()+1) ;
     var dd  = (today.getDate() <10)? "0"+today.getDate() : today.getDate();
     var hari = yyyy+"-"+mm+"-"+dd; 
 
-    //table.ajax.url('newData.json').load()
-
+    unitEditor = new $.fn.dataTable.Editor({
+        //ajax: "api/unit",
+        ajax: "api/unit/"+hari,
+        table: "#bargeTable",
+        fields: [{
+            //label: "First name:",
+            name: "unit_table.name"
+        }, {
+            //label: "Last name:",
+            name: "unit_table.ket"
+        }, {
+            //label: "Manager:",
+            name: "unit_distance_table.id",
+            type: "select"
+        }
+        ]
+    });
     unitTable = $("#bargeTable").DataTable({
         dom: "Bfrtip",
         ajax: {
@@ -139,8 +151,8 @@ $(document).ready(function () {
 
             
             //{ data: "unit_distance" },
-            { data: "unit_table.ket" }
-            //{ data: "unit_tgl" }
+            { data: "unit_table.ket" },
+            { data: "unit_distance_table.tgl" }
         ],
         select: true,
         buttons: [
@@ -574,6 +586,7 @@ $(document).ready(function () {
         $.post("api/cs/unitdist", data, function (res) {
             if (res == "success") {
                 $("#modalUnitDistance").modal('hide');
+                unitTable.ajax.url('api/unit/' + hari).load();
             //    //        unitTable.ajax.reload();
             //    //console.log("masukkk");
             } else {
@@ -620,14 +633,12 @@ $(document).ready(function () {
         })
         e.preventDefault();
     });
-    /*
     $('#tbl_cari').click(function () {
         var sss = new Date($('#tgl_cari').val());
         var carii = sss.getFullYear() + "-" + (sss.getMonth() + 1) + "-" + sss.getDate();
         //console.log(sss.getFullYear(), sss.getMonth()+1, sss.getDate());
         unitTable.ajax.url('api/unit/' + carii).load();
     });
-    */
     $("#modalUser form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/users", data, function (res) {

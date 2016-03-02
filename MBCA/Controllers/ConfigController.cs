@@ -70,12 +70,6 @@ namespace chevron.Controllers
         [HttpPost]
         public ActionResult _ApiUserUnitParam(string tg)
         {
-            //DateTime date = (DateTime.Equals(null))
-            //var skr = DateTime.Today.ToString("yyyy-mm-dd");
-            //var tttt = (Request["tg"] != null) ? Request["tg"] : skr;
-
-            //DateTime tanggal = (Request["tg"] != null) ? Request["tg"] : skr;
-
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
@@ -397,7 +391,7 @@ namespace chevron.Controllers
             var jml = (int)ts.TotalDays;
 
 
-            Response.Write(jml);
+            //Response.Write(jml);
             try
             {
 
