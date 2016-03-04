@@ -121,17 +121,32 @@ $(document).ready(function () {
 
     $("#timeatForm").submit(function (e) {
         var data = $(this).serialize();
-            $.post(path + "/api/cs/daily", data, function (res) {
-                if (res === "success") {
-                    dailyTable.ajax.reload();
-                    $("#timeatForm input[name='time_at_dur']").val(null);
-                    dailyCancel.apply();
-                } else {
-                    alert(res);
-                }
-            })
+        $.post(path + "/api/cs/daily", data, function (res) {
+            if (res === "success") {
+                dailyTable.ajax.reload();
+                $("#timeatForm input[name='time_at_dur']").val(null);
+                dailyCancel.apply();
+            } else {
+                alert(res);
+            }
+        })
         e.preventDefault();
-    })
+    });
+    $("#drillForm").submit(function (e) {
+        console.log("asdasdasdasd");
+        var data = $(this).serialize();
+        console.log(data);
+        $.post(path + "/api/save/drill", data, function (res) {
+            console.log(res);
+            if (res === "success") {
+                $("#drillForm input" ).val(null);
+            }
+            else {
+                alert(res);
+            }
+        });
+        e.preventDefault();
+    });
 
     $("#daily_tgl").datetimepicker({
         format: "MM/DD/YYYY",
@@ -221,7 +236,7 @@ $(document).ready(function () {
 
     $("#btnSaveDataDaily").click(function () {
         var data = dailyTable.data();
-        console.log(data);
+        //console.log(data);
 
         var saveDaily = function () {
             $.post(path + "/api/save/daily")

@@ -146,12 +146,9 @@ $(document).ready(function () {
                     return i++;
                 }
             },
-            //{ data: "unit_name" },
             { data: "unit_table.name" },
-
-            
-            //{ data: "unit_distance" },
-            { data: "unit_table.ket" },
+            { data: "unit_distance_table.distance" },
+            //{ data: "unit_table.ket" },
             { data: "unit_distance_table.tgl" }
         ],
         select: true,
@@ -171,15 +168,6 @@ $(document).ready(function () {
                     $("#modalUnitDistance").modal({ backdrop: false });
                     $("#modalUnitDistance button[type='submit']").text("Add Distance");
                     $("#modalUnitDistance input").val(null);
-                    //var a = unitTable.rows('.selected').data(), b = a[0];
-                    //if (a.length > 0) {
-                    //    $("#modalUnitDistance input").val(null);
-                    //    $("#modalUnitDistance input[name='userunit']").val(null);
-
-                    //}
-                    //else {
-                        
-                    //}
                 }
             
             },
@@ -206,7 +194,14 @@ $(document).ready(function () {
     }).on('init', function () {
         i = 1;
     });
-
+    editorMainunit = new $.fn.dataTable.Editor({
+        ajax: "api/mainunit",
+        table: "#mainunitTable"
+        //fields: [
+        //    { label: "Area Name", name: "distance_name" },
+        //    { label: "Distance", name: "distance" }
+        //]
+    })
     mainunittable = $('#mainunitTable').DataTable({
         dom: "Bfrtip",
         ajax: {
@@ -219,13 +214,23 @@ $(document).ready(function () {
                     return i++;
                 }
             },
-            {data:"nama"}
+            { data: "nama" },
+            { data: "description" }
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: editor, text: "Create new Main User" },
+            {
+                extend: "create",
+                text: "New Main User",
+                action: function () {
+                    $("#modalMainUnit").modal({ backdrop: false });
+                    $("#modalMainUnit button[type='submit']").text("Add")
+                    $("#modalMainUnit input").val(null);
+                    $("#modalMainUnit input[name='action']").val("create");
+                }
+            },
             { extend: "edit", editor: editor },
-            { extend: "remove", editor: editor }
+            { extend: "remove", editor: editorMainunit }
         ]
     }).on('init', function () {
         i = 1;
@@ -371,12 +376,6 @@ $(document).ready(function () {
                     
                 }
             }
-            //,
-            //{
-            //    data: null, render: function (data) {
-            //        return "Rp" + Number(data.cost_rp).toLocaleString();
-            //    }
-            //}
         ],
         buttons: [
             {
@@ -652,6 +651,22 @@ $(document).ready(function () {
         })
         e.preventDefault();
     })
+    $("#modalMainUnit form").submit(function (e) {
+        var data = $(this).serialize();
+        console.log(data);
+        $.post("api/cs/mainunit", data, function (res) {
+            console.log(res);
+        //    if (res == "success") {
+        //        $("#modalUser").modal('hide');
+        //        $("#modalUser input").val(null);
+        //        userTable.ajax.reload();
+        //    } else {
+        //        alert(res);
+        //    }
+        })
+        e.preventDefault();
+    })
+
 
     $("#modalUnitDistance form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"

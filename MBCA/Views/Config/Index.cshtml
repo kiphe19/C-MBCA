@@ -36,7 +36,7 @@
                         <tr>
                             <th>No</th>
                             <th>Name Main Unit</th>
-                            <th>User Unit</th>
+                            @*<th>User Unit</th>*@
                             <th>Description</th>
 
                         </tr>
@@ -62,7 +62,7 @@
                             <th>Name of Unit</th>
                             @*<th>Unit Category</th>*@
                             <th>Distance Area</th>
-                            <th>Description</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                 </table>
@@ -172,30 +172,6 @@
                             <input type="text" name="unit_afe" class="form-control" autocomplete="off" required/>
                         </div>
                     </div>
-                    @*<div class="form-group">
-                        <label class="col-sm-2 control-label">Date Periode</label>
-                        <div class="col-sm-5">
-                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" placeholder="From" required />
-                        </div>
-                        <div class="col-sm-5">
-                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To" required />
-                        </div>
-                    </div>*@
-                    @*<div class="form-group">
-                        <label class="col-sm-2 control-label">Unit Category</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" name="unit_cat">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                            </select>
-                        </div>
-                    </div>*@
-                    @*<div class="form-group">
-                        <label class="col-sm-2 control-label">Distance</label>
-                        <div class="col-sm-10">
-                            @Html.DropDownList("distance", null, new {@class= "form-control" })
-                        </div>
-                    </div>*@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
@@ -241,6 +217,36 @@
                         </div>
                         <div class="col-sm-5">
                             <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalMainUnit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Main Unit</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Main Unit Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="mainunit_name" class="form-control" autocomplete="off" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Description</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="mainunit_desc" class="form-control" autocomplete="off" />
                         </div>
                     </div>
                 </div>

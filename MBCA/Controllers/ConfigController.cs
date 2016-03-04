@@ -96,8 +96,6 @@ namespace chevron.Controllers
 
             }
             //return Json(new { a }, JsonRequestBehavior.AllowGet);
-            //DateTime tgl = Convert.ToDateTime(tg);
-
             //return Json(new { date = tgl.ToString() },
             //            JsonRequestBehavior.AllowGet);
         }
@@ -121,21 +119,11 @@ namespace chevron.Controllers
                 //    .Validator(Validation.DateFormat("MM/dd/yyyy"))
                 //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                 //    )
-                //.Where("tgl", tg.ToString("yyyy-MM-dd"), "=")
                 .Process(request)
                 .Data();
 
                 return Json(response);
             }
-            //DateTime yy = tg.ToString("yyyy-mm-dd");
-
-            //string a = "successssss";
-            ////string query = string.Format("ini pada tgl = {0}", tg.ToString("yyyy-mm-dd"));
-            ////Response.Write(query);
-            ////return Json(new { tanggal = tg.ToString() },
-            ////            JsonRequestBehavior.AllowGet);
-            ////Response.Write(yy.ToString());
-            //return a;
         }
 
         [Route("mainunit")]
@@ -448,6 +436,31 @@ namespace chevron.Controllers
             catch (Exception ex)
             {
                 return ex.Message;
+            }
+        }
+
+        [Route("cs/mainunit")]
+        [HttpPost]
+        public String _MainUnitCustom(FormCollection input)
+        {
+            String query="";
+            Response.Write(input["action"]);
+            try
+            {
+                switch (input["action"])
+                {
+                    case "create":
+                        query = string.Format("insert into mainunit_table (nama,description) values('{0}','{1}')", input["mainunit_name"], input["mainunit_desc"]);
+                        break;
+                    default:
+                        break;
+                }
+                Response.Write(query);
+                return "success";
+            }
+            catch(Exception e)
+            {
+                return e.Message;
             }
         }
 

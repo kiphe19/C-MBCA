@@ -115,7 +115,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             @*<h3>Drill and Completion</h3>*@
-                                            <form class="form-horizontal" id="activityForm">
+                                            <form class="form-horizontal" id="drillForm">
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Date</label>
                                                     <div class="col-sm-9"><input type="text" name="drill_date" class="form-control" id="drill_date" autocomplete="off" value="@DateTime.Today.AddDays(-1).ToString("MM/dd/yyyy")" placeholder="Date" /></div>
@@ -123,11 +123,12 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Well</label>
                                                     @*<div class="col-sm-9">@Html.DropDownList("well", null, new { @class = "form-control" })</div>*@
-                                                    <div class="col-sm-9"><input type="text" name="well" class="form-control" placeholder="Well" required /></div>
+                                                    <div class="col-sm-9"><input type="text" name="well" class="form-control" placeholder="Well" /></div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-3">AFE</label>
-                                                    <div class="col-sm-9"><input type="text" name="afe" class="form-control" placeholder="AFE #" required /></div>
+                                                    <div class="col-sm-9">@Html.DropDownList("drill_afe", null, new { @class = "form-control" })</div>
+                                                    @*<div class="col-sm-9"><input type="text" name="afe" class="form-control" placeholder="AFE #" required /></div>*@
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-sm-3">PSC Number</label>
@@ -140,6 +141,11 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-3">Time Completed</label>
                                                     <div class="col-sm-9"><input type="text" name="t_end" id="t_end" class="form-control" placeholder="Time Complete" /></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="button-group pull-right" role="group" id="btnDrillsave">
+                                                        <button type="submit" class="btn btn-primary">@*<i class="glyphicon glyphicon-plus"></i>*@ Simpan Drill</button>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>

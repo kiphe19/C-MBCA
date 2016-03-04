@@ -24,6 +24,7 @@ namespace chevron.Controllers
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
+            ViewBag.drill_afe = getListAfe();
             return View();
         }
 
@@ -31,6 +32,24 @@ namespace chevron.Controllers
         /// Dropdown
         /// </summary>
 
+        private List<SelectListItem> getListAfe()
+        {
+            List<SelectListItem> afe = new List<SelectListItem>();
+
+            con.select("unit_table", "id,afe,name");
+            while (con.result.Read())
+            {
+                afe.Add(new SelectListItem
+                {
+                    Text = con.result["afe"].ToString(),
+                    Value = con.result["id"].ToString()
+                });
+            }
+            con.Close();
+
+            var AfeSorted = (from li in afe orderby li.Text select li).ToList();
+            return AfeSorted;
+        }
         private List<SelectListItem> getListVessel()
         {
             List<SelectListItem> vessel = new List<SelectListItem>();
@@ -607,6 +626,21 @@ namespace chevron.Controllers
 
             //ViewBag.data = data;
             return PartialView("_MonthlyGrid", data);
+        }
+
+        [Route("save/drill")]
+        [HttpPost]
+        public string _saveDailyDrill(FormCollection input)
+        {
+            var awal = Convert.ToDateTime(input["t_start"]);
+            var akhir = Convert.ToDateTime(input["t_end"]);
+            TimeSpan dur = akhir - awal;
+            string query = string.Format("insert into drilling_table (well,afe_unit,tgl,t_start,t_end,durasi) values ('{0}',{1},'{2}','{3}','{4}',{5})",input["well"],input["drill_afe"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
+            //Response.Write(input["drill_date"]+"   --> "+input["t_start"]+" pek "+input["t_end"]+" = "+dur.TotalHours.ToString()+" in minute : "+ dur.TotalMinutes.ToString());
+            //Response.Write(query);
+            con.queryExec(query);
+            return "success";
+
         }
     }
 }
