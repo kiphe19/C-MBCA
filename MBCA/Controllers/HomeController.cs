@@ -24,7 +24,7 @@ namespace chevron.Controllers
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
-            ViewBag.drill_afe = getListAfe();
+            //ViewBag.drill_afe = getListAfe();
             return View();
         }
 

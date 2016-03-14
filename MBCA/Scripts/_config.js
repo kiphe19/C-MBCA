@@ -172,6 +172,12 @@ $(document).ready(function () {
             
             },
             {
+                text: "Main Unit",
+                action : function(){
+                    $("#modalUnittoMainUnit").modal({ backdrop: false });
+    }
+            },
+            {
                 extend : 'edit',
                 text: "Edit Unit",
                 action: function () {
@@ -651,18 +657,19 @@ $(document).ready(function () {
         })
         e.preventDefault();
     })
-    $("#modalMainUnit form").submit(function (e) {
+    $("#modalUnittoMainUnit form").submit(function (e) {
         var data = $(this).serialize();
         console.log(data);
-        $.post("api/cs/mainunit", data, function (res) {
+        $.post("api/cs/unit_mainunit", data, function (res) {
             console.log(res);
-        //    if (res == "success") {
-        //        $("#modalUser").modal('hide');
-        //        $("#modalUser input").val(null);
-        //        userTable.ajax.reload();
-        //    } else {
-        //        alert(res);
-        //    }
+        //    //onload("/config");
+        ////    if (res == "success") {
+        ////        $("#modalUser").modal('hide');
+        ////        $("#modalUser input").val(null);
+        ////        userTable.ajax.reload();
+        ////    } else {
+        ////        alert(res);
+        ////    }
         })
         e.preventDefault();
     })
@@ -671,9 +678,17 @@ $(document).ready(function () {
     $("#modalUnitDistance form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
     });
+    
     $("#modalUnitDistance form input[name='tgl_to']").datetimepicker({
         format: "MM/DD/YYYY"
     });
+    $("#modalUnittoMainUnit form input[name='tgl_to']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+    $("#modalUnittoMainUnit form input[name='tgl_from']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+
     $("#modalFuel form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
     });

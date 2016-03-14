@@ -25,6 +25,8 @@ namespace chevron.Controllers
             ViewBag.vessel = _getVessel();
             ViewBag.distance = _getDistance();
             ViewBag.userunit = _getUserUnit();
+            ViewBag.mainunit = _getMainUnit();
+
             return View();
         }
 
@@ -339,6 +341,24 @@ namespace chevron.Controllers
             return unitSorted;
         }
 
+        private List<SelectListItem> _getMainUnit()
+        {
+            List<SelectListItem> mainunit = new List<SelectListItem>();
+
+            con.select("mainunit_table", "id, nama");
+            while (con.result.Read())
+            {
+                mainunit.Add(new SelectListItem
+                {
+                    Text = con.result["nama"].ToString(),
+                    Value = con.result["nama"].ToString()
+                });
+            }
+            con.Close();
+            var mainunitSorted = (from li in mainunit orderby li.Text select li).ToList();
+            return mainunitSorted;
+        }
+
 
 
         [Route("cs/unit")]
@@ -401,34 +421,46 @@ namespace chevron.Controllers
                     con.queryExec(query);
                 }
 
-                //switch (input["action"])
-                //{
-                //    case "create":
+               //Response.Write(input);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+        [Route("cs/unit_mainunit")]
+        [HttpPost]
+        public string _UnittoMainUnitCustom(FormCollection input)
+        {
+            String query = "";
+            DateTime tanggal1 = Convert.ToDateTime(input["tgl_from"]);
+            DateTime tanggal2 = Convert.ToDateTime(input["tgl_to"]);
+            TimeSpan ts = tanggal2.Subtract(tanggal1);
+            var jml = (int)ts.TotalDays;
 
-                //            break;
-                //    case "update":
-                //        for (int i = 0; i <= jml; i++)
-                //        {
-                //            var cari = string.Format("tgl = '{0}' and name= '{1}'", tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                //            con.select("unit_table", "*", cari);
-                //            con.result.Read();
-                //            if (con.result.HasRows)
-                //            {
-                //                query = string.Format("update unit_table set distance = {0},ket = {1} where tgl = '{2}' and name = {3} ", input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["unit_name"]);
-                //            }
-                //            else
-                //            {
-                //                query = string.Format("insert into unit_table (name,distance,ket,tgl) values('{0}',{1},'{2}','{3}')", input["unit_name"], input["distance"], input["unit_desc"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                //            }
-                //            con.Close();
-                //            //Response.Write(query);
-                //            con.queryExec(query);
-                //        }
-                //        break;
-                //    default:
-                //        break;
 
-                //}
+            Response.Write(jml);
+            try
+            {
+
+                for (int i = 0; i <= jml; i++)
+                {
+                    var cari = string.Format("id_unit={1} and tgl = '{1}'", input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    con.select("unit_distance_table", "*", cari);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    }
+                    else
+                    {
+                        query = string.Format("insert into unit_distance_table (id_unit,distance,tgl) values({0},{1},'{2}')", input["userunit"], input["distance"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    }
+                    con.Close();
+                    Response.Write(query);
+                    //con.queryExec(query);
+                }
 
                 //Response.Write(input);
                 return "success";
@@ -438,7 +470,6 @@ namespace chevron.Controllers
                 return ex.Message;
             }
         }
-
         [Route("cs/mainunit")]
         [HttpPost]
         public String _MainUnitCustom(FormCollection input)

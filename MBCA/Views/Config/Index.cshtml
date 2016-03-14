@@ -228,6 +228,46 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUnittoMainUnit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Main Unit Daily</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">User Unit</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("userunit", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Main Unit</label>
+                        <div class="col-sm-10">
+                            @Html.DropDownList("mainunit", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Periode</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="tgl_from" class="form-control" autocomplete="off" placeholder="From" required />
+                        </div>
+                        <div class="col-sm-5">
+                            <input type="text" name="tgl_to" class="form-control" autocomplete="off" placeholder="To" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" tabindex="-1" role="dialog" id="modalMainUnit">
     <div class="modal-dialog">
         <div class="modal-content">
