@@ -600,7 +600,22 @@ $(document).ready(function () {
         })
         e.preventDefault();
     });
-
+    $("#modalUnittoMainUnit form").submit(function (e) {
+        var data = $(this).serialize();
+        console.log(data);
+        $.post("api/cs/unit_mainunit", data, function (res) {
+            console.log(res);
+            //    //onload("/config");
+            if (res == "success") {
+                $("#modalUnittoMainUnit").modal('hide');
+                $("#modalUnittoMainUnit input").val(null);
+                userTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        })
+        e.preventDefault();
+    });
     $("#modalCharter form").submit(function (e) {
         var data = $(this).serialize();
         $.post("api/cs/charter", data, function (res) {
@@ -657,22 +672,7 @@ $(document).ready(function () {
         })
         e.preventDefault();
     })
-    $("#modalUnittoMainUnit form").submit(function (e) {
-        var data = $(this).serialize();
-        console.log(data);
-        $.post("api/cs/unit_mainunit", data, function (res) {
-            console.log(res);
-        //    //onload("/config");
-        ////    if (res == "success") {
-        ////        $("#modalUser").modal('hide');
-        ////        $("#modalUser input").val(null);
-        ////        userTable.ajax.reload();
-        ////    } else {
-        ////        alert(res);
-        ////    }
-        })
-        e.preventDefault();
-    })
+    
 
 
     $("#modalUnitDistance form input[name='tgl_from']").datetimepicker({

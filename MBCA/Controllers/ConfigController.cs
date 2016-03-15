@@ -351,7 +351,7 @@ namespace chevron.Controllers
                 mainunit.Add(new SelectListItem
                 {
                     Text = con.result["nama"].ToString(),
-                    Value = con.result["nama"].ToString()
+                    Value = con.result["id"].ToString()
                 });
             }
             con.Close();
@@ -405,16 +405,18 @@ namespace chevron.Controllers
 
                 for (int i = 0; i <= jml; i++)
                 {
-                    var cari = string.Format("id_unit={1} and tgl = '{1}'", input["userunit"],  tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    //var cari = string.Format("id_unit={0} and tgl = '{1}'", input["userunit"],  tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    var cari = string.Format("id_unit={0} and tgl = '{1}' and id_mainunit = '{2}'", input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["mainunit"]);
+
                     con.select("unit_distance_table", "*", cari);
                     con.result.Read();
                     if (con.result.HasRows)
                     {
-                        query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}' and id_mainunit = {3}", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["mainunit"]);
                     }
                     else
                     {
-                        query = string.Format("insert into unit_distance_table (id_unit,distance,tgl) values({0},{1},'{2}')", input["userunit"], input["distance"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        query = string.Format("insert into unit_distance_table (id_unit,distance,tgl,id_mainunit) values({0},{1},'{2}',{3})", input["userunit"], input["distance"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["mainunit"]);
                     }
                     con.Close();
                     //Response.Write(query);
@@ -446,20 +448,21 @@ namespace chevron.Controllers
 
                 for (int i = 0; i <= jml; i++)
                 {
-                    var cari = string.Format("id_unit={1} and tgl = '{1}'", input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                    var cari = string.Format("id_unit={0} and tgl = '{1}' and id_mainunit = '{2}'", input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"), input["mainunit"]);
                     con.select("unit_distance_table", "*", cari);
                     con.result.Read();
                     if (con.result.HasRows)
                     {
-                        query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        //query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        continue;
                     }
                     else
                     {
-                        query = string.Format("insert into unit_distance_table (id_unit,distance,tgl) values({0},{1},'{2}')", input["userunit"], input["distance"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
+                        query = string.Format("insert into unit_distance_table (id_unit,id_mainunit,tgl) values({0},{1},'{2}')", input["userunit"], input["mainunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                     }
                     con.Close();
-                    Response.Write(query);
-                    //con.queryExec(query);
+                    //Response.Write(query);
+                    con.queryExec(query);
                 }
 
                 //Response.Write(input);

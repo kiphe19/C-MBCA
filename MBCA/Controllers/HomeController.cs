@@ -24,7 +24,7 @@ namespace chevron.Controllers
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
-            //ViewBag.drill_afe = getListAfe();
+            ViewBag.daily_unitid = getUserUnitId();
             return View();
         }
 
@@ -108,6 +108,26 @@ namespace chevron.Controllers
             var unitSorted = (from li in unit orderby li.Text select li).ToList();
 
             return unitSorted;
+        }
+
+        private List<SelectListItem> getUserUnitId()
+        {
+            List<SelectListItem> unit_id = new List<SelectListItem>();
+
+            con.select("unit_table", "id, name");
+            while (con.result.Read())
+            {
+                unit_id.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["id"].ToString()
+                });
+            }
+            con.Close();
+
+            var unitidSorted = (from li in unit_id orderby li.Text select li).ToList();
+
+            return unitidSorted;
         }
 
         /// <summary>
@@ -635,7 +655,7 @@ namespace chevron.Controllers
             var awal = Convert.ToDateTime(input["t_start"]);
             var akhir = Convert.ToDateTime(input["t_end"]);
             TimeSpan dur = akhir - awal;
-            string query = string.Format("insert into drilling_table (well,afe_unit,tgl,t_start,t_end,durasi) values ('{0}',{1},'{2}','{3}','{4}',{5})",input["well"],input["drill_afe"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
+            string query = string.Format("insert into drilling_table (id_unit,well,afe,tgl,t_start,t_end,durasi) values ({0},'{1}','{2}','{3}','{4}','{5}',{6})",input["daily_unitid"],input["well"],input["afe"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
             //Response.Write(input["drill_date"]+"   --> "+input["t_start"]+" pek "+input["t_end"]+" = "+dur.TotalHours.ToString()+" in minute : "+ dur.TotalMinutes.ToString());
             //Response.Write(query);
             con.queryExec(query);
