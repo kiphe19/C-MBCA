@@ -147,8 +147,8 @@ $(document).ready(function () {
                 }
             },
             { data: "unit_table.name" },
+            { data: "mainunit_table.nama" },
             { data: "unit_distance_table.distance" },
-            //{ data: "unit_table.ket" },
             { data: "unit_distance_table.tgl" }
         ],
         select: true,

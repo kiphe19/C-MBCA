@@ -21,9 +21,16 @@ namespace chevron.Models
         {
             public Int32 id { get; set; }
             public Int32 id_unit { get; set; }
+            public Int32 id_mainunit { get; set; }
             public Int64 distance { get; set; }
             public string tgl { get; set; }
 
+        }
+
+        public class mainunit_table
+        {
+            public Int32 id { get; set; }
+            public string nama { get; set; }
         }
         
        

@@ -89,6 +89,7 @@ namespace chevron.Controllers
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                     )
                 .LeftJoin("unit_distance_table", "unit_distance_table.id_unit", "=", "unit_table.id")
+                .LeftJoin("mainunit_table", "mainunit_table.id","=","unit_distance_table.id_mainunit")
                 .Where("unit_distance_table.tgl", tg, "=")
                 .Process(request)
                 .Data();
