@@ -245,6 +245,16 @@ namespace chevron.Controllers
             }
         }
 
+        [Route("drill")]
+        public ActionResult _dataDrillCompletion()
+        {
+            using (var db= new Database(setting.DbType, setting.DbConnection))
+            {
+                var response = new Editor(db, "drilling_table").Model<DrillModel>().Process(Request.Form).Data();
+                return Json(response);
+            }
+        }
+
         [Route("cs/daily")]
         [HttpPost]
         public String _dailyInsert(FormCollection input)
