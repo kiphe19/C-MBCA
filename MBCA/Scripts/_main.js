@@ -65,14 +65,13 @@
             method: "post"
         },
         columns: [
-            { data: "tgl" },
-            { data: 'well' },
-          
-            { data: "afe" },
-              { data: 'id_unit' },
-              { data: 't_start' },
-              { data: 't_end' },
-              {data: 'durasi'}
+            { data: 'unit_table.name' },
+            { data: "drilling_table.tgl" },
+            { data: 'drilling_table.well' },
+            { data: "drilling_table.afe" },
+            { data: 'drilling_table.t_start' },
+            { data: 'drilling_table.t_end' },
+            { data: 'drilling_table.durasi' }
             
         ],
     });
@@ -185,6 +184,15 @@ $(document).ready(function () {
         minuteStep: 1,
         showMeridian: false 
     });
+    $('#fd_t_from').datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    });
+    $('#fd_t_to').datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    });
+
 
 
     $("#btnSaveDailyAct").click(function () {

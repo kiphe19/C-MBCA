@@ -251,7 +251,23 @@ namespace chevron.Controllers
             var request = System.Web.HttpContext.Current.Request;
             using (var db= new Database(setting.DbType, setting.DbConnection))
             {
-                var response = new Editor(db, "drilling_table").Model<DrillModel>().Process(request).Data();
+                var response = new Editor(db, "drilling_table")
+                    .Model<DrillModel>()
+                    .Field(new Field("drilling_table.tgl")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Field(new Field("drilling_table.t_start")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Field(new Field("drilling_table.t_end")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
+                    //.LeftJoin("mainunit_table","")
+                    .Process(request).Data();
                 return Json(response);
             }
         }
