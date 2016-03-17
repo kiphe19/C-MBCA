@@ -248,9 +248,10 @@ namespace chevron.Controllers
         [Route("drill")]
         public ActionResult _dataDrillCompletion()
         {
+            var request = System.Web.HttpContext.Current.Request;
             using (var db= new Database(setting.DbType, setting.DbConnection))
             {
-                var response = new Editor(db, "drilling_table").Model<DrillModel>().Process(Request.Form).Data();
+                var response = new Editor(db, "drilling_table").Model<DrillModel>().Process(request).Data();
                 return Json(response);
             }
         }

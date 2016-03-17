@@ -64,6 +64,17 @@
             url: path + "/api/drill",
             method: "post"
         },
+        columns: [
+            { data: "tgl" },
+            { data: 'well' },
+          
+            { data: "afe" },
+              { data: 'id_unit' },
+              { data: 't_start' },
+              { data: 't_end' },
+              {data: 'durasi'}
+            
+        ],
     });
 
     monthlyEditor = new $.fn.dataTable.Editor({
