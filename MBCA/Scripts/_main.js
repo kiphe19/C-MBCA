@@ -59,6 +59,12 @@
         ]
     });
 
+    drillcompTable = $("#drillTable").DataTable({
+        ajax: {
+            url: path + "/api/drill",
+            method: "post"
+        },
+    });
 
     monthlyEditor = new $.fn.dataTable.Editor({
         ajax: path + "/api/monthly",
