@@ -184,15 +184,17 @@ $(document).ready(function () {
         minuteStep: 1,
         showMeridian: false 
     });
-    $('#fd_t_from').datetimepicker({
+    $("#filterDrill input[name='fd_t_from']").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date(),
+        //defaultDate : new Date("2018-03-02")
+    });
+    $("#filterDrill input[name='fd_t_from']").val("tanggalamuuuuu");
+    $("#filterDrill input[name='fd_t_to']").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
     });
-    $('#fd_t_to').datetimepicker({
-        format: "MM/DD/YYYY",
-        maxDate: new Date()
-    });
-
+    $("#filterDrill input[name='fd_t_to']").val(new Date(2011,02,20))
 
 
     $("#btnSaveDailyAct").click(function () {

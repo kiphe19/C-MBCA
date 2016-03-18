@@ -190,46 +190,78 @@
                                             </div>*@
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6 col-md-offset-6" id="filterDrill">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" value="test0" />
-                                                <span class="input-group-btn" style="width:0px;"></span>
-                                                <input type="text" class="form-control" id="fd_t_from" value="@DateTime.Parse("02-25-2016").ToString();"/>
-                                                @*<input type="text" class="form-control" id="fd_t_from" value="@DateTime.ParseExact("2016/03/25", "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);" />*@
-
-                                                <span class="input-group-btn" style="width:0px;"></span>
-                                                <input type="text" class="form-control" id="fd_t_to"/>
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="button" id="tbl_cari"><i class="glyphicon glyphicon-search"></i></button>
-                                                </span>
+                                    <form class="form-horizontal" id="filterDrill">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2">Unit</label>
+                                                <div class="col-sm-10">
+                                                    @Html.DropDownList("daily_unitid", null, new { @class = "form-control" })
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                        
-                                        
-                                    <div class="table-responsive">
-                                        <table id="drillTable" class="table display table-bordered" style="width:100%">
-                                            <thead>
-                                                <tr>
-                                                    @*<th>No</th>*@
-                                                    <th>Unit</th>
-                                                    <th>Date</th>
-                                                    <th>Well</th>
-                                                    <th>AFE</th>
-                                                    <th>Time From</th>
-                                                    <th>Time To</th>
-                                                    <th>TimeSpan</th>
-                                                    <th>Fuel (L)</th>
-                                                    <th>Fuel Cost</th>
-                                                    <th>HireRate</th>
-                                                    <th>Mob/Demob</th>
-                                                    <th>Total</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
+                                        <div class="col-md-6">
+                                            @{ 
+                                                DateTime tgl = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 25); DateTime tg2 = tgl.AddMonths(-1);
+                                            }
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2">Periode</label>
+                                                <div class="col-sm-5">
+                                                    <input type="text" placeholder="Date From" class="form-control" name="fd_t_from" value="@tg2.ToString("MM/dd/yyyy")" />
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input type="text" placeholder="Date To" class="form-control" name="fd_t_to" value="@tgl.ToString("MM/dd/yyyy")"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" id="drillcari" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+                                        </div>
+                                    
+                                    </form>
+
+                                        <div class="row">
+                                            @*<form class="form-inline">
+                                                @{
+                                                    DateTime tgl1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 25);
+                                                    //DateTime tgl2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 25);
+
+                                                }
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="f_unit" placeholder="Jane Doe">
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="fd_t_from" value="@tgl1.ToString()">
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="email" class="form-control" id="fd_t_to" value="@tgl1.ToString()">
+                                                </div>
+                                                <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+                                            </form>*@
+                                        </div>
+
+
+                                        <div class="table-responsive">
+                                            <table id="drillTable" class="table display table-bordered" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        @*<th>No</th>*@
+                                                        <th>Unit</th>
+                                                        <th>Date</th>
+                                                        <th>Well</th>
+                                                        <th>AFE</th>
+                                                        <th>Time From</th>
+                                                        <th>Time To</th>
+                                                        <th>TimeSpan</th>
+                                                        <th>Fuel (L)</th>
+                                                        <th>Fuel Cost</th>
+                                                        <th>HireRate</th>
+                                                        <th>Mob/Demob</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+</div>
                             </div>
                         </div>
                     </div>
