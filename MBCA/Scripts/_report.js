@@ -1,7 +1,7 @@
 ﻿var path = window.location.pathname;
 //var path = "";
 var aseliTable = $("table").html();
-var tablee = tablee = $("table").DataTable();
+var tablee = tablee = $("table").DataTable({ "scrollX": true });
 $("#DataTables_Table_0_wrapper").hide();
 
 function loadTableData(data) {

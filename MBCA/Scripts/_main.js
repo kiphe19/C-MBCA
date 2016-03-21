@@ -143,7 +143,7 @@ $(document).ready(function () {
 
         ajax: {
             //url: path + "/api/drill",
-            url: path + "/api/drill/" + tg1 + "/" + tg2 + "/unitall",
+            url: path + "/api/drill/" + tg1 + "/" + tg2 + "/"+2,
 
             method: "post"
         },
@@ -322,8 +322,8 @@ $(document).ready(function () {
         console.log(dari1 + " s/d " + ke1 + " ==> " + unit);
 
         
-        //drillcompTable.ajax.url('api/drill/' + dari1 + '/' + ke1 + '/' + unit).load();
-        drillcompTable.ajax.url('api/drill').load();
+        drillcompTable.ajax.url('api/drill/' + dari1 + '/' + ke1 + '/' + unit).load();
+        //drillcompTable.ajax.url('api/drill').load();
 
     });
 

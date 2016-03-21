@@ -245,31 +245,70 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("drill/{tg1}/{tg2}/{unit}")]
-        public ActionResult _dataDrillCompletion()
+        [Route("drill/{tg1}/{tg2}/{unitx}")]
+        public ActionResult _dataDrillCompletion(string tg1, string tg2, string unitx)
         {
-            var request = System.Web.HttpContext.Current.Request;
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "drilling_table")
-                    .Model<DrillModel>()
-                    .Field(new Field("drilling_table.tgl")
-                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                        .Validator(Validation.NotEmpty())
-                    )
-                    .Field(new Field("drilling_table.t_start")
-                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-                        .Validator(Validation.NotEmpty())
-                    )
-                    .Field(new Field("drilling_table.t_end")
-                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-                        .Validator(Validation.NotEmpty())
-                    )
-                    .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
-                    //.LeftJoin("mainunit_table","")
-                    .Process(request).Data();
-                return Json(response);
-            }
+
+            //var un = (unitx === "all")? 
+            //var request = System.Web.HttpContext.Current.Request;
+            //using (var db = new Database(setting.DbType, setting.DbConnection))
+            //{
+                //if (unitx != null) {
+                    //var response = new Editor(db, "drilling_table")
+                    //    .Model<DrillModel>()
+                    //    .Field(new Field("drilling_table.tgl")
+                    //        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    //        .Validator(Validation.NotEmpty())
+                    //    )
+                    //    .Field(new Field("drilling_table.t_start")
+                    //        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                    //        .Validator(Validation.NotEmpty())
+                    //    )
+                    //    .Field(new Field("drilling_table.t_end")
+                    //        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                    //        .Validator(Validation.NotEmpty())
+                    //    )
+                    //    .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
+                    //    //.LeftJoin("mainunit_table","")
+                    //    //.Where("drilling_table.tgl", tg1, ">")
+                    //    //.Where("drilling_table.tgl", tg2, "<=")
+                    //     .Where("drilling_table.id_unit", unitx, "=")
+                    //    .Process(request).Data();
+                    //return Json(response);
+                //}
+                //else
+                //{
+                //    var response = new Editor(db, "drilling_table")
+                //        .Model<DrillModel>()
+                //        .Field(new Field("drilling_table.tgl")
+                //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                //            .Validator(Validation.NotEmpty())
+                //        )
+                //        .Field(new Field("drilling_table.t_start")
+                //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                //            .Validator(Validation.NotEmpty())
+                //        )
+                //        .Field(new Field("drilling_table.t_end")
+                //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                //            .Validator(Validation.NotEmpty())
+                //        )
+                //        .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
+                //        //.LeftJoin("mainunit_table","")
+                //        .Where("drilling_table.tgl", tg1, ">")
+                //        .Where("drilling_table.tgl", tg2, "<=")
+
+                //        .Process(request).Data();
+
+                //    Response.Write(unitx);
+                //    return Json(response);
+                //}
+
+                //var response1 =  new Editor(db.Select("drilling_table",))
+               
+
+            //}
+            return Json(new { date = tg1, date2 = tg2, unitnya = unitx },
+                     JsonRequestBehavior.AllowGet);
         }
 
         //[Route("drill/{tg1}/{tg2}/{unit}")]
