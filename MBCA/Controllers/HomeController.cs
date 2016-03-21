@@ -245,11 +245,11 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("drill")]
+        [Route("drill/{tg1}/{tg2}/{unit}")]
         public ActionResult _dataDrillCompletion()
         {
             var request = System.Web.HttpContext.Current.Request;
-            using (var db= new Database(setting.DbType, setting.DbConnection))
+            using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "drilling_table")
                     .Model<DrillModel>()
@@ -271,6 +271,15 @@ namespace chevron.Controllers
                 return Json(response);
             }
         }
+
+        //[Route("drill/{tg1}/{tg2}/{unit}")]
+        //public ActionResult _dataDrillCompletionParam(string tg1, string tg2,string unit)
+        //{
+
+        //    //Response.Write
+        //    return Json(new { date = tg1, date2 = tg2, unitnya = unit },
+        //            JsonRequestBehavior.AllowGet);
+        //}
 
         [Route("cs/daily")]
         [HttpPost]

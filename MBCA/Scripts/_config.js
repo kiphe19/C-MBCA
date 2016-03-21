@@ -175,7 +175,7 @@ $(document).ready(function () {
                 text: "Main Unit",
                 action : function(){
                     $("#modalUnittoMainUnit").modal({ backdrop: false });
-    }
+                }
             },
             {
                 extend : 'edit',
