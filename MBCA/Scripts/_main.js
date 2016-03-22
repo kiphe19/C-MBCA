@@ -169,23 +169,19 @@ $(document).ready(function () {
                 action: function (e, dt, node, config) {
                     var a = drillcompTable.rows('.selected').indexes();
                     var b = drillcompTable.row(a).data();
-                    console.log(a);
-                    console.log(b);
-
-
+                    //console.log(a);
+                    //console.log(b);
+                    $("#drillForm option[value='" + b.drilling_table.id_unit + "']").prop("selected", true);
                     $("#drillForm input[name='drill_date']").val(b.drilling_table.tgl);
                     $("#drillForm input[name='well']").val(b.drilling_table.well);
                     $("#drillForm input[name='afe']").val(b.drilling_table.afe);
-                    $("#drillForm input[name='psc']").val(b.drilling_table.psc);
-
+                    $("#drillForm input[name='psc']").val(b.drilling_table.psc_no);
                     $("#drillForm input[name='t_start']").val(b.drilling_table.t_start);
                     $("#drillForm input[name='t_end']").val(b.drilling_table.t_end);
-
-
-
-
+                    $("#drillForm button[type='submit']").text("Edit D&C");
+                    $("#drillForm input[name='action']").val("update");
+                    $("#drillForm input[name='id']").val(b.drilling_table.id);
                 }
-        
             },
             { extend: 'remove', text: 'Delete Dril Completion', editor: drillEditor }
         ]
@@ -206,12 +202,12 @@ $(document).ready(function () {
         e.preventDefault();
     });
     $("#drillForm").submit(function (e) {
-        console.log("asdasdasdasd");
         var data = $(this).serialize();
-        console.log(data);
+        //console.log(data);
         $.post(path + "/api/save/drill", data, function (res) {
             console.log(res);
             if (res === "success") {
+                drillcompTable.ajax.reload();
                 $("#drillForm input").val(null);
             }
             else {

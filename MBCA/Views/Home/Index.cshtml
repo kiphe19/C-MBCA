@@ -116,7 +116,10 @@
                                         <div class="col-md-6">
                                             @*<h3>Drill and Completion</h3>*@
                                             <form class="form-horizontal" id="drillForm">
+                                                <input type="hidden" name="action" value="create" />
+                                                <input type="hidden" name="id" />
                                                 <div class="form-group">
+                                                    
                                                     <label class="col-sm-3">User Unit</label>
                                                     <div class="col-sm-9">@Html.DropDownList("daily_unitid", null, new { @class = "form-control" })</div>
                                                     <div class="col-sm-9">@*<input type="text" name="afe" class="form-control" placeholder="AFE #" required />*@</div>

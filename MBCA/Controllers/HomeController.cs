@@ -731,10 +731,19 @@ namespace chevron.Controllers
             var awal = Convert.ToDateTime(input["t_start"]);
             var akhir = Convert.ToDateTime(input["t_end"]);
             TimeSpan dur = akhir - awal;
-            string query = string.Format("insert into drilling_table (id_unit,well,afe,psc,tgl,t_start,t_end,durasi) values ({0},'{1}','{2}','{3}','{4}','{5}','{6}',{7})",input["daily_unitid"],input["well"],input["afe"],input["psc"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
-            //Response.Write(input["drill_date"]+"   --> "+input["t_start"]+" pek "+input["t_end"]+" = "+dur.TotalHours.ToString()+" in minute : "+ dur.TotalMinutes.ToString());
-            //Response.Write(query);
-            con.queryExec(query);
+            string qq = null;
+
+            if (input["action"] == "create")
+            {
+                qq = string.Format("insert into drilling_table (id_unit,well,afe,psc_no,tgl,t_start,t_end,durasi) values ({0},'{1}','{2}','{3}','{4}','{5}','{6}',{7})", input["daily_unitid"], input["well"], input["afe"], input["psc"], input["drill_date"], input["t_start"], input["t_end"], dur.TotalHours);
+
+            }
+            else if (input["action"] == "update") {
+                qq = string.Format("update drilling_table set id_unit={0}, well='{1}', afe = '{2}',psc_no='{3}',tgl = '{4}',t_start = '{5}',t_end='{6}',durasi={7} where id = {8}", input["daily_unitid"], input["well"], input["afe"], input["psc"], input["drill_date"], input["t_start"], input["t_end"], dur.TotalHours,input["id"]);
+
+            }
+            //Response.Write(qq);
+            con.queryExec(qq);
             return "success";
 
         }
