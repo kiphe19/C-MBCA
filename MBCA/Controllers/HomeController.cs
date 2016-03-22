@@ -731,7 +731,7 @@ namespace chevron.Controllers
             var awal = Convert.ToDateTime(input["t_start"]);
             var akhir = Convert.ToDateTime(input["t_end"]);
             TimeSpan dur = akhir - awal;
-            string query = string.Format("insert into drilling_table (id_unit,well,afe,tgl,t_start,t_end,durasi) values ({0},'{1}','{2}','{3}','{4}','{5}',{6})",input["daily_unitid"],input["well"],input["afe"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
+            string query = string.Format("insert into drilling_table (id_unit,well,afe,psc,tgl,t_start,t_end,durasi) values ({0},'{1}','{2}','{3}','{4}','{5}','{6}',{7})",input["daily_unitid"],input["well"],input["afe"],input["psc"],input["drill_date"],input["t_start"], input["t_end"],dur.TotalHours);
             //Response.Write(input["drill_date"]+"   --> "+input["t_start"]+" pek "+input["t_end"]+" = "+dur.TotalHours.ToString()+" in minute : "+ dur.TotalMinutes.ToString());
             //Response.Write(query);
             con.queryExec(query);

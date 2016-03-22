@@ -13,6 +13,7 @@ namespace chevron.Models
             public Int32 id_unit { get; set; }
             public string well { get; set; }
             public string afe { get; set; }
+            public string psc_no { get; set; }
             public string tgl { get; set; }
             public string t_start { get; set; }
             public string t_end { get; set; }

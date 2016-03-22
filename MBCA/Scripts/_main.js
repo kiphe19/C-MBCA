@@ -154,6 +154,7 @@ $(document).ready(function () {
             { data: "drilling_table.tgl" },
             { data: 'drilling_table.well' },
             { data: "drilling_table.afe" },
+            { data: "drilling_table.psc_no" },
             { data: 'drilling_table.t_start' },
             { data: 'drilling_table.t_end' },
             { data: 'drilling_table.durasi' }
@@ -161,22 +162,32 @@ $(document).ready(function () {
         ],
         select: true,
         buttons: [
-            //{
-            //    text: "Baru",
-            //    action: function () {
-            //        console("buat baruu");
-            //    }
-            //},
+            
             {
                 extend: 'edit',
                 text: "Edit Dril Completion",
                 action: function (e, dt, node, config) {
                     var a = drillcompTable.rows('.selected').indexes();
                     var b = drillcompTable.row(a).data();
-                        console.log(a);
+                    console.log(a);
+                    console.log(b);
+
+
+                    $("#drillForm input[name='drill_date']").val(b.drilling_table.tgl);
+                    $("#drillForm input[name='well']").val(b.drilling_table.well);
+                    $("#drillForm input[name='afe']").val(b.drilling_table.afe);
+                    $("#drillForm input[name='psc']").val(b.drilling_table.psc);
+
+                    $("#drillForm input[name='t_start']").val(b.drilling_table.t_start);
+                    $("#drillForm input[name='t_end']").val(b.drilling_table.t_end);
+
+
+
+
                 }
         
-            }
+            },
+            { extend: 'remove', text: 'Delete Dril Completion', editor: drillEditor }
         ]
     });
 
