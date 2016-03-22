@@ -372,10 +372,10 @@ namespace chevron.Controllers
                 switch (input["action"])
                 {
                     case "create":
-                        query = string.Format("insert into unit_table(name,afe, ket) values('{0}','{1}','{2}')", input["unit_name"], input["unit_afe"], input["unit_desc"]);
+                        query = string.Format("insert into unit_table(name, ket) values('{0}','{1}')", input["unit_name"], input["unit_desc"]);
                         break;
                     case "update":
-                        query = string.Format("update unit_table set name='{0}', afe='{1}', ket='{2}' where id = {3}", input["unit_name"], input["unit_afe"], input["unit_desc"], input["id"]);
+                        query = string.Format("update unit_table set name='{0}', ket='{1}' where id = {2}", input["unit_name"], input["unit_desc"], input["id"]);
                         break;
                     default:
                         break;
@@ -443,7 +443,7 @@ namespace chevron.Controllers
             var jml = (int)ts.TotalDays;
 
 
-            Response.Write(jml);
+            //Response.Write(jml);
             try
             {
 

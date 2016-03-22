@@ -602,9 +602,9 @@ $(document).ready(function () {
     });
     $("#modalUnittoMainUnit form").submit(function (e) {
         var data = $(this).serialize();
-        console.log(data);
+        //console.log(data);
         $.post("api/cs/unit_mainunit", data, function (res) {
-            console.log(res);
+            //console.log(res);
             //    //onload("/config");
             if (res == "success") {
                 $("#modalUnittoMainUnit").modal('hide');
