@@ -138,13 +138,15 @@ $(document).ready(function () {
         tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
         tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
     }
+
+    drillEditor = new $.fn.dataTable.Editor({
+        ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
+        table: "#drillTable"
+    });
     drillcompTable = $("#drillTable").DataTable({
-    //$("#drillTable").DataTable({
-
+        dom: "Bfrtip",
         ajax: {
-            //url: path + "/api/drill",
             url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
-
             method: "post"
         },
         columns: [
@@ -157,7 +159,27 @@ $(document).ready(function () {
             { data: 'drilling_table.durasi' }
 
         ],
+        select: true,
+        buttons: [
+            //{
+            //    text: "Baru",
+            //    action: function () {
+            //        console("buat baruu");
+            //    }
+            //},
+            {
+                extend: 'edit',
+                text: "Edit Dril Completion",
+                action: function (e, dt, node, config) {
+                    var a = drillcompTable.rows('.selected').indexes();
+                    var b = drillcompTable.row(a).data();
+                        console.log(a);
+                }
+        
+            }
+        ]
     });
+
 
     $("#timeatForm").submit(function (e) {
         var data = $(this).serialize();
