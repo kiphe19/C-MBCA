@@ -143,7 +143,7 @@ $(document).ready(function () {
 
         ajax: {
             //url: path + "/api/drill",
-            url: path + "/api/drill/" + tg1 + "/" + tg2 + "/"+2,
+            url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
 
             method: "post"
         },
