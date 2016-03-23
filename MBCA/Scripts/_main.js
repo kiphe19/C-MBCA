@@ -13,14 +13,14 @@ $(document).ready(function () {
                 //{ label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
                 //{ label: "Vessel", name: "daily_vessel", type: "select" },
                 //{ label: "Activity", name: "daily_activity", type: "select" },
-                { label: "User Unit", name: "user_unit", type: "select" },
-                { label: "Duration", name: "daily_duration" }
+                //{ label: "User Unit", name: "user_unit", type: "select" },
+                //{ label: "Duration", name: "daily_duration" }
             ]
         }).on('preOpen', function () {
             dailyEditor.title('Add new Daily Activity');
         })
 
-        dailyTable = $("#dailyTable").DataTable({
+        var dailyTable = $("#dailyTable").DataTable({
             dom: '<"dailyButton"B<"floatright">>rt',
             ajax: {
                 url: path + "/api/daily",
@@ -29,29 +29,36 @@ $(document).ready(function () {
             serverSide: true,
             columns: [
                 //{ data: 'daily_date' },
-                { data: 'user_unit' },
+                { data: 'unit_table.name' },
                 //{ data: "daily_activity" },
-                { data: "duration" }
+                { data: "temp_daily.duration" }
             ],
             select: true,
             buttons: [
                 {
+                    extend: 'create',
+                    text: 'New',
+                    action: function () {
+                        $("#timeatForm")[0].reset();
+                        $("#timeatForm input[name='action']").val("create");
+                        $("#timeatForm input[name='id']").val("");
+                        $("#timeatForm button[type='submit']").text("Add");
+                    }
+                },
+                {
+                    extend:'edit',
                     text: "Edit",
                     action: function (e, dt, node, config) {
-                        var a = dailyTable.rows('.selected').indexes()
+                        var a = dailyTable.rows('.selected').indexes();
                         if (a.length !== 0) {
                             var b = dailyTable.row(a).data();
-                            console.log(b);
-                            $('#inputDaily').collapse('show');
-                            $("#daily_unit").val(b.user_unit);
-                            //$("#daily_activity").val(b.daily_activity);
-                            //$("#dailyForm input[name='daily_date']").val(b.daily_date);
-                            $("#dailyForm input[name='time_at_dur']").val(b.duration);
-                            $("#dailyForm input[name='action']").val("update");
-                            $("#dailyForm input[name='id']").val(b.id);
+                            //console.log(b);
+                            $("#timeatForm select[name = 'daily_unitid'] option[value=" + b.temp_daily.id_unit + "]").prop("selected", true);
+                            $("#timeatForm input[name='time_at_dur']").val(b.temp_daily.duration);
+                            $("#timeatForm input[name='action']").val("update");
+                            $("#timeatForm input[name='id']").val(b.temp_daily.id);
                             //$("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
-                            $("#btnEditGroup").show();
-                            $("#btnSaveGroup").hide();
+                            $("#timeatForm button[type='submit']").text("Update");
                         }
                     }
                 },
@@ -182,11 +189,12 @@ $(document).ready(function () {
 
     $("#timeatForm").submit(function (e) {
         var data = $(this).serialize();
+        //console.log(data);
         $.post(path + "/api/cs/daily", data, function (res) {
             if (res === "success") {
                 dailyTable.ajax.reload();
                 $("#timeatForm input[name='time_at_dur']").val(null);
-                dailyCancel.apply();
+                //dailyCancel.apply();
             } else {
                 alert(res);
             }
@@ -197,7 +205,7 @@ $(document).ready(function () {
         var data = $(this).serialize();
         //console.log(data);
         $.post(path + "/api/save/drill", data, function (res) {
-            console.log(res);
+            //console.log(res);
             if (res === "success") {
                 drillcompTable.ajax.reload();
                 $("#drillForm input").val(null);
@@ -270,7 +278,7 @@ $(document).ready(function () {
                 //console.log($("#activityForm")[0]);
                 $("#activityForm")[0].reset();
                 dailyTable.ajax.reload();
-                dailylogTable.ajax.reload();
+                //dailylogTable.ajax.reload();
             })
         }
         var data = dailyTable.data();

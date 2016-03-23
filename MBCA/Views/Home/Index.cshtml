@@ -68,12 +68,12 @@
                                                 <input type="hidden" name="action" value="create" />
                                                 <input type="hidden" name="id" />
                                                 <label class="col-sm-2">Time At</label>
-                                                <div class="col-sm-4">@Html.DropDownList("daily_unit", null, new { @class = "form-control" })</div>
+                                                <div class="col-sm-4">@Html.DropDownList("daily_unitid", null, new { @class = "form-control", @id="unitid" })</div>
                                                 <div class="col-sm-4"><input type="text" name="time_at_dur" class="form-control" placeholder="Duration" autocomplete="off" required /></div>
                                                 <div class="col-sm-1"></div>
                                                 <div class="col-sm-1">
                                                     <div class="button-group pull-right" role="group" id="btnSaveGroup">
-                                                        <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                                                        <button type="submit" class="btn btn-primary">@*<i class="glyphicon glyphicon-plus"></i>*@ Add</button>
                                                     </div>
                                                 </div>
                                             </div>

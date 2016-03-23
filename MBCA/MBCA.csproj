@@ -177,7 +177,7 @@
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\DrillModel.cs" />
     <Compile Include="Models\FuelModel.cs" />
-    <Compile Include="Models\HireModel.cs" />
+    <Compile Include="Models\CharterModel.cs" />
     <Compile Include="Models\MainUnitModel.cs" />
     <Compile Include="Models\MonthlyActivityModel.cs" />
     <Compile Include="Models\ReportDailyModel.cs" />

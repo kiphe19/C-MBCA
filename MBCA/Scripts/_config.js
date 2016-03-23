@@ -4,15 +4,15 @@
     HireEditor,
     i = 1;
 
-function SetSelectedIndex(dropdownlist, sVal) {
-    var a = $(dropdownlist)[0];
+//function SetSelectedIndex(dropdownlist, sVal) {
+//    var a = $(dropdownlist)[0];
 
-    for (i = 0; i < a.options.length; i++) {
-        if (a.options[i].value == sVal) {
-            a.selectedIndex = i;
-        }
-    }
-}
+//    for (i = 0; i < a.options.length; i++) {
+//        if (a.options[i].value == sVal) {
+//            a.selectedIndex = i;
+//        }
+//    }
+//}
 
 $(document).ready(function () {
     editor = new $.fn.dataTable.Editor({
@@ -350,14 +350,14 @@ $(document).ready(function () {
     });
 
     CharterEditor = new $.fn.dataTable.Editor({
-        ajax: "api/hire",
+        ajax: "api/charter",
         table: "#hireTable"
     })
 
     CharterTable = $("#hireTable").DataTable({
         dom: "Bfrtip",
         ajax: {
-            url: "api/hire",
+            url: "api/charter",
             type: 'post'
         },
         select: true,
@@ -367,19 +367,16 @@ $(document).ready(function () {
                     return i++;
                 }
             },
-            { data: "tgl_start" },
-            { data: "tgl_end" },
-            { data: "vessel" },
-            { data: "cost_usd" },
-            { data: "mob_cost" },
+            { data: "hire_table.tgl_start" },
+            { data: "hire_table.tgl_end" },
+            { data: "vessel_table.name" },
+            { data: "hire_table.cost_usd" },
+            { data: "hire_table.mob_cost" },
             {
-                data: null, render: function (data) {
-                    if (data === 1)
-                    {
-                        return "USD"
-                    }
+                data: "hire_table.curency_cat",
+                render: function (data) {
+                    if (data === 1) return "USD"
                     else return "IDR"
-                    
                 }
             }
         ],
@@ -399,24 +396,17 @@ $(document).ready(function () {
                 action: function () {
                     var a = CharterTable.rows('.selected').indexes();
                     var b = CharterTable.row(a).data();
-                    console.log(b);
-                    var aa = $("#curr_cat");
-                    //a.options[i].value
-                    console.log(aa[0].options.length);
                     if (a.length > 0) {
                         $("#modalCharter").modal({ backdrop: false });
-                        $("#modalCharter input[name='tgl_start']").val(b.tgl_start);
-                        $("#modalCharter input[name='tgl_end']").val(b.tgl_end);
-                        $("#modalCharter input[name='charter_cost']").val(b.cost_usd);
-                        $("#modalCharter input[name='mob_cost']").val(b.mob_cost);
-                        SetSelectedIndex("#curr_cat", b.curency_cat);
-
-                        //(b.curency_cat === 1) ? $("#modalCharter select[name='currency_cat'] option:selected").text("USD") : $("#modalCharter select[name='currency_cat'] option:selected").text("IDR");
-                        //$("#modalCharter select[name='currency_cat'] option:selected").text(b.curency_cat);
+                        $("#modalCharter input[name='tgl_start']").val(b.hire_table.tgl_start);
+                        $("#modalCharter input[name='tgl_end']").val(b.hire_table.tgl_end);
+                        $("#modalCharter input[name='charter_cost']").val(b.hire_table.cost_usd);
+                        $("#modalCharter input[name='mob_cost']").val(b.hire_table.mob_cost);
+                        $("#modalCharter select[name = 'currency_cat'] option[value=" + b.hire_table.curency_cat + "]").prop("selected", true);
+                        $("#modalCharter select[name = 'vesselid'] option[value=" + b.hire_table.id_vessel + "]").prop("selected", true);
                         $("#modalCharter input[name='action']").val("update");
-                        $("#modalCharter input[name='id']").val(b.id);
+                        $("#modalCharter input[name='id']").val(b.hire_table.id);
                         $("#modalCharter button[type='submit']").text("Update")
-                        $("#modalCharter select[id='vessel'").val(b.vessel)
                     }
                 }
             },
@@ -559,13 +549,15 @@ $(document).ready(function () {
                 action: function () {
                     var a = userTable.rows('.selected').indexes();
                     var b = userTable.row(a).data();
+                    //console.log(b);
                     if (a.length > 0) {
                         $("#modalUser").modal({ backdrop: false });
                         $("#modalUser input[name='action']").val("update");
                         $("#modalUser input[name='username']").val(b.username);
                         $("#modalUser input[name='id']").val(b.username);
                         $("#modalUser input[name='password']").attr("placeholder", "New Password");
-                        $("#modalUser select[name='level'] option:selected").text(b.tingkat);
+                        //$("#modalUser select[name='level'] option:selected").text(b.tingkat);
+                        $("#modalUser select[name='level'] option[value='" + b.tingkat + "']").prop("selected", true);
                         $("#modalUser button[type='submit']").text("Update")
                     }
                 }
@@ -616,6 +608,12 @@ $(document).ready(function () {
                 alert(res);
             }
         })
+        e.preventDefault();
+    });
+
+    $("#modalMainUnit form").submit(function (e) {
+        var data = $(this).serialize();
+        console.log(data);
         e.preventDefault();
     });
     $("#modalCharter form").submit(function (e) {

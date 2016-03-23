@@ -8,13 +8,24 @@ namespace chevron.Models
 {
     public class TempDailyModel
     {
-        public Int32 id { get; set; }
+        public class temp_daily
+        {
+            public Int32 id { get; set; }
 
-        [EditorHttpName("duration")]
-        public decimal duration { get; set; }
+            //[EditorHttpName("duration")]
+            public decimal duration { get; set; }
 
-        [EditorHttpName("user_unit")]
-        public string user_unit { get; set; }
+            //[EditorHttpName("user_unit")]
+            //public string user_unit { get; set; }
+            public string id_unit { get; set; }
+            
+
+        }
+        public class unit_table
+        {
+            public string name { get; set; }
+
+        }
 
     }
 }

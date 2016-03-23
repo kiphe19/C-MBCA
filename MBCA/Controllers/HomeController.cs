@@ -145,8 +145,10 @@ namespace chevron.Controllers
                 //var response = new Editor(db, "daily_activity")
                 var response = new Editor(db, "temp_daily")
                 .Model<TempDailyModel>()
+                .LeftJoin("unit_table", "unit_table.id", "=", "temp_daily.id_unit")
                 .Where("user_log", Session["userid"], "=")
                 .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+
                 //.Field(new Field("duration").Validator(Validation.Numeric()))
                 //.Field(new Field("tgl")
                 //    .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
@@ -203,47 +205,47 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("dataa")]
-        public ActionResult _dataActivity()
-        {
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "activity_table")
-                .Model<ActivityModel>()
-                .Process(Request.Form)
-                .Data();
+        //[Route("dataa")]
+        //public ActionResult _dataActivity()
+        //{
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "activity_table")
+        //        .Model<ActivityModel>()
+        //        .Process(Request.Form)
+        //        .Data();
 
-                return Json(response);
-            }
-        }
+        //        return Json(response);
+        //    }
+        //}
 
-        [Route("datau")]
-        public ActionResult _dataUnit()
-        {
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "unit_table")
-                .Model<UnitDistanceDailyModel>()
-                .Process(Request.Form)
-                .Data();
+        //[Route("datau")]
+        //public ActionResult _dataUnit()
+        //{
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "unit_table")
+        //        .Model<UnitDistanceDailyModel>()
+        //        .Process(Request.Form)
+        //        .Data();
 
-                return Json(response);
-            }
-        }
+        //        return Json(response);
+        //    }
+        //}
 
-        [Route("datav")]
-        public ActionResult _dataVessel()
-        {
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "vessel_table")
-                .Model<VesselModel>()
-                .Process(Request.Form)
-                .Data();
+        //[Route("datav")]
+        //public ActionResult _dataVessel()
+        //{
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "vessel_table")
+        //        .Model<VesselModel>()
+        //        .Process(Request.Form)
+        //        .Data();
 
-                return Json(response);
-            }
-        }
+        //        return Json(response);
+        //    }
+        //}
 
         [Route("drill/{tg1}/{tg2}/{unitx}")]
         public ActionResult _dataDrillCompletion(string tg1, string tg2, int unitx)
@@ -329,23 +331,23 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    var val_unit = string.Format("date_input = '{0}' and user_log = '{1}' and user_unit = '{2}'", DateTime.Today.ToString("yyyy-MM-dd"),Session["userid"],input["daily_unit"]);
-                    con.select("temp_daily", "user_unit", val_unit);
+                    var val_unit = string.Format("date_input = '{0}' and user_log = '{1}' and id_unit = {2}", DateTime.Today.ToString("yyyy-MM-dd"),Session["userid"],input["daily_unitid"]);
+                    con.select("temp_daily", "id_unit", val_unit);
                     con.result.Read();
                     if (con.result.HasRows)
                     {
-                        query = string.Format("update temp_daily set [duration] = {0} where date_input = CAST('{1}' as DATE) and user_log = '{2}' and user_unit = '{3}'"
-                                ,input["time_at_dur"].ToString(CultureInfo.InvariantCulture), DateTime.Today.ToString("yyyy-MM-dd"), Session["userid"], input["daily_unit"]);
+                        query = string.Format("update temp_daily set duration = {0} where date_input = '{1}' and user_log = '{2}' and id_unit = {3}"
+                                ,input["time_at_dur"].ToString(CultureInfo.InvariantCulture), DateTime.Today.ToString("yyyy-MM-dd"), Session["userid"], input["daily_unitid"]);
                     }
                     else
                     {
-                        query = string.Format("insert into temp_daily ([user_unit],[duration],[user_log],[date_input]) values ('{0}',{1},'{2}',CAST('{3}' as DATE ))"
-                                ,input["daily_unit"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"));
+                        query = string.Format("insert into temp_daily (id_unit,duration,user_log,date_input) values ({0},{1},'{2}','{3}')"
+                                , input["daily_unitid"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"));
                     }
                     break;
                 case "update":
-                    query = string.Format("update temp_daily set user_unit = '{0}', duration = {1} where user_log = '{2}' and date_input = '{3}' and id = {4}",
-                            input["daily_unit"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"), input["id"]);
+                    query = string.Format("update temp_daily set id_unit = {0}, duration = {1} where user_log = '{2}' and date_input = '{3}' and id = {4}",
+                            input["daily_unitid"], input["time_at_dur"].ToString(CultureInfo.InvariantCulture), Session["userid"], DateTime.Today.ToString("yyyy-MM-dd"), input["id"]);
                     break;
                 default:
                     break;
@@ -373,7 +375,7 @@ namespace chevron.Controllers
         {
             //String qdailytable = "";
 
-            Response.Write("isi dari mob : " +input["mob"]);
+            //Response.Write("isi dari mob : " +input["mob"]);
             
 
             var stb     = (input["standby"] == "") ? Convert.ToInt16(0) :  Convert.ToDecimal(input["standby"]);

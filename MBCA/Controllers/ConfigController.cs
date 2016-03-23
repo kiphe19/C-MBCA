@@ -22,7 +22,8 @@ namespace chevron.Controllers
         public ActionResult Index()
         {
             ViewBag.currency_cat = _getCurrency();
-            ViewBag.vessel = _getVessel();
+            //ViewBag.vessel = _getVessel();
+            ViewBag.vesselid = _getVesselId();
             ViewBag.distance = _getDistance();
             ViewBag.userunit = _getUserUnit();
             ViewBag.mainunit = _getMainUnit();
@@ -195,22 +196,23 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("hire")]
+        [Route("charter")]
         public ActionResult _ApiHire()
         {
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "hire_table")
-                .Model<HireModel>()
-                .Field(new Field("tgl_start")
+                .Model<CharterModel>()
+                .Field(new Field("hire_table.tgl_start")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                 )
-                .Field(new Field("tgl_end")
+                .Field(new Field("hire_table.tgl_end")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                 )
+                .LeftJoin("vessel_table", "vessel_table.id","=","hire_table.id_vessel")
                 .Process(request)
                 .Data();
 
@@ -286,21 +288,38 @@ namespace chevron.Controllers
             return currency;
         }
 
-        private List<SelectListItem> _getVessel()
+        //private List<SelectListItem> _getVessel()
+        //{
+        //    List<SelectListItem> vessel = new List<SelectListItem>();
+        //    con.select("vessel_table", "name");
+
+        //    while (con.result.Read())
+        //    {
+        //        vessel.Add(new SelectListItem
+        //        {
+        //            Text = con.result["name"].ToString(),
+        //            Value = con.result["name"].ToString()
+        //        });
+        //    }
+        //    con.Close();
+        //    var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+        //    return VesselSorted;
+        //}
+        private List<SelectListItem> _getVesselId()
         {
-            List<SelectListItem> vessel = new List<SelectListItem>();
-            con.select("vessel_table", "name");
+            List<SelectListItem> vessel_id = new List<SelectListItem>();
+            con.select("vessel_table", "id,name");
 
             while (con.result.Read())
             {
-                vessel.Add(new SelectListItem
+                vessel_id.Add(new SelectListItem
                 {
                     Text = con.result["name"].ToString(),
-                    Value = con.result["name"].ToString()
+                    Value = con.result["id"].ToString()
                 });
             }
             con.Close();
-            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+            var VesselSorted = (from li in vessel_id orderby li.Text select li).ToList();
             return VesselSorted;
         }
 
@@ -574,11 +593,11 @@ namespace chevron.Controllers
             {
                 case "create":
                     //query = string.format("insert into hire_table ([tgl], [vessel], [cost_usd], [cost_rp]) values ('{0}', '{1}', {2}, {3})", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture));
-                    query = string.Format("insert into hire_table (tgl_start,tgl_end,vessel,cost_usd,mob_cost,mob_rate,curency_cat,periode) " +
-                                        "values ('{0}','{1}','{2}',{3},{4},{5},{6},{7})",
+                    query = string.Format("insert into hire_table (tgl_start,tgl_end,id_vessel,cost_usd,mob_cost,mob_rate,curency_cat,periode) " +
+                                        "values ('{0}','{1}',{2},{3},{4},{5},{6},{7})",
                                         Convert.ToDateTime(input["tgl_start"]).ToString("yyyy-MM-dd"),
                                         Convert.ToDateTime(input["tgl_end"]).ToString("yyyy-MM-dd"),
-                                        input["vessel"],
+                                        input["vesselid"],
                                         charter_rate,
                                         mob_cost,
                                         mob_rate,
@@ -587,10 +606,10 @@ namespace chevron.Controllers
                     break;
                 case "update":
                     //query = string.format("update hire_table set tgl='{0}', vessel='{1}', cost_usd={2}, cost_rp={3} where id={4}", input["tgl"], input["vessel"], hasilusd.tostring(cultureinfo.invariantculture), hasilrp.tostring(cultureinfo.invariantculture), input["id"]);
-                    query = string.Format("update hire_table set tgl_start = '{0}', tgl_end='{1}', vessel = '{2}', cost_usd = {3}, mob_cost={4}, mob_rate={5},curency_cat={6}, periode = {7} where id={8}",
+                    query = string.Format("update hire_table set tgl_start = '{0}', tgl_end='{1}', id_vessel = {2}, cost_usd = {3}, mob_cost={4}, mob_rate={5},curency_cat={6}, periode = {7} where id={8}",
                                         input["tgl_start"], 
                                         input["tgl_end"], 
-                                        input["vessel"], 
+                                        input["vesselid"], 
                                         charter_rate, 
                                         mob_cost, 
                                         mob_rate, 
