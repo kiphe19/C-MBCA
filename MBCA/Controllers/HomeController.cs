@@ -22,6 +22,8 @@ namespace chevron.Controllers
         public ActionResult Index()
         {
             ViewBag.daily_vessel = getListVessel();
+            ViewBag.daily_vesselid = getListVesselId();
+
             //ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
             ViewBag.daily_unitid = getUserUnitId();
@@ -61,6 +63,25 @@ namespace chevron.Controllers
                 {
                     Text = con.result["name"].ToString(),
                     Value = con.result["name"].ToString()
+                });
+            }
+            con.Close();
+
+            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
+
+            return VesselSorted;
+        }
+        private List<SelectListItem> getListVesselId()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+
+            con.select("vessel_table", "id,name");
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["id"].ToString()
                 });
             }
             con.Close();
@@ -205,47 +226,6 @@ namespace chevron.Controllers
             }
         }
 
-        //[Route("dataa")]
-        //public ActionResult _dataActivity()
-        //{
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "activity_table")
-        //        .Model<ActivityModel>()
-        //        .Process(Request.Form)
-        //        .Data();
-
-        //        return Json(response);
-        //    }
-        //}
-
-        //[Route("datau")]
-        //public ActionResult _dataUnit()
-        //{
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "unit_table")
-        //        .Model<UnitDistanceDailyModel>()
-        //        .Process(Request.Form)
-        //        .Data();
-
-        //        return Json(response);
-        //    }
-        //}
-
-        //[Route("datav")]
-        //public ActionResult _dataVessel()
-        //{
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "vessel_table")
-        //        .Model<VesselModel>()
-        //        .Process(Request.Form)
-        //        .Data();
-
-        //        return Json(response);
-        //    }
-        //}
 
         [Route("drill/{tg1}/{tg2}/{unitx}")]
         public ActionResult _dataDrillCompletion(string tg1, string tg2, int unitx)
@@ -314,14 +294,6 @@ namespace chevron.Controllers
             //     JsonRequestBehavior.AllowGet);
         }
 
-        //[Route("drill/{tg1}/{tg2}/{unit}")]
-        //public ActionResult _dataDrillCompletionParam(string tg1, string tg2,string unit)
-        //{
-
-        //    //Response.Write
-        //    return Json(new { date = tg1, date2 = tg2, unitnya = unit },
-        //            JsonRequestBehavior.AllowGet);
-        //}
 
         [Route("cs/daily")]
         [HttpPost]
@@ -429,35 +401,41 @@ namespace chevron.Controllers
             List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
             var skr = DateTime.Now.ToString("yyyy-MM-dd");
             var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], skr);
-            con.select("temp_daily", "count(user_unit) as jml", where);
+            con.select("temp_daily", "count(id_unit) as jml", where);
             con.result.Read();
             var jml_unit = Convert.ToInt16(con.result["jml"]);
             con.Close();
             //Response.Write(jml_unit);
 
             // query jadi berubah ----
-            
-            var qunit = string.Format("select td.user_unit,td.duration,ut.distance from temp_daily td "+
-                                            "inner join unit_table ut on ut.name = td.user_unit "+
-                                            "where td.user_log = '{0}' and td.date_input = '{1}'",Session["userid"],skr);
+            //ambil data table time at //
+            var qunit = string.Format("select td.id_unit,td.duration,dt.distance, dt.id_mainunit "
+                + " from temp_daily td inner join unit_distance_table dt on dt.id_unit = td.id_unit "
+                + " where td.user_log = '{0}' and td.date_input = '{1}' and dt.tgl = '{2}' ", Session["userid"], skr,tanggal);
 
-            Response.Write("mob_cost: " + mob_cost + ", mob_rate: " + mob_demob_rate+"; ");
+
+                //select td.user_unit,td.duration,ut.distance from temp_daily td "+
+                //                            "inner join unit_table ut on ut.name = td.user_unit "+
+                //                            "where td.user_log = '{0}' and td.date_input = '{1}'",Session["userid"],skr);
+
+            //Response.Write("mob_cost: " + mob_cost + ", mob_rate: " + mob_demob_rate+"; ");
             Response.Write(qunit);
 
-            /*
+            //*
             con.query(qunit);
             while (con.result.Read())
             {
                 usernit.Add(new DailyUnitActivityModel
                 {
-                    user_unit = con.result["user_unit"].ToString(),
+                    //user_unit = con.result["user_unit"].ToString(),
+                    id_unit = Convert.ToInt32(con.result["id_unit"]),
                     durasi = (decimal)con.result["duration"],
                     jarak = Convert.ToInt32(con.result["distance"]),
                     hit = Convert.ToInt16(1)
                 });
             }
             con.Close();
-            */
+            //*/
             // ------------
             //buat variabel total jarak, dan jumlah user_unit
             decimal total_jarak = 0, tot_hit = 0;
@@ -472,11 +450,12 @@ namespace chevron.Controllers
             {
                 foreach (DailyUnitActivityModel unit in usernit)
                 {
-                    //simpan ke daily_table    
-                    var qdailytable = string.Format("insert into daily_table (tgl,vessel,standby,loading,steaming,downtime,user_unit,duration,distance,fuel_tot,user_log,date_input) " +
-                        "values (cast('{0}' as DATE),'{1}',{2},{3},{4},{5},'{6}',{7},{8},{9},'{10}','{11}'); "
-                        ,input["daily_date"], input["daily_vessel"], stb, load, steam, down, unit.user_unit, unit.durasi, unit.jarak, fuel, Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
+                    //simpan ke daily_table untuk log daily     
+                    var qdailytable = string.Format("insert into daily_table (tgl,id_vessel,standby,loading,steaming,downtime,id_unit,duration,distance,fuel_tot,user_log,date_input) " 
+                                + " values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},'{10}','{11}'); "
+                                ,tanggal, input["daily_vesselid"], stb, load, steam, down, unit.id_unit, unit.durasi, unit.jarak, fuel, Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"));
                     //Response.Write(qdailytable);
+
                     con.queryExec(qdailytable);
 
                     t_standby = stb / tot_hit;
@@ -491,9 +470,10 @@ namespace chevron.Controllers
                     t_all_mob = t_stb_mob + t_load + t_steam + unit.durasi;
                     mob_price = t_all_mob *(mob_demob_rate/24);
                     
-
-                    var q_rpt1 = string.Format("insert into report_daily (tgl,vessel,user_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price) values ('{0}','{1}','{2}',{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}); ",
-                            tanggal,input["daily_vessel"],unit.user_unit,t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga,charter_price,curr_charter,mob_price
+                    //simpan ke report_daily untuk Reporting
+                    var q_rpt1 = string.Format("insert into report_daily (tgl,id_vessel,id_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price) "
+                            +" values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}); ",
+                            tanggal,input["daily_vesselid"],unit.id_unit, t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga,charter_price,curr_charter,mob_price
                         );
                     //Response.Write(q_rpt1);
                     con.queryExec(q_rpt1);
@@ -507,7 +487,7 @@ namespace chevron.Controllers
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
             //Response.Write(qdelete);
 
-            //con.queryExec(qdelete);
+            con.queryExec(qdelete);
             //return "success";
         }
 

@@ -11,7 +11,7 @@ namespace chevron.Models
         public int id { get; set; }
 
         public string user_unit { get; set; }
-
+        public Int32 id_unit { get; set; }
         public decimal durasi { get; set; }
         public int jarak { get; set; }
         public int hit { get; set; }
