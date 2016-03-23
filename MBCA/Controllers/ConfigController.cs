@@ -218,24 +218,24 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("demob")]
-        public ActionResult _ApiDemob()
-        {
-            var request = System.Web.HttpContext.Current.Request;
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "demob_table")
-                .Model<DemobModel>()
-                .Field(new Field("tgl")
-                    .Validator(Validation.DateFormat("MM/dd/yyyy"))
-                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                )
-                .Process(request)
-                .Data();
+        //[Route("demob")]
+        //public ActionResult _ApiDemob()
+        //{
+        //    var request = System.Web.HttpContext.Current.Request;
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "demob_table")
+        //        .Model<DemobModel>()
+        //        .Field(new Field("tgl")
+        //            .Validator(Validation.DateFormat("MM/dd/yyyy"))
+        //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+        //        )
+        //        .Process(request)
+        //        .Data();
 
-                return Json(response);
-            }
-        }
+        //        return Json(response);
+        //    }
+        //}
 
         [Route("currency")]
         public ActionResult _ApiCurrency()

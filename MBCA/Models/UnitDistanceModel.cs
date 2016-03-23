@@ -12,7 +12,7 @@ namespace chevron.Models
         {
             public Int32 Id { get; set; }
             public string name { get; set; }
-            public string afe { get; set; }
+            //public string afe { get; set; }
             public string ket { get; set; }
 
         }

@@ -394,6 +394,7 @@ $(document).ready(function () {
                 }
             },
             {
+                extend : 'edit',
                 text: "Edit",
                 action: function () {
                     var a = CharterTable.rows('.selected').indexes();
@@ -462,68 +463,68 @@ $(document).ready(function () {
         ]
     })
 
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/demob",
-        table: "#demobTable"
-    })
+    //editor = new $.fn.dataTable.Editor({
+    //    ajax: "api/demob",
+    //    table: "#demobTable"
+    //})
 
-    DemobTable = $("#demobTable").DataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/demob",
-            type: "post"
-        },
-        select: true,
-        columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "tgl" },
-            { data: "vessel" },
-            {
-                data: null, render: function (data) {
-                    return "$" + Number(data.cost_usd).toLocaleString();
-                }
-            },
-            {
-                data: null, render: function (data) {
-                    return "Rp" + Number(data.cost_rp).toLocaleString();
-                }
-            }
-        ],
-        buttons: [
-            {
-                text: "New",
-                action: function () {
-                    $("#modalDemob").modal({ backdrop: false });
-                    $("#modalDemob button[type='submit']").text("Add")
-                    $("#modalDemob input").val(null);
-                    $("#modalDemob input[name='action']").val("create");
-                }
-            },
-            {
-                text: "Edit",
-                action: function () {
-                    var a = DemobTable.rows('.selected').indexes();
-                    var b = DemobTable.row(a).data();
-                    if (a.length > 0) {
-                        $("#modalDemob").modal({ backdrop: false });
-                        $("#modalDemob input[name='tgl']").val(b.tgl);
-                        $("#modalDemob input[name='cost']").val(b.cost_usd);
-                        $("#modalDemob input[name='action']").val("update");
-                        $("#modalDemob input[name='id']").val(b.id);
-                        $("#modalDemob select[id='vessel'").val(b.vessel)
-                        $("#modalDemob button[type='submit']").text("Update")
-                    }
-                }
-            },
-            { extend: "remove", editor: editor }
-        ]
-    }).on('init', function () {
-        i = 1;
-    });
+    //DemobTable = $("#demobTable").DataTable({
+    //    dom: "Bfrtip",
+    //    ajax: {
+    //        url: "api/demob",
+    //        type: "post"
+    //    },
+    //    select: true,
+    //    columns: [
+    //        {
+    //            data: null, render: function (data, type, row) {
+    //                return i++;
+    //            }
+    //        },
+    //        { data: "tgl" },
+    //        { data: "vessel" },
+    //        {
+    //            data: null, render: function (data) {
+    //                return "$" + Number(data.cost_usd).toLocaleString();
+    //            }
+    //        },
+    //        {
+    //            data: null, render: function (data) {
+    //                return "Rp" + Number(data.cost_rp).toLocaleString();
+    //            }
+    //        }
+    //    ],
+    //    buttons: [
+    //        {
+    //            text: "New",
+    //            action: function () {
+    //                $("#modalDemob").modal({ backdrop: false });
+    //                $("#modalDemob button[type='submit']").text("Add")
+    //                $("#modalDemob input").val(null);
+    //                $("#modalDemob input[name='action']").val("create");
+    //            }
+    //        },
+    //        {
+    //            text: "Edit",
+    //            action: function () {
+    //                var a = DemobTable.rows('.selected').indexes();
+    //                var b = DemobTable.row(a).data();
+    //                if (a.length > 0) {
+    //                    $("#modalDemob").modal({ backdrop: false });
+    //                    $("#modalDemob input[name='tgl']").val(b.tgl);
+    //                    $("#modalDemob input[name='cost']").val(b.cost_usd);
+    //                    $("#modalDemob input[name='action']").val("update");
+    //                    $("#modalDemob input[name='id']").val(b.id);
+    //                    $("#modalDemob select[id='vessel'").val(b.vessel)
+    //                    $("#modalDemob button[type='submit']").text("Update")
+    //                }
+    //            }
+    //        },
+    //        { extend: "remove", editor: editor }
+    //    ]
+    //}).on('init', function () {
+    //    i = 1;
+    //});
 
     editor = new $.fn.dataTable.Editor({
         ajax: "api/users",
@@ -553,6 +554,7 @@ $(document).ready(function () {
                 }
             },
             {
+                extend: 'edit',
                 text: "Edit",
                 action: function () {
                     var a = userTable.rows('.selected').indexes();

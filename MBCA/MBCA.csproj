@@ -174,7 +174,6 @@
     <Compile Include="Models\DailyActivityModel.cs" />
     <Compile Include="Models\DailyTableModel.cs" />
     <Compile Include="Models\DailyUnitActivityModel.cs" />
-    <Compile Include="Models\DemobModel.cs" />
     <Compile Include="Models\DistanceModel.cs" />
     <Compile Include="Models\DrillModel.cs" />
     <Compile Include="Models\FuelModel.cs" />

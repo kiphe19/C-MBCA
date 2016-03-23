@@ -22,7 +22,7 @@ namespace chevron.Controllers
         public ActionResult Index()
         {
             ViewBag.daily_vessel = getListVessel();
-            ViewBag.daily_activity = getListActivity();
+            //ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
             ViewBag.daily_unitid = getUserUnitId();
             return View();
@@ -32,24 +32,24 @@ namespace chevron.Controllers
         /// Dropdown
         /// </summary>
 
-        private List<SelectListItem> getListAfe()
-        {
-            List<SelectListItem> afe = new List<SelectListItem>();
+        //private List<SelectListItem> getListAfe()
+        //{
+        //    List<SelectListItem> afe = new List<SelectListItem>();
 
-            con.select("unit_table", "id,afe,name");
-            while (con.result.Read())
-            {
-                afe.Add(new SelectListItem
-                {
-                    Text = con.result["afe"].ToString(),
-                    Value = con.result["id"].ToString()
-                });
-            }
-            con.Close();
+        //    con.select("unit_table", "id,afe,name");
+        //    while (con.result.Read())
+        //    {
+        //        afe.Add(new SelectListItem
+        //        {
+        //            Text = con.result["afe"].ToString(),
+        //            Value = con.result["id"].ToString()
+        //        });
+        //    }
+        //    con.Close();
 
-            var AfeSorted = (from li in afe orderby li.Text select li).ToList();
-            return AfeSorted;
-        }
+        //    var AfeSorted = (from li in afe orderby li.Text select li).ToList();
+        //    return AfeSorted;
+        //}
         private List<SelectListItem> getListVessel()
         {
             List<SelectListItem> vessel = new List<SelectListItem>();
@@ -70,25 +70,25 @@ namespace chevron.Controllers
             return VesselSorted;
         }
 
-        private List<SelectListItem> getListActivity()
-        {
-            List<SelectListItem> activity = new List<SelectListItem>();
+        //private List<SelectListItem> getListActivity()
+        //{
+        //    List<SelectListItem> activity = new List<SelectListItem>();
 
-            con.select("activity_table", "name");
-            while (con.result.Read())
-            {
-                activity.Add(new SelectListItem
-                {
-                    Text = con.result["name"].ToString(),
-                    Value = con.result["name"].ToString()
-                });
-            }
-            con.Close();
+        //    con.select("activity_table", "name");
+        //    while (con.result.Read())
+        //    {
+        //        activity.Add(new SelectListItem
+        //        {
+        //            Text = con.result["name"].ToString(),
+        //            Value = con.result["name"].ToString()
+        //        });
+        //    }
+        //    con.Close();
 
-            var ActivitySorted = (from li in activity orderby li.Text select li).ToList();
+        //    var ActivitySorted = (from li in activity orderby li.Text select li).ToList();
 
-            return ActivitySorted;
-        }
+        //    return ActivitySorted;
+        //}
 
         private List<SelectListItem> getUserUnit()
         {
@@ -373,6 +373,9 @@ namespace chevron.Controllers
         {
             //String qdailytable = "";
 
+            Response.Write("isi dari mob : " +input["mob"]);
+            
+
             var stb     = (input["standby"] == "") ? Convert.ToInt16(0) :  Convert.ToDecimal(input["standby"]);
             var load    = (input["load"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["load"]);
             var steam   = (input["steaming"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["steaming"]);
@@ -409,8 +412,9 @@ namespace chevron.Controllers
             if(con.result.HasRows)
             {
                 charter_rate    = Convert.ToDecimal(con.result["cost_usd"]);
-                mob_cost        = Convert.ToDecimal(con.result["mob_cost"]);
-                mob_demob_rate  = Convert.ToDecimal(con.result["mob_rate"]);
+                
+                mob_cost        = (input["mob"] == "" )?  0 : Convert.ToDecimal(con.result["mob_cost"]) ;
+                mob_demob_rate  = (input["mob"] == "") ? 0 : Convert.ToDecimal(con.result["mob_rate"]);
                 curr_charter    = Convert.ToDecimal(con.result["curency_cat"]);
                 period          = Convert.ToDecimal(con.result["periode"]);
             }
@@ -429,9 +433,16 @@ namespace chevron.Controllers
             con.Close();
             //Response.Write(jml_unit);
 
+            // query jadi berubah ----
+            
             var qunit = string.Format("select td.user_unit,td.duration,ut.distance from temp_daily td "+
                                             "inner join unit_table ut on ut.name = td.user_unit "+
                                             "where td.user_log = '{0}' and td.date_input = '{1}'",Session["userid"],skr);
+
+            Response.Write("mob_cost: " + mob_cost + ", mob_rate: " + mob_demob_rate+"; ");
+            Response.Write(qunit);
+
+            /*
             con.query(qunit);
             while (con.result.Read())
             {
@@ -444,6 +455,8 @@ namespace chevron.Controllers
                 });
             }
             con.Close();
+            */
+            // ------------
             //buat variabel total jarak, dan jumlah user_unit
             decimal total_jarak = 0, tot_hit = 0;
             foreach (DailyUnitActivityModel unit_jar in usernit) {
@@ -491,205 +504,11 @@ namespace chevron.Controllers
             //delete setelah input
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
             //Response.Write(qdelete);
-            con.queryExec(qdelete);
+
+            //con.queryExec(qdelete);
             //return "success";
         }
 
-        [Route("save/daily_")]
-        [HttpPost]
-        public void saveDailytoMonthly()
-        {
-            var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-            var kueriDelete = string.Format("delete from daily_activity where tgl= '{0}'", nowDate);
-
-            List<DailyActivityModel> dataDaily = new List<DailyActivityModel>();
-
-            var where = string.Format("user_log='{0}' and tgl_input='{1}'", Session["userid"], nowDate);
-            con.select("daily_activity", "tgl, vessel, activity, duration, unit", where);
-
-            while (con.result.Read())
-            {
-                dataDaily.Add(new DailyActivityModel
-                {
-                    activity = con.result["activity"].ToString(),
-                    duration = (decimal)con.result["duration"],
-                    tgl = DateTime.Parse(con.result["tgl"].ToString()).ToString("MM/dd/yyy"),
-                    vessel = con.result["vessel"].ToString(),
-                    unit = con.result["unit"].ToString(),
-                });
-            }
-
-            con.Close();
-            //Response.Write(dataDaily);
-
-            foreach (DailyActivityModel daily in dataDaily)
-            {
-                var Query = String.Format("insert into monthly_activity ([tgl], [vessel], [activity], [duration], [unit]) \n" +
-                        "values('{0}', '{1}', '{2}', {3}, '{4}')",
-                        daily.tgl, daily.vessel, daily.activity, daily.duration.ToString(CultureInfo.InvariantCulture), daily.unit
-                    );
-                con.queryExec(Query);
-            }
-
-            List<ReportModelCS> ya = new List<ReportModelCS>();
-            List<ReportModelCS> tidak = new List<ReportModelCS>();
-            Decimal standby = 0, load = 0, steaming = 0, countDistance = 0,downTime = 0;
-            Decimal rupiah = 0, dollar = 0, totalFuel = 0, charter_usd = 0, charter_rp = 0, demob_usd = 0, demob_rp = 0;
-
-            var query = "select vt.id as vessel_id, da.vessel, da.unit, da.duration, da.fuel, ut.distance, (select sum(unit_cat) from daily_activity) as jml \n" +
-                                       "from daily_activity da \n" +
-                                       "inner join vessel_table vt \n" +
-                                       "on vt.name = da.vessel \n" +
-                                       "inner join unit_table ut \n" +
-                                       "on da.unit = ut.name \n" +
-                                       "where da.unit_cat=1 and da.tgl = '" + nowDate + "'";
-
-            var query2 = "select vt.id as vessel_id, da.vessel, da.activity, da.duration, da.fuel from daily_activity da \n" +
-                                       "inner join vessel_table vt \n" +
-                                       "on vt.name = da.vessel \n" +
-                                       "inner join unit_table ut \n" +
-                                       "on da.unit = ut.name \n" +
-                                       "where da.unit_cat!=1";
-
-            var query3 = "select top 1 cost_usd, cost_rp from fuel_table";
-            var query4 = "";
-
-            try
-            {
-                con.query(query);
-                while (con.result.Read())
-                {
-                    ya.Add(new ReportModelCS
-                    {
-                        vessel_id = int.Parse(con.result["vessel_id"].ToString()),
-                        vessel_name = con.result["vessel"].ToString(),
-                        duration = Decimal.Parse(con.result["duration"].ToString()),
-                        distance = int.Parse(con.result["distance"].ToString()),
-                        fuel = int.Parse(con.result["fuel"].ToString()),
-                        jml = int.Parse(con.result["jml"].ToString()),
-                        unit = con.result["unit"].ToString()
-                    });
-                }
-                con.Close();
-
-                query4 = string.Format("select top 1 tgl, cost_usd, cost_rp \n" +
-                    "from hire_table where vessel = '{0}' order by tgl desc", 
-                    ya[0].vessel_name
-                    );
-
-                con.query(query2);
-                while (con.result.Read())
-                {
-                    tidak.Add(new ReportModelCS
-                    {
-                        vessel_id = int.Parse(con.result["vessel_id"].ToString()),
-                        vessel_name = con.result["vessel"].ToString(),
-                        duration = Decimal.Parse(con.result["duration"].ToString()),
-                        activity = con.result["activity"].ToString(),
-                    });
-                }
-                con.Close();
-
-                con.query(query4);
-                while (con.result.Read())
-                {
-                    charter_usd = Decimal.Parse(con.result["cost_usd"].ToString());
-                    charter_rp = Decimal.Parse(con.result["cost_rp"].ToString());
-                }
-                con.Close();
-
-                query4 = string.Format("select top 1 tgl, cost_usd, cost_rp \n" +
-                    "from demob_table where vessel = '{0}' order by tgl desc",
-                    ya[0].vessel_name
-                    );
-
-                con.query(query4);
-                while (con.result.Read())
-                {
-                    demob_usd = Decimal.Parse(con.result["cost_usd"].ToString());
-                    demob_rp = Decimal.Parse(con.result["cost_rp"].ToString());
-                }
-                con.Close();
-
-                con.query(query3);
-                while (con.result.Read())
-                {
-                    dollar = Decimal.Parse(con.result["cost_usd"].ToString());
-                    rupiah = Decimal.Parse(con.result["cost_rp"].ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-
-                Response.Write(ex.Message);
-            }
-            finally
-            {
-                con.Close();
-            }
-
-
-            foreach (var item in ya)
-            {
-                countDistance += item.distance; //Hitung jumlah jarak 
-            }
-
-            foreach (var item in ya)
-            {
-                for (int i = 0; i < tidak.Count; i++)
-                {
-                    switch (tidak[i].activity)
-                    {
-                        case "Standby":
-                            standby = tidak[i].duration / item.jml;
-                            break;
-                        case "Load":
-                            load = tidak[i].duration / item.jml;
-                            break;
-                        case "Steaming Time":
-                            steaming = tidak[i].duration * (item.distance / countDistance);
-                            break;
-                        case "Downtime":
-                            downTime = tidak[i].duration;
-                            break;
-                        default:
-                            break;
-                    }
-                    
-                }
-
-                //Response.Write("Standby = " + standby.ToString("f2") + " Load = " + load.ToString("f2") + " Steaming = " + steaming.ToString("f2") + "<br />");
-                Decimal hasil = standby + load + steaming + item.duration;
-                
-                Decimal hasil_charter_usd = hasil * (charter_usd / 24);
-                Decimal hasil_charter_rp = hasil * (charter_rp / 24);
-
-                Decimal hasil_demob_usd = hasil * (demob_usd / 24);
-                Decimal hasil_demob_rp = hasil * (demob_rp / 24);
-
-                //hasil = hasil;
-
-                //Response.Write("Hasilnya adalah == " + hasil.ToString("f3") + "<br />");
-                //Response.Write("ini downtime : " + downTime + "<br/>");
-
-                totalFuel = hasil * item.fuel / (24 - downTime);
-
-                Decimal duit1 = dollar * totalFuel,
-                        duit2 = rupiah * totalFuel;
-
-                var qp = String.Format(
-                    "insert into report_table ([vessel_id], [vessel_name], [unit], [date], [fuel_liter], [fuel_usd], [fuel_rp], [standby_time], [load_time], [steaming_time], [down_time], [charter_usd], [charter_rp], [demob_usd], [demob_rp]) \n" +
-                    "VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14})",
-                     item.vessel_id, item.vessel_name, item.unit, nowDate, totalFuel.ToString("n3", CultureInfo.InvariantCulture), duit1.ToString("f3", CultureInfo.InvariantCulture), duit2.ToString("f3", CultureInfo.InvariantCulture), standby.ToString(CultureInfo.InvariantCulture), load.ToString(CultureInfo.InvariantCulture), steaming.ToString(CultureInfo.InvariantCulture), downTime.ToString(CultureInfo.InvariantCulture),
-                     hasil_charter_usd.ToString(CultureInfo.InvariantCulture), hasil_charter_rp.ToString(CultureInfo.InvariantCulture), hasil_demob_usd.ToString(CultureInfo.InvariantCulture), hasil_demob_rp.ToString(CultureInfo.InvariantCulture)
-                    );
-                con.queryExec(qp);
-                //Response.Write(qp + "<br><hr>");
-            }
-
-            con.queryExec(kueriDelete);
-            Response.Write("true");
-        }
 
         [Route("filter/monthly")]
         [HttpPost]
@@ -742,8 +561,9 @@ namespace chevron.Controllers
                 qq = string.Format("update drilling_table set id_unit={0}, well='{1}', afe = '{2}',psc_no='{3}',tgl = '{4}',t_start = '{5}',t_end='{6}',durasi={7} where id = {8}", input["daily_unitid"], input["well"], input["afe"], input["psc"], input["drill_date"], input["t_start"], input["t_end"], dur.TotalHours,input["id"]);
 
             }
+            Response.Write(input["mob"]);
             //Response.Write(qq);
-            con.queryExec(qq);
+            //con.queryExec(qq);
             return "success";
 
         }
