@@ -28,15 +28,16 @@ $(document).ready(function () {
                 name: "vs_desc"
             }
         ]
-    }).on('initCreate', function () {
-        i = vesselTable.data().length + 1;
-    }).on('remove', function () {
-        i = 1;
-        vesselTable.ajax.reload()
-    }).on('edit', function () {
-        i = 1;
-        vesselTable.ajax.reload()
-    })
+    });
+    //    .on('initCreate', function () {
+    //    i = vesselTable.data().length + 1;
+    //}).on('remove', function () {
+    //    i = 1;
+    //    vesselTable.ajax.reload()
+    //}).on('edit', function () {
+    //    i = 1;
+    //    vesselTable.ajax.reload()
+    //})
 
     vesselTable = $('#vesselTable').DataTable({
         dom: "Bfrtip",
@@ -46,9 +47,10 @@ $(document).ready(function () {
         },
         columns: [
             {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
+                data: null
+                //, render: function (data, type, row) {
+                //    return i++;
+                //}
             },
             { data: "name" },
             { data: "vs_desc" }
@@ -58,57 +60,16 @@ $(document).ready(function () {
             { extend: 'create', editor: editor, text: "Add New Vessel" },
             { extend: 'edit', editor: editor },
             { extend: 'remove', editor: editor },
-        ]
-    }).on('init', function () {
-        i = 1;
-    })
-
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/activity",
-        table: "#activityTable",
-        fields: [
-            { label: "Activity Name", name: "activity_name" },
-            { label: "Description", name: "activity_ket" }
-        ]
-    });
-
-    $('#activityTable').DataTable({
-        dom: "Bfrtip",
-        ajax: {
-            url: "api/activity",
-            type: 'post'
-        },
-        columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
-            { data: "activity_name" },
-            { data: "activity_ket" }
         ],
-        select: true,
-        buttons: [
-            {
-                extend: 'create',
-                editor: editor,
-                text: "Add New Activity",
-            },
-            {
-                extend: 'edit',
-                editor: editor
-            },
-            {
-                extend: 'remove',
-                editor: editor,
-            },
-        ]
-    }).on('init', function () {
-        i = 1;
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
     });
 
-
-    
     var today = new Date();
     var yyyy = today.getFullYear();
     var mm = ((today.getMonth()+1)<10)? "0"+(today.getMonth()+1) :(today.getMonth()+1) ;
@@ -141,11 +102,7 @@ $(document).ready(function () {
             type: "post",
         },
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
+            { data: null },
             { data: "unit_table.name" },
             { data: "mainunit_table.nama" },
             { data: "unit_distance_table.distance" },
@@ -169,20 +126,20 @@ $(document).ready(function () {
                     $("#modalUnitDistance button[type='submit']").text("Add Distance");
                     $("#modalUnitDistance input").val(null);
                 }
-            
+
             },
             {
                 text: "Main Unit",
-                action : function(){
+                action: function () {
                     $("#modalUnittoMainUnit").modal({ backdrop: false });
                 }
             },
             {
-                extend : 'edit',
+                extend: 'edit',
                 text: "Edit Unit",
                 action: function () {
                     var a = unitTable.rows('.selected').data(), b = a[0];
-                    console.log(b);
+                    //console.log(b);
                     if (a.length > 0) {
                         $("#modalBarge").modal({ backdrop: false })
                         $("#modalBarge input[name='action']").val("update")
@@ -195,11 +152,17 @@ $(document).ready(function () {
                     }
                 }
             },
-            { extend: 'remove', text: 'Delete Unit',editor: unitEditor }
-        ]
-    }).on('init', function () {
-        i = 1;
+            { extend: 'remove', text: 'Delete Unit', editor: unitEditor }
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
     });
+
     editorMainunit = new $.fn.dataTable.Editor({
         ajax: "api/mainunit",
         table: "#mainunitTable"
@@ -208,18 +171,14 @@ $(document).ready(function () {
         //    { label: "Distance", name: "distance" }
         //]
     })
-    mainunittable = $('#mainunitTable').DataTable({
+    var MainunitTable = $('#mainunitTable').DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/mainunit",
             type: "post"
         },
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
+            {data: null},
             { data: "nama" },
             { data: "description" }
         ],
@@ -235,11 +194,33 @@ $(document).ready(function () {
                     $("#modalMainUnit input[name='action']").val("create");
                 }
             },
-            { extend: "edit", editor: editor },
+            {
+                extend: "edit",
+                text: 'Edit',
+                action: function () {
+                    var a = MainunitTable.rows('.selected').data(), b = a[0];
+                    //console.log(b);
+                    if (a.length > 0) {
+                        $("#modalMainUnit").modal({ backdrop: false });
+                        $("#modalMainUnit button[type='submit']").text("Update")
+                        $("#modalMainUnit input[name='action']").val("update");
+                        $("#modalMainUnit input[name='id']").val(b.id);
+                        $("#modalMainUnit input[name='mainunit_name']").val(b.nama);
+                        $("#modalMainUnit input[name='mainunit_desc']").val(b.description);
+                    }
+                }
+                //editor: editor
+            },
             { extend: "remove", editor: editorMainunit }
-        ]
-    }).on('init', function () {
-        i = 1;
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
+
     });
 
 
@@ -262,14 +243,11 @@ $(document).ready(function () {
             type: 'post'
         },
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
+            {data: null},
             { data: "distance_name" },
             {
-                data: null, render: function (data, type, row) {
+                data: null,
+                render: function (data, type, row) {
                     return data.distance + " NMi";
                 }
             }
@@ -279,12 +257,17 @@ $(document).ready(function () {
             { extend: "create", editor: editor, text: "Create new Area" },
             { extend: "edit", editor: editor },
             { extend: "remove", editor: editor }
-        ]
-    }).on('init', function () {
-        i = 1;
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
     });
 
-    editor = new $.fn.dataTable.Editor({
+    Fueleditor = new $.fn.dataTable.Editor({
         ajax: "api/fuel",
         table: "#fuelTable"
     })
@@ -297,24 +280,18 @@ $(document).ready(function () {
             type: "post"
         },
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
+            {data: null},
             { data: "tgl" },
             {
-                data: null, render: function (data, type, row) {
+                data: null,
+                render: function (data, type, row) {
                     return Number(data.cost_usd).toLocaleString();
                 }
             },
             {
                 data: null, render: function (data, type, row) {
-                    if (data.currency_type === 1) {
-                        return "USD";
-                    }
+                    if (data.currency_type === 1) return "USD";
                     else return "IDR";
-                    
                     //return "Rp" + Number(data.currency_type).toLocaleString();
                 }
             }
@@ -343,10 +320,15 @@ $(document).ready(function () {
             //        }
             //    }
             //},
-            { extend: "remove", editor: editor }
-        ]
-    }).on('init', function () {
-        i = 1;
+            { extend: "remove", editor: Fueleditor }
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
     });
 
     CharterEditor = new $.fn.dataTable.Editor({
@@ -362,11 +344,7 @@ $(document).ready(function () {
         },
         select: true,
         columns: [
-            {
-                data: null, render: function (data, type, row) {
-                    return i++;
-                }
-            },
+            { data: null },
             { data: "hire_table.tgl_start" },
             { data: "hire_table.tgl_end" },
             { data: "vessel_table.name" },
@@ -375,8 +353,8 @@ $(document).ready(function () {
             {
                 data: "hire_table.curency_cat",
                 render: function (data) {
-                    if (data === 1) return "USD"
-                    else return "IDR"
+                    if (data === 1) return "USD";
+                    else return "IDR";
                 }
             }
         ],
@@ -391,7 +369,7 @@ $(document).ready(function () {
                 }
             },
             {
-                extend : 'edit',
+                extend: 'edit',
                 text: "Edit",
                 action: function () {
                     var a = CharterTable.rows('.selected').indexes();
@@ -411,127 +389,40 @@ $(document).ready(function () {
                 }
             },
             { extend: "remove", editor: CharterEditor }
-        ]
-    }).on('init', function () {
-        i = 1;
-    })
-
-    editor = new $.fn.dataTable.Editor({
-        ajax: "api/currency",
-        table: "#currencyTable"
-    })
-
-    currencyTable = $("#currencyTable").DataTable({
-        dom: '<B<"floatright"f>>rtip',
-        ajax: {
-            url: "api/currency",
-            type: "post"
-        },
-        serverSide: true,
-        columns: [
-            { data: "currency_name" },
-            { data: "currency_value" },
-            { data: "last_up" }
         ],
-        select: true,
-        buttons: [
-            {
-                text: "Edit", action: function (e, dt, node, config) {
-                    var q = currencyTable.rows('.selected').indexes()
-                    if (q.length !== 0) {
-                        var a = currencyTable.row(q).data();
-                        $("#modalCurrency").modal({
-                            backdrop: false
-                        })
-                        $("#modalCurrency form input[name='currency_name']").val(a.currency_name);
-                        $("#modalCurrency form input[name='currency_value']").val(a.currency_value);
-                        $("#modalCurrency form input[name='currency_id']").val(a.id);
-                    }
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
                 }
-            },
-            { extend: "remove", editor: editor }
-        ]
-    })
+            }
+        }
+    });
 
-    //editor = new $.fn.dataTable.Editor({
-    //    ajax: "api/demob",
-    //    table: "#demobTable"
-    //})
 
-    //DemobTable = $("#demobTable").DataTable({
-    //    dom: "Bfrtip",
-    //    ajax: {
-    //        url: "api/demob",
-    //        type: "post"
-    //    },
-    //    select: true,
-    //    columns: [
-    //        {
-    //            data: null, render: function (data, type, row) {
-    //                return i++;
-    //            }
-    //        },
-    //        { data: "tgl" },
-    //        { data: "vessel" },
-    //        {
-    //            data: null, render: function (data) {
-    //                return "$" + Number(data.cost_usd).toLocaleString();
-    //            }
-    //        },
-    //        {
-    //            data: null, render: function (data) {
-    //                return "Rp" + Number(data.cost_rp).toLocaleString();
-    //            }
-    //        }
-    //    ],
-    //    buttons: [
-    //        {
-    //            text: "New",
-    //            action: function () {
-    //                $("#modalDemob").modal({ backdrop: false });
-    //                $("#modalDemob button[type='submit']").text("Add")
-    //                $("#modalDemob input").val(null);
-    //                $("#modalDemob input[name='action']").val("create");
-    //            }
-    //        },
-    //        {
-    //            text: "Edit",
-    //            action: function () {
-    //                var a = DemobTable.rows('.selected').indexes();
-    //                var b = DemobTable.row(a).data();
-    //                if (a.length > 0) {
-    //                    $("#modalDemob").modal({ backdrop: false });
-    //                    $("#modalDemob input[name='tgl']").val(b.tgl);
-    //                    $("#modalDemob input[name='cost']").val(b.cost_usd);
-    //                    $("#modalDemob input[name='action']").val("update");
-    //                    $("#modalDemob input[name='id']").val(b.id);
-    //                    $("#modalDemob select[id='vessel'").val(b.vessel)
-    //                    $("#modalDemob button[type='submit']").text("Update")
-    //                }
-    //            }
-    //        },
-    //        { extend: "remove", editor: editor }
-    //    ]
-    //}).on('init', function () {
-    //    i = 1;
-    //});
-
-    editor = new $.fn.dataTable.Editor({
+    userEditor = new $.fn.dataTable.Editor({
         ajax: "api/users",
         table: "#userTable"
     })
 
     userTable = $("#userTable").DataTable({
         //dom: "<'top'Bf>rt<'bottom'lp><'clear'>",
-        dom : "Brftip",
+        dom: "Brftip",
         ajax: {
             url: "api/users",
-            type: "post"
+            type: 'post'
         },
         select: true,
         columns: [
+            { data: null },
             { data: "username" },
-            { data: "tingkat" }
+            {
+                data: "tingkat",
+                render: function (data) {
+                    if (data == "0") return "Administrator";
+                    else return "Operator";
+                }
+            }
         ],
         buttons: [
             {
@@ -544,7 +435,7 @@ $(document).ready(function () {
                 }
             },
             {
-                extend: 'edit',
+                //extend: "edit',
                 text: "Edit",
                 action: function () {
                     var a = userTable.rows('.selected').indexes();
@@ -553,8 +444,8 @@ $(document).ready(function () {
                     if (a.length > 0) {
                         $("#modalUser").modal({ backdrop: false });
                         $("#modalUser input[name='action']").val("update");
+                        $("#modalUser input[name='id']").val(b.id);
                         $("#modalUser input[name='username']").val(b.username);
-                        $("#modalUser input[name='id']").val(b.username);
                         $("#modalUser input[name='password']").attr("placeholder", "New Password");
                         //$("#modalUser select[name='level'] option:selected").text(b.tingkat);
                         $("#modalUser select[name='level'] option[value='" + b.tingkat + "']").prop("selected", true);
@@ -562,9 +453,16 @@ $(document).ready(function () {
                     }
                 }
             },
-            { extend: "remove", editor: editor }
-        ]
-    })
+            { extend: "remove", editor: userEditor }
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
+    });
 
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
@@ -613,8 +511,17 @@ $(document).ready(function () {
 
     $("#modalMainUnit form").submit(function (e) {
         var data = $(this).serialize();
-        console.log(data);
+        //console.log(data);
+        $.post("api/cs/mainunit", data, function (res) {
+            if (res == "success") {
+                $("#modalMainUnit").modal('hide');
+                MainunitTable.ajax.reload();
+            } else {
+                alert(res);
+            }
+        });
         e.preventDefault();
+
     });
     $("#modalCharter form").submit(function (e) {
         var data = $(this).serialize();
@@ -641,18 +548,18 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    $("#modalCurrency form").submit(function (e) {
-        var data = $(this).serialize();
-        $.post("api/cs/currency", data, function (res) {
-            if (res == "success") {
-                $("#modalCurrency").modal('hide');
-                CharterTable.ajax.reload();
-            } else {
-                alert(res);
-            }
-        })
-        e.preventDefault();
-    });
+    //$("#modalCurrency form").submit(function (e) {
+    //    var data = $(this).serialize();
+    //    $.post("api/cs/currency", data, function (res) {
+    //        if (res == "success") {
+    //            $("#modalCurrency").modal('hide');
+    //            CharterTable.ajax.reload();
+    //        } else {
+    //            alert(res);
+    //        }
+    //    })
+    //    e.preventDefault();
+    //});
     $('#tbl_cari').click(function () {
         var sss = new Date($('#tgl_cari').val());
         var carii = sss.getFullYear() + "-" + (sss.getMonth() + 1) + "-" + sss.getDate();

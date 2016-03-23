@@ -50,24 +50,24 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("activity")]
-        public ActionResult _ApiActivity()
-        {
-            var request = System.Web.HttpContext.Current.Request;
+        //[Route("activity")]
+        //public ActionResult _ApiActivity()
+        //{
+        //    var request = System.Web.HttpContext.Current.Request;
 
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "activity_table")
-                .Model<ActivityModel>()
-                .Field(new Field("name")
-                    .Validator(Validation.NotEmpty())
-                )
-                .Process(request)
-                .Data();
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "activity_table")
+        //        .Model<ActivityModel>()
+        //        .Field(new Field("name")
+        //            .Validator(Validation.NotEmpty())
+        //        )
+        //        .Process(request)
+        //        .Data();
 
-                return Json(response);
-            }
-        }
+        //        return Json(response);
+        //    }
+        //}
 
         [Route("unit/{tg}")]
         [HttpPost]
@@ -220,24 +220,6 @@ namespace chevron.Controllers
             }
         }
 
-        //[Route("demob")]
-        //public ActionResult _ApiDemob()
-        //{
-        //    var request = System.Web.HttpContext.Current.Request;
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "demob_table")
-        //        .Model<DemobModel>()
-        //        .Field(new Field("tgl")
-        //            .Validator(Validation.DateFormat("MM/dd/yyyy"))
-        //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-        //        )
-        //        .Process(request)
-        //        .Data();
-
-        //        return Json(response);
-        //    }
-        //}
 
         [Route("currency")]
         public ActionResult _ApiCurrency()
@@ -261,13 +243,15 @@ namespace chevron.Controllers
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
-                var response = new Editor(db, "users_table", "username")
+                var response = new Editor(db, "users_table")
                 .Model<UsersModel>()
-                .Field(new Field("tingkat").GetFormatter((val, data) => val.ToString() == "0" ? "Administrator" : "Operator"))
+                //.Field(new Field("tingkat").GetFormatter((val, data) => (val.ToString() == "0") ? "Administrator" : "Operator"))
                 .Process(request)
                 .Data();
 
-                return Json(response, JsonRequestBehavior.AllowGet);
+                //return Json(response, JsonRequestBehavior.AllowGet);
+                return Json(response);
+
             }
         }
 
@@ -379,7 +363,34 @@ namespace chevron.Controllers
             return mainunitSorted;
         }
 
+        [Route("cs/mainunit")]
+        [HttpPost]
+        public string _MainUnitCreate(FormCollection input)
+        {
+            String query = "";
+            try
+            {
+                switch (input["action"])
+                {
+                    case "create":
+                        query = string.Format("insert into mainunit_table (nama,description) values ('{0}','{1}')", input["mainunit_name"], input["mainunit_desc"]);
+                        break;
+                    case "update":
+                        query = string.Format("update mainunit_table set nama = '{0}', description='{1}' where id = {2}", input["mainunit_name"], input["mainunit_desc"], input["id"]);
+                        break;
+                    default:
+                        break;
+                }
 
+                //Response.Write(query);
+                con.queryExec(query);
+                return "success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
 
         [Route("cs/unit")]
         [HttpPost]
@@ -720,15 +731,10 @@ namespace chevron.Controllers
             switch (input["action"])
             {
                 case "create":
-                    query = String.Format("insert into users_table \n" +
-                        "values ('{0}', '{1}', '{2}')",
-                        input["username"], input["password"], input["level"]
-                        );
+                    query = String.Format("insert into users_table values ('{0}', '{1}', {2})",input["username"], input["password"], input["level"]);
                     break;
                 case "update":
-                    query = String.Format("update users_table set username='{0}', password='{1}', tingkat={2} where username='{0}'",
-                            input["username"], input["password"], input["level"]
-                        );
+                    query = String.Format("update users_table set username='{0}', password='{1}', tingkat={2} where id={3}",input["username"], input["password"], input["level"],input["id"]);
                     break;
                 default:
                     break;
