@@ -343,13 +343,11 @@ namespace chevron.Controllers
 
         [Route("save/daily")]
         [HttpPost]
-        public void _saveDailyData(FormCollection input)
+        public string _saveDailyData(FormCollection input)
         {
             //String qdailytable = "";
 
             //Response.Write("isi dari mob : " +input["mob"]);
-            
-
             var stb     = (input["standby"] == "") ? Convert.ToInt16(0) :  Convert.ToDecimal(input["standby"]);
             var load    = (input["load"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["load"]);
             var steam   = (input["steaming"] == "") ? Convert.ToInt16(0) : Convert.ToDecimal(input["steaming"]);
@@ -357,7 +355,7 @@ namespace chevron.Controllers
             var fuel    = (input["daily_fuel"] == "") ? Convert.ToInt16(0) : Convert.ToInt32(input["daily_fuel"]);
             var tanggal = (input["daily_date"] == "") ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") : Convert.ToDateTime(input["daily_date"]).ToString("yyyy-MM-dd");
             //var tanggal = (input["daily_date"] == "") ? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") :  DateTime.ParseExact(input["daily_date"], "yyyy-MM-dd", null).ToString();
-
+            var cekmob = input["mob"];
             //Response.Write(tanggal);
 
             //buat variabel harga fuel
@@ -380,15 +378,15 @@ namespace chevron.Controllers
             //buat variable charter_rate
             //select* from hire_table where tgl_start <= '2016-01-14' and tgl_end >= '2016-01-14' and vessel = 'Vessel A'
             decimal charter_rate, mob_demob_rate, curr_charter, mob_cost, period;
-            var cari_charter = string.Format("tgl_start <= '{0}' and tgl_end >= '{0}' and vessel = '{1}'", tanggal, input["daily_vessel"]);
+            var cari_charter = string.Format("tgl_start <= '{0}' and tgl_end >= '{0}' and id_vessel = {1}", tanggal, input["daily_vesselid"]);
             con.select("hire_table", "cost_usd, mob_cost,curency_cat, mob_rate, periode", cari_charter);
             con.result.Read();
-            if(con.result.HasRows)
+            if(con.result.HasRows && (cekmob == "1"))
             {
                 charter_rate    = Convert.ToDecimal(con.result["cost_usd"]);
                 
-                mob_cost        = (input["mob"] == "" )?  0 : Convert.ToDecimal(con.result["mob_cost"]) ;
-                mob_demob_rate  = (input["mob"] == "") ? 0 : Convert.ToDecimal(con.result["mob_rate"]);
+                mob_cost        = Convert.ToDecimal(con.result["mob_cost"]) ;
+                mob_demob_rate  = Convert.ToDecimal(con.result["mob_rate"]);
                 curr_charter    = Convert.ToDecimal(con.result["curency_cat"]);
                 period          = Convert.ToDecimal(con.result["periode"]);
             }
@@ -397,14 +395,15 @@ namespace chevron.Controllers
             }
             con.Close();
 
+            Response.Write("charter_rate = " + charter_rate + ", mob_cost = " + mob_cost + ", mob_demob_rate = " + mob_demob_rate + ", period = " + period + ", curr_charter = " + curr_charter);
 
-            List<DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
+            List <DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
             var skr = DateTime.Now.ToString("yyyy-MM-dd");
-            var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], skr);
-            con.select("temp_daily", "count(id_unit) as jml", where);
-            con.result.Read();
-            var jml_unit = Convert.ToInt16(con.result["jml"]);
-            con.Close();
+            //var where = string.Format("user_log='{0}' and date_input='{1}'", Session["userid"], skr);
+            //con.select("temp_daily", "count(id_unit) as jml", where);
+            //con.result.Read();
+            //var jml_unit = Convert.ToInt16(con.result["jml"]);
+            //con.Close();
             //Response.Write(jml_unit);
 
             // query jadi berubah ----
@@ -419,7 +418,7 @@ namespace chevron.Controllers
                 //                            "where td.user_log = '{0}' and td.date_input = '{1}'",Session["userid"],skr);
 
             //Response.Write("mob_cost: " + mob_cost + ", mob_rate: " + mob_demob_rate+"; ");
-            Response.Write(qunit);
+            //Response.Write(qunit);
 
             //*
             con.query(qunit);
@@ -469,15 +468,14 @@ namespace chevron.Controllers
                     t_stb_mob = stb * (t_load + t_steam + unit.durasi);
                     t_all_mob = t_stb_mob + t_load + t_steam + unit.durasi;
                     mob_price = t_all_mob *(mob_demob_rate/24);
-                    
+
                     //simpan ke report_daily untuk Reporting
                     var q_rpt1 = string.Format("insert into report_daily (tgl,id_vessel,id_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price) "
-                            +" values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}); ",
-                            tanggal,input["daily_vesselid"],unit.id_unit, t_standby,t_load,t_steam,down,unit.durasi,t_all,fuel_l,fuel_price,curr_harga,charter_price,curr_charter,mob_price
+                            + " values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}); ",
+                            tanggal, input["daily_vesselid"], unit.id_unit, t_standby, t_load, t_steam, down, unit.durasi, t_all, fuel_l, fuel_price, curr_harga, charter_price, curr_charter, mob_price
                         );
                     //Response.Write(q_rpt1);
                     con.queryExec(q_rpt1);
-
                 }
             }
 
@@ -488,7 +486,7 @@ namespace chevron.Controllers
             //Response.Write(qdelete);
 
             con.queryExec(qdelete);
-            //return "success";
+            return "success";
         }
 
 

@@ -282,7 +282,8 @@ $(document).ready(function () {
             })
         }
         var data = dailyTable.data();
-        //console.log(data);
+        console.log(data);
+        console.log(data.length);
 
         if (data.length == 0) {
             alert("Belum ada data Durasi Time At, Periksa dulu input Time At");
@@ -292,10 +293,7 @@ $(document).ready(function () {
                 var duration = 0;
 
                 for (var i = 0; i < data.length; i++) {
-                    duration += data[i].duration;
-                    //if (data[i].daily_activity == "Downtime") {
-                    //    downTime = true;
-                    //}
+                    duration += data[i].temp_daily.duration;
                 }
                 var stb = ($("#activityForm input[name='standby']").val() === "") ? 0 : $("#activityForm input[name='standby']").val();
                 var lod = ($("#activityForm input[name='load']").val() === "") ? 0 : $("#activityForm input[name='load']").val();

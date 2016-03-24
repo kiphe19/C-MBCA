@@ -69,7 +69,7 @@
                                                 <input type="hidden" name="id" />
                                                 <label class="col-sm-2">Time At</label>
                                                 <div class="col-sm-4">@Html.DropDownList("daily_unitid", null, new { @class = "form-control", @id="unitid" })</div>
-                                                <div class="col-sm-4"><input type="text" name="time_at_dur" class="form-control" placeholder="Duration" autocomplete="off" required /></div>
+                                                <div class="col-sm-4"><input type="number" min="0" max="24" name="time_at_dur" class="form-control" placeholder="Duration"  required /></div>
                                                 <div class="col-sm-1"></div>
                                                 <div class="col-sm-1">
                                                     <div class="button-group pull-right" role="group" id="btnSaveGroup">
