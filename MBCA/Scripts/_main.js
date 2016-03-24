@@ -101,42 +101,52 @@ $(document).ready(function () {
                 }
             ]
         });
-
-        dailylogTable = $("#dailyLogTable").DataTable({
+        var yyyy = tgl.getFullYear();
+    //var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
+        var mm = (tgl.getMonth() + 1);
+        var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
+        var tg1, tg2;
+        if (dd <= 25) {
+            tg1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
+            tg2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+        }
+        else {
+            tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+            tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
+        }
+        console.log(tg1, tg2);
+        var dailylogTable = $("#DailyLogTable").DataTable({
             dom: 'B<"floatright">rtip',
             ajax: {
-                url: path + "/api/daily_log",
+                url: path + "/api/dailylog/" + tg1 + "/" + tg2,
                 type: "post"
             },
             columns: [
-                { data: "tgl" },
-                { data: "vessel" },
-                { data: "fuel_tot" },
-                { data: "user_unit" },
-                { data: "duration" },
+                { data: null },
+                { data: "daily_table.tgl" },
+                { data: "vessel_table.name" },
+                { data: "daily_table.standby" },
+                { data: "daily_table.loading" },
+                { data: "daily_table.steaming" },
+                { data: "daily_table.downtime" },
             ],
             buttons: [
-                {
-                    extend: "collection",
-                    text: "Export to ..",
-                    buttons: ['excel']
+                //{
+                //    extend: "collection",
+                //    text: "Export to ..",
+                //    buttons: ['excel']
+                //}
+            ],
+            fnDrawCallback: function (oSettings) {
+                if (oSettings.bSorted || oSettings.bFiltered) {
+                    for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                        $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                    }
                 }
-            ]
+            }
         });
 
-    var yyyy = tgl.getFullYear();
-    //var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
-    var mm = (tgl.getMonth() + 1);
-    var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
-    var tg1, tg2;
-    if (dd <= 25) {
-        tg1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
-        tg2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
-    }
-    else {
-        tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
-        tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
-    }
+    
 
     drillEditor = new $.fn.dataTable.Editor({
         ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",

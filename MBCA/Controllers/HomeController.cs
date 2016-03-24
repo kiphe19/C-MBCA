@@ -177,24 +177,31 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("daily_log")]
-        public ActionResult _LogDaily()
+        //[Route("daily_log")]
+        [Route("dailylog/{tg1}/{tg2}")]
+        public ActionResult _LogDaily(string tg1, string tg2)
         {
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "daily_table")
                     .Model<DailyTableModel>()
-                    .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
-                    .Where("user_log", Session["userid"], "=")
-                    .Field(new Field("tgl")
+                    .Field(new Field("daily_table.tgl")
                         .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                         .Validator(Validation.NotEmpty())
                     )
-                    .Field(new Field("date_input")
-                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                        .Validator(Validation.NotEmpty())
-                    )
+                    .LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
+                    .LeftJoin("vessel_table", "vessel_table.id", "=", "daily_table.id_vessel")
+                    
+                    //.Where("daily_table.tgl", tg1, ">")
+                    //.Where("daily_table.tgl", tg2, "<=")
+                    //.Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+                    //.Where("user_log", Session["userid"], "=")
+                    
+                    //.Field(new Field("date_input")
+                    //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                    //    .Validator(Validation.NotEmpty())
+                    //)
                     .Process(request)
                     .Data();
                 return Json(response);
@@ -281,6 +288,35 @@ namespace chevron.Controllers
             }
         }
 
+        //[Route("dailylog")]
+        //public ActionResult _dataDailyLog()
+        //{
+        //    var request = System.Web.HttpContext.Current.Request;
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "daily_table")
+        //            .Model<DrillModel>()
+        //            .Field(new Field("drilling_table.tgl")
+        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+        //                .Validator(Validation.NotEmpty())
+        //            )
+        //            .Field(new Field("drilling_table.t_start")
+        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+        //                .Validator(Validation.NotEmpty())
+        //            )
+        //            .Field(new Field("drilling_table.t_end")
+        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+        //                .Validator(Validation.NotEmpty())
+        //            )
+        //            .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
+        //             //.LeftJoin("mainunit_table","")
+        //             .Where("drilling_table.tgl", tg1, ">")
+        //             .Where("drilling_table.tgl", tg2, "<=")
+        //             .Where("drilling_table.id_unit", unitx, "=")
+        //            .Process(request).Data();
+        //        return Json(response);
+        //    }
+        //}
 
         [Route("cs/daily")]
         [HttpPost]
@@ -513,118 +549,118 @@ namespace chevron.Controllers
             return "success";
         }
 
-        public ActionResult BuatJson() {
+        //public ActionResult BuatJson() {
 
-            //select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit
-            dynamic un = new ExpandoObject();
-            JArray unitx = new JArray();
-            JArray durx = new JArray();
-            JArray isinya = new JArray();
-            //List<string> unitk = new List<string>();
-            var qry = string.Format("select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit");
-            con.select("daily_table join unit_table on unit_table.Id = daily_table.id_unit","*");
-            //con.
-            //con.queryExec(qry);
-            while (con.result.Read())
-            {
-                unitx.Add(con.result["name"]);
-                durx.Add(con.result["duration"]);
+        //    //select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit
+        //    dynamic un = new ExpandoObject();
+        //    JArray unitx = new JArray();
+        //    JArray durx = new JArray();
+        //    JArray isinya = new JArray();
+        //    //List<string> unitk = new List<string>();
+        //    var qry = string.Format("select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit");
+        //    con.select("daily_table join unit_table on unit_table.Id = daily_table.id_unit","*");
+        //    //con.
+        //    //con.queryExec(qry);
+        //    while (con.result.Read())
+        //    {
+        //        unitx.Add(con.result["name"]);
+        //        durx.Add(con.result["duration"]);
 
-                //unitk.Add( new 
-                //{
-                //     = con.result["name"]
-                //});
-                foreach (var isik in unitx)
-                {
-                    un.Nama = isik;
-                }
-                foreach (var lama in durx)
-                {
-                    un.Durasi = lama;
-                }
-                isinya.Add(un);
-            }
-            con.Close();
+        //        //unitk.Add( new 
+        //        //{
+        //        //     = con.result["name"]
+        //        //});
+        //        foreach (var isik in unitx)
+        //        {
+        //            un.Nama = isik;
+        //        }
+        //        foreach (var lama in durx)
+        //        {
+        //            un.Durasi = lama;
+        //        }
+        //        isinya.Add(un);
+        //    }
+        //    con.Close();
 
-            dynamic kk = new ExpandoObject();
-            kk.auuu = isinya;
+        //    dynamic kk = new ExpandoObject();
+        //    kk.auuu = isinya;
             
 
 
 
-            //var qunit = string.Format("select td.id_unit,td.duration,dt.distance, dt.id_mainunit "
-            //    + " from temp_daily td inner join unit_distance_table dt on dt.id_unit = td.id_unit "
-            //    + " where td.user_log = '{0}' and td.date_input = '{1}' and dt.tgl = '{2}' ", Session["userid"], skr, tanggal);
+        //    //var qunit = string.Format("select td.id_unit,td.duration,dt.distance, dt.id_mainunit "
+        //    //    + " from temp_daily td inner join unit_distance_table dt on dt.id_unit = td.id_unit "
+        //    //    + " where td.user_log = '{0}' and td.date_input = '{1}' and dt.tgl = '{2}' ", Session["userid"], skr, tanggal);
 
-            ////Response.Write(qunit);
+        //    ////Response.Write(qunit);
 
-            ////*
-            //con.query(qunit);
-            //while (con.result.Read())
-            //{
-            //    usernit.Add(new DailyUnitActivityModel
-            //    {
-            //        id_mainunit = (int)con.result["id_mainunit"],
-            //        id_unit = (int)con.result["id_unit"],
-            //        durasi = (decimal)con.result["duration"],
-            //        jarak = (int)con.result["distance"],
-            //        hit = Convert.ToInt16(1)
-            //    });
-            //}
-            //con.Close();
+        //    ////*
+        //    //con.query(qunit);
+        //    //while (con.result.Read())
+        //    //{
+        //    //    usernit.Add(new DailyUnitActivityModel
+        //    //    {
+        //    //        id_mainunit = (int)con.result["id_mainunit"],
+        //    //        id_unit = (int)con.result["id_unit"],
+        //    //        durasi = (decimal)con.result["duration"],
+        //    //        jarak = (int)con.result["distance"],
+        //    //        hit = Convert.ToInt16(1)
+        //    //    });
+        //    //}
+        //    //con.Close();
 
-            //con.select()
-
-
+        //    //con.select()
 
 
 
 
-            //dynamic b = new JObject();
-            dynamic aa = new ExpandoObject();
-            aa.Nama = "jono";
-            aa.Alamat = "Amerika";
-            //b.Nama = "Jono";
-            //b.Alamat = "Amerika";
 
-            string[] hari = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-            //hari.a
-            aa.Minggu = hari;
+
+        //    //dynamic b = new JObject();
+        //    dynamic aa = new ExpandoObject();
+        //    aa.Nama = "jono";
+        //    aa.Alamat = "Amerika";
+        //    //b.Nama = "Jono";
+        //    //b.Alamat = "Amerika";
+
+        //    string[] hari = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        //    //hari.a
+        //    aa.Minggu = hari;
             
 
-            List<string> list = new List<string>();
-            //list.Add("one");
-            //list.Add("two");
-            //list.Add("three");
+        //    List<string> list = new List<string>();
+        //    //list.Add("one");
+        //    //list.Add("two");
+        //    //list.Add("three");
 
-            for (int i = 0; i < 10; i++)
-            {
-                list.Add("isi ke-" + i);
-            }
+        //    for (int i = 0; i < 10; i++)
+        //    {
+        //        list.Add("isi ke-" + i);
+        //    }
 
-            string[] itung = list.ToArray();
-            int u = 10;
-            string[] isi = new string[u];
-            for (int j = 0; j < u; j++)
-            {
-                isi[j] = "haloo ke - " + j;
-            }
+        //    string[] itung = list.ToArray();
+        //    int u = 10;
+        //    string[] isi = new string[u];
+        //    for (int j = 0; j < u; j++)
+        //    {
+        //        isi[j] = "haloo ke - " + j;
+        //    }
 
-            aa.Hitung = itung;
-            aa.Isi = isi;
-            //string a = "jono";
-            //return Json(new { nama = a },
-            //return Json(aa, JsonRequestBehavior.AllowGet);
-            //Response.ContentType = "text/json";
-            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(b);
-            //return Response.Write();
+        //    aa.Hitung = itung;
+        //    aa.Isi = isi;
+        //    //string a = "jono";
+        //    //return Json(new { nama = a },
+        //    //return Json(aa, JsonRequestBehavior.AllowGet);
+        //    //Response.ContentType = "text/json";
+        //    //var json = Newtonsoft.Json.JsonConvert.SerializeObject(b);
+        //    //return Response.Write();
 
-            //var workbook = new ExcelFile();
+        //    //var workbook = new ExcelFile();
 
-            //var json = JsonConvert.SerializeObject(aa);
-            var json = JsonConvert.SerializeObject(kk);
+        //    //var json = JsonConvert.SerializeObject(aa);
+        //    var json = JsonConvert.SerializeObject(kk);
 
-            return Content(json, "application/json");
-        }
+        //    return Content(json, "application/json");
+        //}
     }
 }
