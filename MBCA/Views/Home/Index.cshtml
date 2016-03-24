@@ -102,6 +102,53 @@
                             </div>
                         </div>
                     </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <form class="form-horizontal" id="filterDailyTemp">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Unit</label>
+                                            <div class="col-sm-10">
+                                                @Html.DropDownList("daily_vesselid", null, new { @class = "form-control", @id = "cb_unit" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Periode</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" placeholder="Date From" class="form-control" name="f_daily_from" />
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <input type="text" placeholder="Date To" class="form-control" name="f_daily_to" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" id="drillcari" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="DailyTempTable" class="table display table-bordered" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            @*<th>No</th>*@
+                                            <th>Unit</th>
+                                            <th>Date</th>
+                                            <th>Well</th>
+                                            <th>AFE</th>
+                                            <th>PSC#</th>
+                                            <th>Time From</th>
+                                            <th>Time To</th>
+                                            <th>TimeSpan</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="dc">

@@ -9,6 +9,9 @@ using DataTables;
 using chevron.Models;
 using System.Globalization;
 using AttributeRouting.Helpers;
+using Newtonsoft.Json.Linq;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace chevron.Controllers
 {
@@ -163,18 +166,11 @@ namespace chevron.Controllers
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
-                //var response = new Editor(db, "daily_activity")
                 var response = new Editor(db, "temp_daily")
                 .Model<TempDailyModel>()
                 .LeftJoin("unit_table", "unit_table.id", "=", "temp_daily.id_unit")
                 .Where("user_log", Session["userid"], "=")
                 .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
-
-                //.Field(new Field("duration").Validator(Validation.Numeric()))
-                //.Field(new Field("tgl")
-                //    .GetFormatter(Format.DateTime("dd/MM/yyyy H:m:s", "MM/dd/yyyy"))
-                //    .Validator(Validation.NotEmpty())
-                //)
                 .Process(request)
                 .Data();
                 return Json(response);
@@ -203,7 +199,6 @@ namespace chevron.Controllers
                     .Data();
                 return Json(response);
             }
-
         }
 
         [Route("monthly")]
@@ -221,7 +216,6 @@ namespace chevron.Controllers
                 .Field(new Field("duration").Validator(Validation.Numeric()))
                 .Process(request)
                 .Data();
-
                 return Json(response);
             }
         }
@@ -230,8 +224,6 @@ namespace chevron.Controllers
         [Route("drill/{tg1}/{tg2}/{unitx}")]
         public ActionResult _dataDrillCompletion(string tg1, string tg2, int unitx)
         {
-
-            //var un = (unitx === "all")? 
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
@@ -285,13 +277,8 @@ namespace chevron.Controllers
                     //Response.Write(unitx);
                     return Json(response);
                 }
-
                 //var response1 =  new Editor(db.Select("drilling_table",))
-
-
             }
-            //return Json(new { date = tg1, date2 = tg2, unitnya = unitx },
-            //     JsonRequestBehavior.AllowGet);
         }
 
 
@@ -378,20 +365,20 @@ namespace chevron.Controllers
             var cari_charter = string.Format("tgl_start <= '{0}' and tgl_end >= '{0}' and id_vessel = {1}", tanggal, input["daily_vesselid"]);
             con.select("hire_table", "cost_usd, mob_cost,curency_cat, mob_rate, periode", cari_charter);
             con.result.Read();
-            if(con.result.HasRows && (cekmob == "1"))
+            if (con.result.HasRows)
             {
-                charter_rate    = Convert.ToDecimal(con.result["cost_usd"]);
-                mob_cost        = Convert.ToDecimal(con.result["mob_cost"]) ;
-                mob_demob_rate  = Convert.ToDecimal(con.result["mob_rate"]);
-                curr_charter    = Convert.ToDecimal(con.result["curency_cat"]);
-                period          = Convert.ToDecimal(con.result["periode"]);
+                charter_rate    = (decimal)con.result["cost_usd"];
+                mob_cost        = (cekmob == "1") ? (decimal)con.result["mob_cost"] : 0;
+                mob_demob_rate  = (cekmob == "1") ? (decimal)con.result["mob_rate"] : 0;
+                curr_charter    = (int)con.result["curency_cat"];
+                period          = (int)con.result["periode"];
             }
             else {
                 charter_rate = 0; mob_cost = 0; mob_demob_rate = 0; period = 0; curr_charter = 0;
             }
             con.Close();
 
-            Response.Write("charter_rate = " + charter_rate + ", mob_cost = " + mob_cost + ", mob_demob_rate = " + mob_demob_rate + ", period = " + period + ", curr_charter = " + curr_charter);
+            //Response.Write("charter_rate = " + charter_rate + ", mob_cost = " + mob_cost + ", mob_demob_rate = " + mob_demob_rate + ", period = " + period + ", curr_charter = " + curr_charter);
 
             List <DailyUnitActivityModel> usernit = new List<DailyUnitActivityModel>();
             var skr = DateTime.Now.ToString("yyyy-MM-dd");
@@ -402,7 +389,6 @@ namespace chevron.Controllers
                 + " from temp_daily td inner join unit_distance_table dt on dt.id_unit = td.id_unit "
                 + " where td.user_log = '{0}' and td.date_input = '{1}' and dt.tgl = '{2}' ", Session["userid"], skr,tanggal);
 
-            //Response.Write("mob_cost: " + mob_cost + ", mob_rate: " + mob_demob_rate+"; ");
             //Response.Write(qunit);
 
             //*
@@ -487,7 +473,6 @@ namespace chevron.Controllers
                 tgl_f = nowDate;
             }
             var query = String.Format("select * from monthly_activity where tgl between '{0}' and '{1}'", tgl_e, tgl_f);
-            
             con.query(query);
             while (con.result.Read())
             {
@@ -500,7 +485,6 @@ namespace chevron.Controllers
                     vessel = con.result["vessel"].ToString()
                 });
             }
-
             //ViewBag.data = data;
             return PartialView("_MonthlyGrid", data);
         }
@@ -527,7 +511,120 @@ namespace chevron.Controllers
             //Response.Write(qq);
             //con.queryExec(qq);
             return "success";
+        }
 
+        public ActionResult BuatJson() {
+
+            //select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit
+            dynamic un = new ExpandoObject();
+            JArray unitx = new JArray();
+            JArray durx = new JArray();
+            JArray isinya = new JArray();
+            //List<string> unitk = new List<string>();
+            var qry = string.Format("select * from daily_table join unit_table on unit_table.Id = daily_table.id_unit");
+            con.select("daily_table join unit_table on unit_table.Id = daily_table.id_unit","*");
+            //con.
+            //con.queryExec(qry);
+            while (con.result.Read())
+            {
+                unitx.Add(con.result["name"]);
+                durx.Add(con.result["duration"]);
+
+                //unitk.Add( new 
+                //{
+                //     = con.result["name"]
+                //});
+                foreach (var isik in unitx)
+                {
+                    un.Nama = isik;
+                }
+                foreach (var lama in durx)
+                {
+                    un.Durasi = lama;
+                }
+                isinya.Add(un);
+            }
+            con.Close();
+
+            dynamic kk = new ExpandoObject();
+            kk.auuu = isinya;
+            
+
+
+
+            //var qunit = string.Format("select td.id_unit,td.duration,dt.distance, dt.id_mainunit "
+            //    + " from temp_daily td inner join unit_distance_table dt on dt.id_unit = td.id_unit "
+            //    + " where td.user_log = '{0}' and td.date_input = '{1}' and dt.tgl = '{2}' ", Session["userid"], skr, tanggal);
+
+            ////Response.Write(qunit);
+
+            ////*
+            //con.query(qunit);
+            //while (con.result.Read())
+            //{
+            //    usernit.Add(new DailyUnitActivityModel
+            //    {
+            //        id_mainunit = (int)con.result["id_mainunit"],
+            //        id_unit = (int)con.result["id_unit"],
+            //        durasi = (decimal)con.result["duration"],
+            //        jarak = (int)con.result["distance"],
+            //        hit = Convert.ToInt16(1)
+            //    });
+            //}
+            //con.Close();
+
+            //con.select()
+
+
+
+
+
+
+            //dynamic b = new JObject();
+            dynamic aa = new ExpandoObject();
+            aa.Nama = "jono";
+            aa.Alamat = "Amerika";
+            //b.Nama = "Jono";
+            //b.Alamat = "Amerika";
+
+            string[] hari = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+            //hari.a
+            aa.Minggu = hari;
+            
+
+            List<string> list = new List<string>();
+            //list.Add("one");
+            //list.Add("two");
+            //list.Add("three");
+
+            for (int i = 0; i < 10; i++)
+            {
+                list.Add("isi ke-" + i);
+            }
+
+            string[] itung = list.ToArray();
+            int u = 10;
+            string[] isi = new string[u];
+            for (int j = 0; j < u; j++)
+            {
+                isi[j] = "haloo ke - " + j;
+            }
+
+            aa.Hitung = itung;
+            aa.Isi = isi;
+            //string a = "jono";
+            //return Json(new { nama = a },
+            //return Json(aa, JsonRequestBehavior.AllowGet);
+            //Response.ContentType = "text/json";
+            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(b);
+            //return Response.Write();
+
+            //var workbook = new ExcelFile();
+
+            //var json = JsonConvert.SerializeObject(aa);
+            var json = JsonConvert.SerializeObject(kk);
+
+            return Content(json, "application/json");
         }
     }
 }

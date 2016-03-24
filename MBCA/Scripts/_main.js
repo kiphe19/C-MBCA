@@ -272,7 +272,7 @@ $(document).ready(function () {
     $("#btnSaveDailyAct").click(function () {
         //alert("clik button save akticiti bro");
         var isi_form = $("#activityForm").serialize();
-        console.log(isi_form);
+        //console.log(isi_form);
         var saveDaily = function () {
             $.post(path + "/api/save/daily", isi_form, function (res) {
                 //console.log($("#activityForm")[0]);
@@ -282,8 +282,8 @@ $(document).ready(function () {
             })
         }
         var data = dailyTable.data();
-        console.log(data);
-        console.log(data.length);
+        //console.log(data);
+        //console.log(data.length);
 
         if (data.length == 0) {
             alert("Belum ada data Durasi Time At, Periksa dulu input Time At");
@@ -331,28 +331,13 @@ $(document).ready(function () {
     });
 
     $("#drillcari").click(function () {
-        //var sss = new Date($('#tgl_cari').val());
-
-
         var dari = new Date($("#filterDrill input[name = 'fd_t_from']").val());
         var ke = new Date($("#filterDrill input[name = 'fd_t_to']").val());
-        //var ke = new Date($("#filterDrill input[name = 'fd_t_to']").val());
-
-        //var unit = $("#cb_unit").find('option:selected').val();
         var unit = $("#cb_unit").val();
-
-        
-        
-
         var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
         var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
-
-        console.log(dari1 + " s/d " + ke1 + " ==> " + unit);
-
-        
         drillcompTable.ajax.url('api/drill/' + dari1 + '/' + ke1 + '/' + unit).load();
         //drillcompTable.ajax.url('api/drill').load();
-
     });
 
     $("#btnSaveDataDaily").click(function () {
@@ -392,7 +377,7 @@ $(document).ready(function () {
                 //console.log(stb,lod,stm,dtm);
 
                 duration += parseFloat(stb) + parseFloat(lod) + parseFloat(stm) + parseFloat(dtm);
-                console.log(duration);
+                //console.log(duration);
                 var b = 24 - duration;
                 if (dtm <= 0 && duration < 24) {
                     var c = confirm("Durasi Aktivitas kurang dari 24 jam, apakah " + b + " jam akan ditambahkan ke Downtime?");
