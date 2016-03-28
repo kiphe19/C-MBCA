@@ -60,6 +60,8 @@
                                                 <label class="col-sm-3">Mob/Demob</label>
                                                 <div class="col-sm-4"><input type="checkbox" name="mob" value="1"> Hitung<br></div>
                                             </div>
+                                            @*<input type="hidden" name="action" value="create" />*@
+                                            <input type="hidden" name="id" />
                                         </form>
                                     </div>
                                     <div class="col-md-6">
@@ -95,6 +97,7 @@
                                         <div class="dailyButton">
                                             <div class="floatright">
                                                 <button type="button" class="btn btn-default" id="btnCancelDaily" ><i class="glyphicon glyphicon-remove"></i> Cancel</button>
+                                                <button type="button" class="btn btn-success" id="btnUpdateDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Update data</button>
                                                 <button type="button" class="btn btn-success" id="btnSaveDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
                                             </div>
                                         </div>
