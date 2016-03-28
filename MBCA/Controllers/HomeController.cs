@@ -192,12 +192,12 @@ namespace chevron.Controllers
                     )
                     .LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
                     .LeftJoin("vessel_table", "vessel_table.id", "=", "daily_table.id_vessel")
-                    
+
                     //.Where("daily_table.tgl", tg1, ">")
                     //.Where("daily_table.tgl", tg2, "<=")
                     //.Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
                     //.Where("user_log", Session["userid"], "=")
-                    
+
                     //.Field(new Field("date_input")
                     //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                     //    .Validator(Validation.NotEmpty())
@@ -208,24 +208,24 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("monthly")]
-        public ActionResult _ApiMonthly()
-        {
-            var request = System.Web.HttpContext.Current.Request;
-            using (var db = new Database(setting.DbType, setting.DbConnection))
-            {
-                var response = new Editor(db, "monthly_activity")
-                .Model<MonthlyActivityModel>()
-                .Field(new Field("tgl")
-                    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                    .Validator(Validation.NotEmpty())
-                )
-                .Field(new Field("duration").Validator(Validation.Numeric()))
-                .Process(request)
-                .Data();
-                return Json(response);
-            }
-        }
+        //[Route("monthly")]
+        //public ActionResult _ApiMonthly()
+        //{
+        //    var request = System.Web.HttpContext.Current.Request;
+        //    using (var db = new Database(setting.DbType, setting.DbConnection))
+        //    {
+        //        var response = new Editor(db, "monthly_activity")
+        //        .Model<MonthlyActivityModel>()
+        //        .Field(new Field("tgl")
+        //            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+        //            .Validator(Validation.NotEmpty())
+        //        )
+        //        .Field(new Field("duration").Validator(Validation.Numeric()))
+        //        .Process(request)
+        //        .Data();
+        //        return Json(response);
+        //    }
+        //}
 
 
         [Route("drill/{tg1}/{tg2}/{unitx}")]
@@ -533,6 +533,7 @@ namespace chevron.Controllers
             var akhir = Convert.ToDateTime(input["t_end"]);
             TimeSpan dur = akhir - awal;
             string qq = null;
+            //Response.Write(input["action"]);
 
             if (input["action"] == "create")
             {
@@ -543,9 +544,9 @@ namespace chevron.Controllers
                 qq = string.Format("update drilling_table set id_unit={0}, well='{1}', afe = '{2}',psc_no='{3}',tgl = '{4}',t_start = '{5}',t_end='{6}',durasi={7} where id = {8}", input["daily_unitid"], input["well"], input["afe"], input["psc"], input["drill_date"], input["t_start"], input["t_end"], dur.TotalHours,input["id"]);
 
             }
-            Response.Write(input["mob"]);
+            //Response.Write(input["mob"]);
             //Response.Write(qq);
-            //con.queryExec(qq);
+            con.queryExec(qq);
             return "success";
         }
 

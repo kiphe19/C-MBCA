@@ -88,12 +88,13 @@
                                                 </tr>
                                             </thead>
                                         </table>
-                                        <div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
+                                        @*<div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
                                             <button type="submit" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Update</button>
                                             <button type="button" class="btn btn-default" id="btnCancelDaily"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
-                                        </div>
+                                        </div>*@
                                         <div class="dailyButton">
                                             <div class="floatright">
+                                                <button type="button" class="btn btn-default" id="btnCancelDaily" ><i class="glyphicon glyphicon-remove"></i> Cancel</button>
                                                 <button type="button" class="btn btn-success" id="btnSaveDailyAct"><i class="glyphicon glyphicon-floppy-disk"></i> Save data today</button>
                                             </div>
                                         </div>
@@ -134,15 +135,18 @@
                                 <table id="DailyLogTable" class="table display table-bordered" style="width:100%">
                                     <thead>
                                         <tr>
-                                            @*<th>No</th>*@
-                                            <th>Unit</th>
+                                            <th>No</th>
+                                            @*<th>Unit</th>*@
                                             <th>Date</th>
-                                            <th>Well</th>
-                                            <th>AFE</th>
-                                            <th>PSC#</th>
-                                            <th>Time From</th>
-                                            <th>Time To</th>
-                                            <th>TimeSpan</th>
+                                            <th>Vessel</th>
+                                            <th>Standby</th>
+                                            <th>Load</th>
+                                            <th>Steam</th>
+                                            <th>DownTime</th>
+                                            <th>Fuel tot</th>
+                                            <th>Unit</th>
+                                            <th>Duration</th>
+
                                         </tr>
                                     </thead>
                                 </table>

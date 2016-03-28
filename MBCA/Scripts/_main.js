@@ -6,7 +6,8 @@
 var tgl = new Date();
 
 $(document).ready(function () {
-        dailyEditor = new $.fn.dataTable.Editor({
+    $("#btnCancelDaily").hide();
+        var dailyEditor = new $.fn.dataTable.Editor({
             ajax: path + "/api/daily",
             table: "#dailyTable",
             fields: [
@@ -68,39 +69,39 @@ $(document).ready(function () {
 
 
 
-        monthlyEditor = new $.fn.dataTable.Editor({
-            ajax: path + "/api/monthly",
-            table: "#monthlyTable",
-            fields: [
-                { label: "Date", name: "monthly_date", type: "datetime", format: "DD/MM/YYYY" },
-                { label: "Vessel", name: "monthly_vessel", type: "select" },
-                { label: "Activity", name: "monthly_activity", type: "select" },
-                { label: "User Unit", name: "monthly_unit", type: "select" },
-                { label: "Duration", name: "monthly_duration" }
-            ]
-        });
+        //monthlyEditor = new $.fn.dataTable.Editor({
+        //    ajax: path + "/api/monthly",
+        //    table: "#monthlyTable",
+        //    fields: [
+        //        { label: "Date", name: "monthly_date", type: "datetime", format: "DD/MM/YYYY" },
+        //        { label: "Vessel", name: "monthly_vessel", type: "select" },
+        //        { label: "Activity", name: "monthly_activity", type: "select" },
+        //        { label: "User Unit", name: "monthly_unit", type: "select" },
+        //        { label: "Duration", name: "monthly_duration" }
+        //    ]
+        //});
 
-        monthlyTable = $("#monthlyTable").DataTable({
-            dom: 'B<"floatright">rtip',
-            ajax: {
-                url: path + "/api/monthly",
-                type: "post"
-            },
-            columns: [
-                { data: "monthly_date" },
-                { data: "monthly_vessel" },
-                { data: "monthly_activity" },
-                { data: "monthly_unit" },
-                { data: "monthly_duration" }
-            ],
-            buttons: [
-                {
-                    extend: "collection",
-                    text: "Export to ..",
-                    buttons: ['excel']
-                }
-            ]
-        });
+        //monthlyTable = $("#monthlyTable").DataTable({
+        //    dom: 'B<"floatright">rtip',
+        //    ajax: {
+        //        url: path + "/api/monthly",
+        //        type: "post"
+        //    },
+        //    columns: [
+        //        { data: "monthly_date" },
+        //        { data: "monthly_vessel" },
+        //        { data: "monthly_activity" },
+        //        { data: "monthly_unit" },
+        //        { data: "monthly_duration" }
+        //    ],
+        //    buttons: [
+        //        {
+        //            extend: "collection",
+        //            text: "Export to ..",
+        //            buttons: ['excel']
+        //        }
+        //    ]
+        //});
         var yyyy = tgl.getFullYear();
     //var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
         var mm = (tgl.getMonth() + 1);
@@ -115,12 +116,32 @@ $(document).ready(function () {
             tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
         }
         console.log(tg1, tg2);
+        var dailyLogEditor = new $.fn.dataTable.Editor({
+            
+            url: path + "/api/dailylog/" + tg1 + "/" + tg2,
+            table: "#DailyLogTable",
+            //fields: [{
+            //    //label: "First name:",
+            //    name: "daily_table.tgl"
+            //}, {
+            //    //label: "Last name:",
+            //    name: "daily_table.id_vessel"
+            //}, {
+            //    //label: "Manager:",
+            //    name: "daily_table.id",
+            //    type: "select"
+            //}
+            //]
+        });
+
         var dailylogTable = $("#DailyLogTable").DataTable({
-            dom: 'B<"floatright">rtip',
+            //dom: 'B<"floatright">rtip',
+            dom: "Bfrtip",
             ajax: {
                 url: path + "/api/dailylog/" + tg1 + "/" + tg2,
                 type: "post"
             },
+            select : true,
             columns: [
                 { data: null },
                 { data: "daily_table.tgl" },
@@ -129,8 +150,36 @@ $(document).ready(function () {
                 { data: "daily_table.loading" },
                 { data: "daily_table.steaming" },
                 { data: "daily_table.downtime" },
+                { data: "daily_table.fuel_tot" },
+                { data: "unit_table.name" },
+                { data: "daily_table.duration" }
+                //{ data: "daily_table.tgl" },
+                ////{ data: "vessel_table.name" },
+                //{ data: "daily_table.standby" },
+                //{ data: "daily_table.loading" },
+                //{ data: "daily_table.steaming" },
+                //{ data: "daily_table.downtime" },
+                //{ data: "daily_table.fuel_tot" },
+                ////{ data: "unit_table.name" },
+                //{ data: "daily_table.duration" }
             ],
             buttons: [
+                {
+                    extend:'edit',
+                    text : 'Edit Activity',
+                    action : function(){
+                        var a = dailylogTable.rows('.selected').indexes();
+                        var b = dailylogTable.row(a).data();
+                        console.log(a);
+                        console.log(b);
+                        $("#btnCancelDaily").show();
+                        $("#activityForm input[name='daily_fuel']").val(b.daily_table.fuel_tot);
+                    }
+                },
+                { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
+                //{
+                //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
+                //}
                 //{
                 //    extend: "collection",
                 //    text: "Export to ..",
@@ -213,12 +262,16 @@ $(document).ready(function () {
     });
     $("#drillForm").submit(function (e) {
         var data = $(this).serialize();
-        //console.log(data);
+        console.log(data);
         $.post(path + "/api/save/drill", data, function (res) {
             //console.log(res);
             if (res === "success") {
                 drillcompTable.ajax.reload();
                 $("#drillForm input").val(null);
+                $("#drillForm input[name='action']").val("create");
+                $("#drillForm button[type='submit']").text("Simpan Drill");
+
+
             }
             else {
                 alert(res);
@@ -288,7 +341,7 @@ $(document).ready(function () {
                 //console.log($("#activityForm")[0]);
                 $("#activityForm")[0].reset();
                 dailyTable.ajax.reload();
-                //dailylogTable.ajax.reload();
+                dailylogTable.ajax.reload();
             })
         }
         var data = dailyTable.data();
@@ -422,7 +475,9 @@ $(document).ready(function () {
         $("#dailyForm input[name='action']").val("create");
     }
     $("#btnCancelDaily").click(function () {
-        dailyCancel.apply();
+        //dailyCancel.apply();
+        console.log("ini cancel di klik");
+        $("#btnCancelDaily").hide();
     })
     $("#accordion").on('hide.bs.collapse', function () {
         $("#accordion h4 i").removeClass("glyphicon-chevron-down");

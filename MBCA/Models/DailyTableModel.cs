@@ -10,6 +10,7 @@ namespace chevron.Models
     {
         public class daily_table
         {
+            public int id { get; set; }
             public string tgl { get; set; }
             public int id_vessel { get; set; }
             public decimal standby { get; set; }
