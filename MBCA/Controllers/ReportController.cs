@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using chevron.Models;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using AttributeRouting.Web.Mvc;
+using Newtonsoft.Json;
 
 namespace chevron.Controllers
 {
@@ -13,6 +15,51 @@ namespace chevron.Controllers
     {
         Connection con = new Connection();
         JArray vessel = new JArray();
+
+        [Route("api/report")]
+        //public String  _reportSatu()
+        public string _reportSatu(FormCollection input)
+        {
+
+            dynamic aa = new JObject();
+            //JArray tg = new JArray();
+
+            DateTime dateFrom = (input["tgFrom"] == "") ? DateTime.Now.AddDays(-1) : DateTime.Parse(Convert.ToDateTime(input["tgFrom"]).ToString("yyyy-MM-dd"));
+            DateTime dateTo = (input["tgTo"] == "") ? DateTime.Now : DateTime.Parse(Convert.ToDateTime(input["tgTo"]).ToString("yyyy-MM-dd"));
+            TimeSpan ambilTanggal = dateTo - dateFrom;
+            //return "success";
+            //JArray unit = new JArray();
+            JArray date = new JArray();
+
+            //con.select("unit_table", "name");
+            //while (con.result.Read())
+            //{
+            //    unit.Add(con.result["name"]);
+            //}
+            //con.Close();
+            dynamic cc = new JObject();
+            for (int i = 0; i <= ambilTanggal.TotalDays; i++)
+            {
+                //date.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
+                //date.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
+
+                cc.tgl = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+                date.Add(cc);
+            }
+            aa.ddd = date;
+            Response.Write(ambilTanggal);
+            //return Json(new { nama = "Jono" },
+            //    JsonRequestBehavior.AllowGet);
+
+            //return Json(aa, JsonRequestBehavior.AllowGet);
+            Response.ContentType = "text/json";
+            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(aa);
+            var json = JsonConvert.SerializeObject(aa);
+
+            //Response.Write(json);
+            //return "success";
+            return json;
+        }
 
         public ActionResult Index()
         {
@@ -27,10 +74,45 @@ namespace chevron.Controllers
 
                 });
             }
+            filterByVessel.Insert(0, (new SelectListItem { Text = "-- Select Vessel -- ", Value = "0" }));
             ViewBag.vessel = filterByVessel;
+            ViewBag.vesselId = getListVesselId();
             return View();
         }
+        private List<SelectListItem> getListVesselId()
+        {
+            List<SelectListItem> vessel = new List<SelectListItem>();
+            vessel.Insert(0, (new SelectListItem
+                {
+                    Text = "All",
+                    Value = "0",
+                    Selected = true
+                }
+            ));
+            con.select("vessel_table", "id,name");
+            while (con.result.Read())
+            {
+                vessel.Add(new SelectListItem
+                {
+                    Text = con.result["name"].ToString(),
+                    Value = con.result["id"].ToString()
+                });
+            }
+            con.Close();
+            var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
 
+            return VesselSorted;
+        }
+
+        private void getVessel()
+        {
+            con.select("report_daily", "distinct(id_vessel)");
+            while (con.result.Read())
+            {
+                vessel.Add(con.result["id_vessel"]);
+            }
+            con.Close();
+        }
         public void Reporting(FormCollection input)
         {
             String column = "",
@@ -214,15 +296,7 @@ namespace chevron.Controllers
         //    return View();
         //}
 
-        private void getVessel()
-        {
-            con.select("report_daily", "distinct(id_vessel)");
-            while (con.result.Read())
-            {
-                vessel.Add(con.result["id_vessel"]);
-            }
-            con.Close();
-        }
+       
 
 
     }

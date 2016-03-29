@@ -18,7 +18,7 @@ namespace chevron.Controllers
     [RouteArea("api")]
     public class HomeController : Controller
     {
-        chevron.Properties.Settings setting = chevron.Properties.Settings.Default;
+        Properties.Settings setting = chevron.Properties.Settings.Default;
 
         Connection con = new Connection();
 

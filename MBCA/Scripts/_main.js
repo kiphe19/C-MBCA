@@ -165,23 +165,6 @@ $(document).ready(function () {
         }
     });
 
-    //var ambilUnitDailyVes = ()
-    //var ambilUnitDailyVes = $("#DailyLogTable").DataTable({
-    //var ambilUnitDailyVes = $("#dailyTable").DataTable({
-    //    dom: '<"dailyButton"B<"floatright">>rt',
-    //    ajax: {
-    //        url: path + "/api/daily",
-    //        method: "post"
-    //    },
-    function ambilUnitDailyVes(a){
-        $("#dailyTable").DataTable({
-            dom: '<"dailyButton"B<"floatright">>rt',
-            ajax: {
-                url: path + "/api/daily/"+a,
-                method: "post"
-            }
-        })
-    }
     
 
     drillEditor = new $.fn.dataTable.Editor({
@@ -356,7 +339,7 @@ $(document).ready(function () {
                 var duration = 0;
 
                 for (var i = 0; i < data.length; i++) {
-                    duration += data[i].temp_daily.duration;
+                    duration += data[i].dur;
                 }
                 var stb = ($("#activityForm input[name='standby']").val() === "") ? 0 : $("#activityForm input[name='standby']").val();
                 var lod = ($("#activityForm input[name='load']").val() === "") ? 0 : $("#activityForm input[name='load']").val();

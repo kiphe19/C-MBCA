@@ -55,7 +55,7 @@ $(document).ready(function () {
         var data = $(this).serialize();
         loadTableData(data);
         e.preventDefault();
-    })
+    });
 
     $("#formGenerate input[type='text']").datetimepicker({
         format: "MM/DD/YYYY"
@@ -67,5 +67,17 @@ $(document).ready(function () {
     $("#accordion").on('show.bs.collapse', function () {
         $("#accordion h4 i").removeClass("glyphicon-chevron-up");
         $("#accordion h4 i").addClass("glyphicon-chevron-down");
-    })
+    });
+    $("#f_generateReport input[type='text']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+
+    $("#report1").click(function (e) {
+        var data = $("#f_generateReport").serialize();
+        console.log(data);
+        $.post("/api/report", data,function (res) {
+            //alert(res);
+            console.log(res);
+        })
+    });
 })
