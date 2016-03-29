@@ -160,22 +160,45 @@ namespace chevron.Controllers
         /// <returns></returns>
 
 
-        [Route("daily")]
-        public ActionResult _ApiDaily()
+        [Route("daily/{id}")]
+        public ActionResult _ApiDaily(int id)
         {
+
+
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
-                var response = new Editor(db, "temp_daily")
-                .Model<TempDailyModel>()
-                .LeftJoin("unit_table", "unit_table.id", "=", "temp_daily.id_unit")
-                .Where("user_log", Session["userid"], "=")
-                .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
-                .Process(request)
-                .Data();
-                return Json(response);
+                if (id > 0)
+                {
+                    var response = new Editor(db, "detail_daily_table")
+                    .Model<DailyUnitVesselModel>()
+                    .LeftJoin("unit_table", "unit_table.id", "=", "detail_daily_table.id_unit")
+                    .Where("detail_daily_table.id_daily_table", id, "=")
+                    //.Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+                    .Process(request)
+                    .Data();
+                    return Json(response);
+                }
+                else
+                {
+                    var response = new Editor(db, "temp_daily")
+                    .Model<TempDailyModel>()
+                    .LeftJoin("unit_table", "unit_table.id", "=", "temp_daily.id_unit")
+                    .Where("user_log", Session["userid"], "=")
+                    .Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
+                    .Process(request)
+                    .Data();
+                    return Json(response);
+                }
             }
         }
+
+        //[Route("daily/{id_daily}")]
+        //public ActionResult _ApiDailyVes(int id_daily)
+        //{
+        //    return Json(new { id = id_daily, report = "report dari yang lain" },
+        //        JsonRequestBehavior.AllowGet);
+        //}
 
         //[Route("daily_log")]
         [Route("dailylog/{tg1}/{tg2}")]
@@ -190,7 +213,7 @@ namespace chevron.Controllers
                         .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                         .Validator(Validation.NotEmpty())
                     )
-                    .LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
+                    //.LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
                     .LeftJoin("vessel_table", "vessel_table.id", "=", "daily_table.id_vessel")
 
                     //.Where("daily_table.tgl", tg1, ">")
@@ -288,35 +311,6 @@ namespace chevron.Controllers
             }
         }
 
-        //[Route("dailylog")]
-        //public ActionResult _dataDailyLog()
-        //{
-        //    var request = System.Web.HttpContext.Current.Request;
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "daily_table")
-        //            .Model<DrillModel>()
-        //            .Field(new Field("drilling_table.tgl")
-        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-        //                .Validator(Validation.NotEmpty())
-        //            )
-        //            .Field(new Field("drilling_table.t_start")
-        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-        //                .Validator(Validation.NotEmpty())
-        //            )
-        //            .Field(new Field("drilling_table.t_end")
-        //                .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-        //                .Validator(Validation.NotEmpty())
-        //            )
-        //            .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
-        //             //.LeftJoin("mainunit_table","")
-        //             .Where("drilling_table.tgl", tg1, ">")
-        //             .Where("drilling_table.tgl", tg2, "<=")
-        //             .Where("drilling_table.id_unit", unitx, "=")
-        //            .Process(request).Data();
-        //        return Json(response);
-        //    }
-        //}
 
         [Route("cs/daily")]
         [HttpPost]
@@ -626,93 +620,7 @@ namespace chevron.Controllers
                 }
             }
 
-
-
-            //foreach (DailyUnitActivityModel isiunit in usernit)
-            //{
-            //    //total_jarak += unit.jarak;
-            //    //tot_hit += unit.hit;
-            //    //q_detail = string.Format("insert into detail_daily_table (id_daily_table,id_unit,id_mainunit,distance,duration) values ({0},{1},{2},{3},{4})",
-            //    //               id_daily, unit.id_unit, unit.id_mainunit, unit.jarak, unit.durasi);
-            //    ////Response.Write(q_detail);
-            //    //con.queryExec(q_detail);
-            //    t_standby = stb / tot_hit;
-            //    t_load = load / tot_hit;
-            //    t_steam = steam * (isiunit.jarak / total_jarak);
-            //    t_all = t_standby + t_load + t_steam + isiunit.durasi;
-            //    fuel_l = (t_all / (24 - down)) * fuel;
-            //    fuel_price = harga * fuel_l;
-            //    charter_price = t_all * charter_rate / 24;
-            //    t_stb_mob = stb * (t_load + t_steam + isiunit.durasi);
-            //    t_all_mob = t_stb_mob + t_load + t_steam + isiunit.durasi;
-            //    mob_price = t_all_mob * (mob_demob_rate / 24);
-
-
-
-            //    //simpan ke report_daily untuk Reporting
-            //    //var q_rpt1 = string.Format("insert into report_daily (tgl,id_vessel,id_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price,id_mainunit) "
-            //    //        + " values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}); ",
-            //    //        tanggal, input["daily_vesselid"], isiunit.id_unit, t_standby, t_load, t_steam, down, isiunit.durasi, t_all, fuel_l, fuel_price, curr_harga, charter_price, curr_charter, mob_price, isiunit.id_mainunit);
-            //    //Response.Write(q_rpt1);
-            //}
-
-
-
-
-
-
-
-
-
-
-
-
-            /*
-
-            // query jadi berubah ----
-           
-            // ------------
-            //buat variabel total jarak, dan jumlah user_unit
             
-            //foreach (DailyUnitActivityModel unit_jar in usernit) {
-                
-            //}
-
-            //Response.Write(total_jarak + " total jarak "+tot_hit);
-            decimal t_standby = 0,t_load =0,t_steam=0,t_all = 0,fuel_l =0, fuel_price=0,charter_price=0, t_stb_mob=0, t_all_mob = 0,mob_price=0;
-            if (fuel > 0)
-            {
-                foreach (DailyUnitActivityModel unit in usernit)
-                {
-                    //simpan ke daily_table untuk log daily     
-                    var qdailytable = string.Format("insert into daily_table (tgl,id_vessel,standby,loading,steaming,downtime,id_unit,duration,distance,fuel_tot,user_log,date_input,id_mainunit) " 
-                                + " values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},'{10}','{11}',{12}); "
-                                ,tanggal, input["daily_vesselid"], stb, load, steam, down, unit.id_unit, unit.durasi, unit.jarak, fuel, Session["userid"], DateTime.Now.ToString("yyyy-MM-dd"),unit.id_mainunit);
-                    //Response.Write(qdailytable);
-
-                    con.queryExec(qdailytable);
-
-                    t_standby = stb / tot_hit;
-                    t_load = load / tot_hit;
-                    t_steam = steam * (unit.jarak / total_jarak);
-                    t_all = t_standby + t_load + t_steam + unit.durasi;
-                    fuel_l = (t_all / (24 - down)) * fuel ;
-                    fuel_price = harga * fuel_l;
-                    charter_price = t_all * charter_rate / 24;
-
-                    t_stb_mob = stb * (t_load + t_steam + unit.durasi);
-                    t_all_mob = t_stb_mob + t_load + t_steam + unit.durasi;
-                    mob_price = t_all_mob *(mob_demob_rate/24);
-
-                    //simpan ke report_daily untuk Reporting
-                    var q_rpt1 = string.Format("insert into report_daily (tgl,id_vessel,id_unit,t_standby,t_load,t_steam,t_down,t_durasi,t_all,fuel_litre,fuel_price,fuel_curr,charter_price,charter_curr,mob_price,id_mainunit) "
-                            + " values ('{0}',{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}); ",
-                            tanggal, input["daily_vesselid"], unit.id_unit, t_standby, t_load, t_steam, down, unit.durasi, t_all, fuel_l, fuel_price, curr_harga, charter_price, curr_charter, mob_price,unit.id_mainunit);
-                    Response.Write(q_rpt1);
-                    //con.queryExec(q_rpt1);
-                }
-            }
-            */
             //delete setelah input
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
             Response.Write(qdelete);

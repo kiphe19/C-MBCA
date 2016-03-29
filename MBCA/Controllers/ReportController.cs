@@ -216,10 +216,10 @@ namespace chevron.Controllers
 
         private void getVessel()
         {
-            con.select("report_daily", "distinct(vessel)");
+            con.select("report_daily", "distinct(id_vessel)");
             while (con.result.Read())
             {
-                vessel.Add(con.result["vessel"]);
+                vessel.Add(con.result["id_vessel"]);
             }
             con.Close();
         }

@@ -8,210 +8,180 @@ var tgl = new Date();
 $(document).ready(function () {
     $("#btnCancelDaily").hide();
     $("#btnUpdateDailyAct").hide();
-        var dailyEditor = new $.fn.dataTable.Editor({
-            ajax: path + "/api/daily",
-            table: "#dailyTable",
-            fields: [
-                //{ label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
-                //{ label: "Vessel", name: "daily_vessel", type: "select" },
-                //{ label: "Activity", name: "daily_activity", type: "select" },
-                //{ label: "User Unit", name: "user_unit", type: "select" },
-                //{ label: "Duration", name: "daily_duration" }
-            ]
-        }).on('preOpen', function () {
-            dailyEditor.title('Add new Daily Activity');
-        })
+    var dailyEditor = new $.fn.dataTable.Editor({
+        ajax: path + "/api/daily/0",
+        table: "#dailyTable",
+        fields: [
+            //{ label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
+            //{ label: "Vessel", name: "daily_vessel", type: "select" },
+            //{ label: "Activity", name: "daily_activity", type: "select" },
+            //{ label: "User Unit", name: "user_unit", type: "select" },
+            //{ label: "Duration", name: "daily_duration" }
+        ]
+    }).on('preOpen', function () {
+        dailyEditor.title('Add new Daily Activity');
+    })
 
-        var dailyTable = $("#dailyTable").DataTable({
-            dom: '<"dailyButton"B<"floatright">>rt',
-            ajax: {
-                url: path + "/api/daily",
-                method: "post"
+    var dailyTable = $("#dailyTable").DataTable({
+        dom: '<"dailyButton"B<"floatright">>rt',
+        ajax: {
+            url: path + "/api/daily/0",
+            method: "post"
+        },
+        serverSide: true,
+        columns: [
+            { data: "unit" },
+            { data: "dur" }
+        ],
+        select: true,
+        buttons: [
+            {
+                extend: 'create',
+                text: 'New',
+                action: function () {
+                    $("#timeatForm")[0].reset();
+                    $("#timeatForm input[name='action']").val("create");
+                    $("#timeatForm input[name='id']").val("");
+                    $("#timeatForm button[type='submit']").text("Add");
+                }
             },
-            serverSide: true,
-            columns: [
-                //{ data: 'daily_date' },
-                { data: 'unit_table.name' },
-                //{ data: "daily_activity" },
-                { data: "temp_daily.duration" }
-            ],
-            select: true,
-            buttons: [
-                {
-                    extend: 'create',
-                    text: 'New',
-                    action: function () {
-                        $("#timeatForm")[0].reset();
-                        $("#timeatForm input[name='action']").val("create");
-                        $("#timeatForm input[name='id']").val("");
-                        $("#timeatForm button[type='submit']").text("Add");
-                    }
-                },
-                {
-                    extend:'edit',
-                    text: "Edit",
-                    action: function (e, dt, node, config) {
-                        var a = dailyTable.rows('.selected').indexes();
-                        if (a.length !== 0) {
-                            var b = dailyTable.row(a).data();
-                            //console.log(b);
-                            $("#timeatForm select[name = 'daily_unitid'] option[value=" + b.temp_daily.id_unit + "]").prop("selected", true);
-                            $("#timeatForm input[name='time_at_dur']").val(b.temp_daily.duration);
-                            $("#timeatForm input[name='action']").val("update");
-                            $("#timeatForm input[name='id']").val(b.temp_daily.id);
-                            //$("#dailyForm input[name='daily_fuel']").val(b.daily_fuel);
-                            $("#timeatForm button[type='submit']").text("Update");
-                        }
-                    }
-                },
-                { extend: "remove", editor: dailyEditor },
-            ]
-        });
-
-
-
-        //monthlyEditor = new $.fn.dataTable.Editor({
-        //    ajax: path + "/api/monthly",
-        //    table: "#monthlyTable",
-        //    fields: [
-        //        { label: "Date", name: "monthly_date", type: "datetime", format: "DD/MM/YYYY" },
-        //        { label: "Vessel", name: "monthly_vessel", type: "select" },
-        //        { label: "Activity", name: "monthly_activity", type: "select" },
-        //        { label: "User Unit", name: "monthly_unit", type: "select" },
-        //        { label: "Duration", name: "monthly_duration" }
-        //    ]
-        //});
-
-        //monthlyTable = $("#monthlyTable").DataTable({
-        //    dom: 'B<"floatright">rtip',
-        //    ajax: {
-        //        url: path + "/api/monthly",
-        //        type: "post"
-        //    },
-        //    columns: [
-        //        { data: "monthly_date" },
-        //        { data: "monthly_vessel" },
-        //        { data: "monthly_activity" },
-        //        { data: "monthly_unit" },
-        //        { data: "monthly_duration" }
-        //    ],
-        //    buttons: [
-        //        {
-        //            extend: "collection",
-        //            text: "Export to ..",
-        //            buttons: ['excel']
-        //        }
-        //    ]
-        //});
-        var yyyy = tgl.getFullYear();
-    //var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
-        var mm = (tgl.getMonth() + 1);
-        var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
-        var tg1, tg2;
-        if (dd <= 25) {
-            tg1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
-            tg2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
-        }
-        else {
-            tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
-            tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
-        }
-        console.log(tg1, tg2);
-        var dailyLogEditor = new $.fn.dataTable.Editor({
-            
-            url: path + "/api/dailylog/" + tg1 + "/" + tg2,
-            table: "#DailyLogTable",
-            //fields: [{
-            //    //label: "First name:",
-            //    name: "daily_table.tgl"
-            //}, {
-            //    //label: "Last name:",
-            //    name: "daily_table.id_vessel"
-            //}, {
-            //    //label: "Manager:",
-            //    name: "daily_table.id",
-            //    type: "select"
-            //}
-            //]
-        });
-
-        var dailylogTable = $("#DailyLogTable").DataTable({
-            //dom: 'B<"floatright">rtip',
-            dom: "Bfrtip",
-            ajax: {
-                url: path + "/api/dailylog/" + tg1 + "/" + tg2,
-                type: "post"
-            },
-            select : true,
-            columns: [
-                { data: null },
-                { data: "daily_table.tgl" },
-                { data: "vessel_table.name" },
-                { data: "daily_table.standby" },
-                { data: "daily_table.loading" },
-                { data: "daily_table.steaming" },
-                { data: "daily_table.downtime" },
-                { data: "daily_table.fuel_tot" },
-                { data: "unit_table.name" },
-                { data: "daily_table.duration" }
-                //{ data: "daily_table.tgl" },
-                ////{ data: "vessel_table.name" },
-                //{ data: "daily_table.standby" },
-                //{ data: "daily_table.loading" },
-                //{ data: "daily_table.steaming" },
-                //{ data: "daily_table.downtime" },
-                //{ data: "daily_table.fuel_tot" },
-                ////{ data: "unit_table.name" },
-                //{ data: "daily_table.duration" }
-            ],
-            buttons: [
-                {
-                    extend:'edit',
-                    text : 'Edit Activity',
-                    action : function(){
-                        var a = dailylogTable.rows('.selected').indexes();
-                        var b = dailylogTable.row(a).data();
-                        //console.log(a);
+            {
+                extend:'edit',
+                text: "Edit",
+                action: function (e, dt, node, config) {
+                    var a = dailyTable.rows('.selected').indexes();
+                    if (a.length !== 0) {
+                        var b = dailyTable.row(a).data();
                         //console.log(b);
-                        $("#btnCancelDaily").show();
-                        $("#activityForm input[name='action']").val("update");
-                        $("#activityForm input[name='id']").val(b.daily_table.id);
-                        $("#activityForm input[name='daily_date']").val(b.daily_table.tgl);
-                        $("#activityForm select[name = 'daily_vesselid'] option[value=" + b.daily_table.id_vessel + "]").prop("selected", true);
-
-                        $("#activityForm input[name='daily_fuel']").val(b.daily_table.fuel_tot);
-                        $("#activityForm input[name='standby']").val(b.daily_table.standby);
-                        $("#activityForm input[name='load']").val(b.daily_table.loading);
-                        $("#activityForm input[name='steaming']").val(b.daily_table.steaming);
-                        $("#activityForm input[name='downtime']").val(b.daily_table.downtime);
-                        $("#timeatForm select[name='daily_unitid'] option[value=" + b.daily_table.id_unit + "]").prop("selected", true);
-                        $("#timeatForm input[name='time_at_dur']").val(b.daily_table.duration);
-                        $("#btnSaveGroup").hide();
-                        $("#btnUpdateDailyAct").show();
-                        $("#btnSaveDailyAct").hide();
-
-                        
-                    }
-                },
-                { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
-                //{
-                //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
-                //}
-                //{
-                //    extend: "collection",
-                //    text: "Export to ..",
-                //    buttons: ['excel']
-                //}
-            ],
-            fnDrawCallback: function (oSettings) {
-                if (oSettings.bSorted || oSettings.bFiltered) {
-                    for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
-                        $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                        $("#timeatForm input[name='action']").val("update");
+                        $("#timeatForm input[name='id']").val(b.id_temp);
+                        $("#timeatForm select[name = 'daily_unitid'] option[value=" + b.id_un + "]").prop("selected", true);
+                        $("#timeatForm input[name='time_at_dur']").val(b.dur);
+                        $("#timeatForm button[type='submit']").text("Update");
                     }
                 }
-            }
-        });
+            },
+            { extend: "remove", editor: dailyEditor },
+        ]
+    });
 
+
+
+    var yyyy = tgl.getFullYear();
+    var mm = (tgl.getMonth() + 1);
+    var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
+    var tg1, tg2;
+    if (dd <= 25) {
+        tg1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
+        tg2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+    }
+    else {
+        tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+        tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
+    }
+    console.log(tg1, tg2);
+    var dailyLogEditor = new $.fn.dataTable.Editor({
+            
+        url: path + "/api/dailylog/" + tg1 + "/" + tg2,
+        table: "#DailyLogTable",
+        //fields: [{
+        //    //label: "First name:",
+        //    name: "daily_table.tgl"
+        //}, {
+        //    //label: "Last name:",
+        //    name: "daily_table.id_vessel"
+        //}, {
+        //    //label: "Manager:",
+        //    name: "daily_table.id",
+        //    type: "select"
+        //}
+        //]
+    });
+
+    var dailylogTable = $("#DailyLogTable").DataTable({
+        //dom: 'B<"floatright">rtip',
+        dom: "Bfrtip",
+        ajax: {
+            url: path + "/api/dailylog/" + tg1 + "/" + tg2,
+            type: "post"
+        },
+        select : true,
+        columns: [
+            { data: null },
+            { data: "tg" },
+            { data: "nm_ves" },
+            { data: "stb" },
+            { data: "ld" },
+            { data: "stm" },
+            { data: "dt" },
+            { data: "fuel_t" }
+        ],
+        buttons: [
+            {
+                extend:'edit',
+                text : 'Edit Activity',
+                action : function(){
+                    var a = dailylogTable.rows('.selected').indexes();
+                    var b = dailylogTable.row(a).data();
+                    console.log(a);
+                    console.log(b);
+                    $("#btnCancelDaily").show();
+                    $("#activityForm input[name='action']").val("update");
+                    $("#activityForm input[name='id']").val(b.id_dt);
+
+                    $("#activityForm input[name='daily_date']").val(b.tg);
+                    $("#activityForm select[name = 'daily_vesselid'] option[value=" + b.id_ves+ "]").prop("selected", true);
+                    $("#activityForm input[name='daily_fuel']").val(b.fuel_t);
+                    $("#activityForm input[name='standby']").val(b.stb);
+                    $("#activityForm input[name='load']").val(b.ld);
+                    $("#activityForm input[name='steaming']").val(b.stm);
+                    $("#activityForm input[name='downtime']").val(b.dt);
+                    (b.mob == 1) ? $("#activityForm input[name='mob']").prop("checked", true) : $("#activityForm input[name='mob']").prop("checked", false);
+                    $("#btnUpdateDailyAct").show();
+                    $("#btnSaveDailyAct").hide();
+
+                    //ambilUnitDailyVes(b.id_dt);
+                    dailyTable.ajax.url('/api/daily/' + b.id_dt).load();
+
+                        
+                }
+            },
+            { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
+            //{
+            //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
+            //}
+            //{
+            //    extend: "collection",
+            //    text: "Export to ..",
+            //    buttons: ['excel']
+            //}
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
+    });
+
+    //var ambilUnitDailyVes = ()
+    //var ambilUnitDailyVes = $("#DailyLogTable").DataTable({
+    //var ambilUnitDailyVes = $("#dailyTable").DataTable({
+    //    dom: '<"dailyButton"B<"floatright">>rt',
+    //    ajax: {
+    //        url: path + "/api/daily",
+    //        method: "post"
+    //    },
+    function ambilUnitDailyVes(a){
+        $("#dailyTable").DataTable({
+            dom: '<"dailyButton"B<"floatright">>rt',
+            ajax: {
+                url: path + "/api/daily/"+a,
+                method: "post"
+            }
+        })
+    }
     
 
     drillEditor = new $.fn.dataTable.Editor({
