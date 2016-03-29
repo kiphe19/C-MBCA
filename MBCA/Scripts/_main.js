@@ -262,12 +262,21 @@ $(document).ready(function () {
         ]
     });
 
+    //$("#activityForm input[name='daily_date']").bind("input", function () {
+    //    //$("#timeatForm input[name = 'date_timeat']").val($(this).val());
+    //    alert($(this).val());
+    //});
 
+    //$("#daily_tgl").live("input",function () {
+    //    alert("tara");
+    //});
     $("#timeatForm").submit(function (e) {
+        $("#timeatForm input[name = 'date_timeat']").val($("#activityForm input[name='daily_date']").val());
         var data = $(this).serialize();
-        //console.log(data);
+        console.log(data);
         $.post(path + "/api/cs/daily", data, function (res) {
             if (res === "success") {
+                //alert(res);
                 dailyTable.ajax.reload();
                 $("#timeatForm input[name='time_at_dur']").val(null);
                 //dailyCancel.apply();
@@ -299,7 +308,8 @@ $(document).ready(function () {
 
     $("#daily_tgl").datetimepicker({
         format: "MM/DD/YYYY",
-        maxDate: new Date()
+        maxDate: new Date(),
+        
     });
     $("#drill_date").datetimepicker({
         format: "MM/DD/YYYY",
