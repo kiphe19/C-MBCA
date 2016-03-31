@@ -21,7 +21,7 @@ namespace chevron.Controllers
         //public string _reportSatu(FormCollection input)
         public string _reportSatu(string tg1, string tg2, string tipe, int ves)
         {
-            Response.Write("tg1 = " + tg1 + ", tg2 = " + tg2 + ", vesselnya " + ves.ToString()+", tipenya = "+tipe+"\n");
+            //Response.Write("tg1 = " + tg1 + ", tg2 = " + tg2 + ", vesselnya " + ves.ToString()+", tipenya = "+tipe+"\n");
             
 
             DateTime dateFrom = Convert.ToDateTime(tg1);

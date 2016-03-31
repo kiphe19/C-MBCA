@@ -1,7 +1,7 @@
 ﻿var path = window.location.pathname;
 //var path = "";
-var aseliTable = $("table").html(); 
-var tablee = tablee = $("table").DataTable({ "scrollX": true });
+//var aseliTable = $("table").html(); 
+//var tablee = tablee = $("table").DataTable({ "scrollX": true });
 $("#DataTables_Table_0_wrapper").hide();
 
 function loadTableData(data) {
@@ -13,14 +13,14 @@ function loadTableData(data) {
 
     $.post(path + '/Reporting', data)
         .done(function (res) {
-            $("table").html(aseliTable);
+            //$("table").html(aseliTable);
             var a = res;
 
             var countUnit = 0;
 
             for (var index in a.unit) {
                 countUnit++;
-                $("table thead tr").append('<th>' + a.unit[index] + '</th>');
+                //$("table thead tr").append('<th>' + a.unit[index] + '</th>');
             }
 
             for (var index in a.data) {
@@ -35,18 +35,18 @@ function loadTableData(data) {
             }
         })
         .always(function () {
-            $("table").show();
-            $("#collapseOne").collapse('hide')
-            tablee = $("table").DataTable({
-                dom: "Brtip",
-                buttons: [
-                {
-                    extend: "excelHtml5",
-                    text: "Excel",
-                    filename: "Reporttt",
-                }
-                ]
-            })
+            //$("table").show();
+            //$("#collapseOne").collapse('hide')
+            ////tablee = $("table").DataTable({
+            //    dom: "Brtip",
+            //    buttons: [
+            //    {
+            //        extend: "excelHtml5",
+            //        text: "Excel",
+            //        filename: "Reporttt",
+            //    }
+            //    ]
+            //})
         })
 }
 
@@ -72,6 +72,8 @@ $(document).ready(function () {
         format: "MM/DD/YYYY"
     });
 
+    var reportUnit = $("#reportUnitTable").DataTable();
+
     $("#report1").click(function (e) {
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
         var tipe = $("#f_generateReport select[name='type'] option:selected").val();
@@ -81,72 +83,55 @@ $(document).ready(function () {
         var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
         var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
 
-        console.log(tgl1, tgl2, tipe, ves);
-
+        //console.log(tgl1, tgl2, tipe, ves);
+        reportUnit.destroy();
         $.ajax({
-            url: "api/report/"+tgl1+"/"+tgl2+"/"+tipe+"/"+ves,
-            type : "post"
+            url: "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
+            type: "post",
+            //success: function (s) {
+            //    alert("adsasdasd");
+            //}
         })
+        .done(function (dt) {
+            //alert("Data Saved: ");
+            //console.log(dt.unit);
 
-        //reportUnit.ajax.url('api/report/tgl1/tgl2/tipe/ves');
-            //unitTable.ajax.url('api/unit/' + hari).load();
+            $.each(dt.unit, function (key, value) {
+                //console.log(key + ": " + value);
+                $("#reportUnitTable thead tr").append('<th>' + value + '</th>');
+            });
 
-        //var data = $("#f_generateReport").serialize();
-        ////console.log(data);
-        //$.post("/api/report", data, function () {
-        //    //console.log("buaj jsonnn");
-        //    //alert(res);
-        //    //console.log(res);
-        //    //$.get("/api/report", function (data) {
-        //    //    console.log(data);
-        //    //});
-        //    alert("OK");
-        //})
-        //    //.done(
-        //    //    alert("asdasdasd");
-        //    //);
-        //    .done(function () {
-        //    //console.log(res);
-        //    alert("aaaaa");
+            //$.each
+            for (var data in dt.data) {
+                console.log(dt.data[data].tg + "  === " + dt.data[data].ves);
+                var isi = "<td>" + dt.data[data].tg + "</td>" + "<td>" + dt.data[data].ves + "</td>";
+                var dtx = dt.data[data].datax;
+                console.log(isi);
+                $.each(dtx, function (k, v) {
+                    console.log(k + ": " + v);
+                    isi += "<td>" + v + "</td>";
+                    //$("#reportUnitTable thead tr").append('<th>' + value + '</th>');
+                });
+                console.log(isi);
+                $("#reportUnitTable ").append('<tr>' + isi + '</tr>');
 
-        //});
-    });
-    //$("#report1").click(function (e) {
-    //    var data1 = $("#f_generateReport").serialize();
-    //    //console.log(data);
-    //    //$.post("/api/report", data, function (res) {
-    //    //    console.log("buaj jsonnn");
-    //    //    //alert(res);
-    //    //    console.log(res);
-    //    //    //$.get("/api/report", function (data) {
-    //    //    //    console.log(data);
-    //    //    //});
-    //    //});
-    //    $.ajax({
-    //        type: "POST",
-    //        contentType: "application/json; charset=utf-8",
-    //        url: "report/_reportSatu",
-    //        dataType: "json",
-    //        data: data1,
-    //        success: function (data) {
-    //            console.log(data);
-    //        }
-    //    });
-    //});
-    var reportUnit = $("#reportUnitTable").DataTable({
-        ajax : {
-            url: "api/report/2016-03-01/2016-03-31/fl/"+0,
-            type: "post"
-        },
-        select : true
+            }
+        })
+        .always(function () {
+            //$("table").show();
+            //$("#collapseOne").collapse('hide')
+            $("reportUnitTable").DataTable({
+                dom: "Brtip",
+                buttons: [
+                {
+                    extend: "excelHtml5",
+                    text: "Excel",
+                    filename: "Reporttt",
+                }
+                ]
+            })
+        });
+
     });
 
-    //userTable = $("#userTable").DataTable({
-    //    //dom: "<'top'Bf>rt<'bottom'lp><'clear'>",
-    //    dom: "Brftip",
-    //    ajax: {
-    //        url: "api/users",
-    //        type: 'post'
-    //    },
-    //    select: true,
 })
