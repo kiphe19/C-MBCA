@@ -16,50 +16,279 @@ namespace chevron.Controllers
         Connection con = new Connection();
         JArray vessel = new JArray();
 
-        [Route("api/report")]
-        //public String  _reportSatu()
-        public string _reportSatu(FormCollection input)
+        //[Route("api/report")]
+        [Route("api/report/{tg1}/{tg2}/{tipe}/{ves}")]
+        //public string _reportSatu(FormCollection input)
+        public string _reportSatu(string tg1, string tg2, string tipe, int ves)
         {
+            Response.Write("tg1 = " + tg1 + ", tg2 = " + tg2 + ", vesselnya " + ves.ToString()+", tipenya = "+tipe+"\n");
+            
+
+            DateTime dateFrom = Convert.ToDateTime(tg1);
+            DateTime dateTo = Convert.ToDateTime(tg2);
+            TimeSpan ambilTanggal = dateTo - dateFrom;
+
+            //Response.Write("tg1x = " + dateFrom + ", tg2x = " + dateTo + ", timespanx = " + ambilTanggal.TotalDays + "\n");
+            //return "sukses \n";
+            //*
+            //Response.Write("tipe reportnya "+ input["type"]+"\n");
+            //DateTime dateFrom = (input["tgFrom"] == "") ? DateTime.Now.AddDays(-1) : Convert.ToDateTime(input["tgFrom"]);
+            //DateTime dateTo = (input["tgTo"] == "") ? DateTime.Now : Convert.ToDateTime(input["tgTo"]);
+            //TimeSpan ambilTanggal = dateTo - dateFrom;
+            //var idvessel = (input["vesselId"] == "0") ? 0 : Convert.ToInt32(input["vesselId"]);
+            var vesselname = "";
+            //con.select("vessel_table", "name", string.Format("id={0}", idvessel));
+            con.select("vessel_table", "name", string.Format("id={0}", ves));
+            while (con.result.Read())
+            {
+                vesselname = con.result["name"].ToString();
+            }
 
             dynamic aa = new JObject();
-            //JArray tg = new JArray();
-
-            DateTime dateFrom = (input["tgFrom"] == "") ? DateTime.Now.AddDays(-1) : DateTime.Parse(Convert.ToDateTime(input["tgFrom"]).ToString("yyyy-MM-dd"));
-            DateTime dateTo = (input["tgTo"] == "") ? DateTime.Now : DateTime.Parse(Convert.ToDateTime(input["tgTo"]).ToString("yyyy-MM-dd"));
-            TimeSpan ambilTanggal = dateTo - dateFrom;
-            //return "success";
-            //JArray unit = new JArray();
+            JArray all = new JArray();
+            JArray unitall = new JArray();
+            JArray unitnama = new JArray();
             JArray date = new JArray();
 
-            //con.select("unit_table", "name");
-            //while (con.result.Read())
-            //{
-            //    unit.Add(con.result["name"]);
-            //}
-            //con.Close();
-            dynamic cc = new JObject();
-            for (int i = 0; i <= ambilTanggal.TotalDays; i++)
+            var cr = string.Format("tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), ves);
+            con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
+            while (con.result.Read())
             {
-                //date.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
-                //date.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
-
-                cc.tgl = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
-                date.Add(cc);
+                unitall.Add(con.result["id_unit"]);
+                unitnama.Add(con.result["nama"]);
             }
-            aa.ddd = date;
-            Response.Write(ambilTanggal);
-            //return Json(new { nama = "Jono" },
-            //    JsonRequestBehavior.AllowGet);
-
-            //return Json(aa, JsonRequestBehavior.AllowGet);
+            for (var i = 0; i < ambilTanggal.TotalDays; i++)
+            {
+                dynamic ii = new JObject();
+                JArray isi = new JArray();
+                ii.ves = vesselname;
+                ii.tg = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+                //Response.Write(dateFrom.AddDays(i).ToString("yyyy-MM-dd")+"\n");
+                foreach (var u in unitall)
+                {
+                    var ww = string.Format("select round(fuel_litre,3) fuel_litre,round(fuel_price,3) fuel_price,fuel_curr,round(charter_price,3) charter_price,round(mob_price,3) mob_price,charter_curr from report_daily where tgl = '{0}' and id_unit = {1} and id_vessel = {2};", dateFrom.AddDays(i).ToString("yyyy-MM-dd"), u, ves);
+                    //Response.Write(ww + "\n");
+                    con.query(ww);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        switch (tipe)
+                        {
+                            case "fl":
+                                isi.Add(con.result["fuel_litre"]);
+                                break;
+                            case "fc":
+                                //isi.Add(con.result["fuel_price"]);
+                                if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
+                                else isi.Add("IDR " + con.result["fuel_price"]);
+                                break;
+                            case "ch":
+                                isi.Add(con.result["charter_price"]);
+                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
+                                //else isi.Add("IDR " + con.result["charter_price"]);
+                                break;
+                            case "mb":
+                                isi.Add(con.result["mob_price"]);
+                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
+                                //else isi.Add("IDR " + con.result["mob_price"]);
+                                break;
+                            default:
+                                break;
+                        }
+                        //isi.Add(con.result["fuel_litre"]);
+                    }
+                    else isi.Add(0);
+                }
+                ii.datax = isi;
+                all.Add(ii);
+            }
+            aa.data = all;
+            aa.unit = unitnama;
             Response.ContentType = "text/json";
-            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(aa);
             var json = JsonConvert.SerializeObject(aa);
-
+            return json;
             //Response.Write(json);
             //return "success";
-            return json;
+            ////var json = Newtonsoft.Json.JsonConvert.SerializeObject(aa);
+            //*/
         }
+
+        
+
+
+
+
+
+
+
+
+        ////Response.Write(idvessel.ToString());
+        //if (idvessel > 0)
+        //{
+        //    //cari_unit = string.Format("select id_unit from report_daily where tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), idvessel);
+        //    cari_tg = string.Format("select distinct(tgl) from report_daily where tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), idvessel);
+
+        //}
+        //else
+        //{
+        //    //cari_unit = string.Format("select id_unit from report_daily where tgl > '{0}' and tgl <= '{1}'", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
+        //    cari_tg = string.Format("select distinct(tgl) tgl from report_daily where tgl > '{0}' and tgl <= '{1}'", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
+
+        //}
+        ////Response.Write(cari_unit);
+        //JArray unit = new JArray();
+        //JArray date1 = new JArray();
+
+        ////con.query(cari_unit);
+        ////while (con.result.Read())
+        ////{
+        ////    unit.Add(con.result["id_unit"]);
+        ////}
+
+        ////con.Close();
+        //con.query(cari_tg);
+        //while (con.result.Read())
+        //{
+        //    date1.Add(con.result["tgl"]);
+        //}
+        //con.Close();
+        //dynamic jj = new JObject();
+        //JArray kk = new JArray();
+        //JArray ll = new JArray();
+        //JArray uni = new JArray();
+
+        ////var k = 0;
+
+        //foreach (var tg in date1)
+        //{
+        //    Response.Write("tanggal= "+tg + "\n");
+        //    cari_unit = string.Format("select id_unit from report_daily where tgl = '{0}' and id_vessel = {1}", tg, idvessel);
+        //    con.query(cari_unit);
+        //    while (con.result.Read()) {
+        //        //Response.Write(tg + " : vess : " +idvessel+" unit ==> " + con.result["id_unit"] + "\n");
+        //        uni.Add(con.result["id_unit"]);
+
+        //    }
+        //    con.Close();
+
+        //    foreach (var zz in uni)
+        //    {
+        //        //Response.Write(tg + " : vess : " + idvessel + " unit ==> " +zz + "\n");
+        //        var ww = string.Format("select * from report_daily where tgl = '{0}' and id_vessel = {1} and id_unit = {2}", tg, idvessel, zz);
+        //        Response.Write(ww + "\n");
+        //        con.query(ww);
+        //        while (con.result.Read())
+        //        {
+        //            Response.Write(con.result["fuel_litre"] + "--");
+        //            kk.Add(con.result["fuel_litre"]);
+        //            //uni.Add(con.result["name"]);
+        //        }
+
+
+
+        //    }
+        //    jj.fuel = kk;
+        //    ll.Add(jj);
+        //    uni.Clear();
+        //    kk.Clear();
+
+        //foreach (var uuu in unit)
+        //{
+        //    Response.Write(tg+" : unit ==> "+uuu + "\n");
+
+        //    //var ww = string.Format("select * from report_daily where tgl = '{0}' and id_vessel = {1} and id_unit = {2}", tg, idvessel, uuu);
+        //    //Response.Write(ww + "\n");
+        //    //con.query(ww);
+        //    //while (con.result.Read())
+        //    //{
+        //    //    kk.Add(con.result["fuel_litre"]);
+        //    //    uni.Add(con.result["name"]);
+        //    //}
+
+        //}
+        //jj.unitx = kk;
+        //jj.unitk = uni;
+
+
+        //}
+        //ll.Add(jj);
+        //foreach( var ut in unit)
+        //{
+        //    JArray unun = new JArray();
+        //    dynamic ee = new JObject();
+        //    var vv = string.Format("select * from report_daily where tgl > '{0}' and tgl <= '{1}' and id_vessel = {2} and id_unit = {3}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), idvessel, ut);
+        //    //Response.Write(vv);
+        //    con.query(vv);
+        //    while (con.result.Read())
+        //    {
+        //        jj.tgl = con.result["tgl"];
+        //        jj.ves = con.result["id_vessel"];
+        //        jj.un = con.result["id_unit"];
+        //        jj.fuel = con.result["fuel_tot"];
+        //        //foreach (var uu in unit)
+        //        //{
+        //        //    ee.
+        //        //}
+
+        //    }
+        //    kk.Add(jj);
+
+        //}
+
+
+
+
+
+        //JArray unit_id = new JArray();
+        //JArray ves_id = new JArray();
+
+
+        //var cari_isi = "";
+        //dynamic cc = new JObject();
+        //for (int i = 0; i <= ambilTanggal.TotalDays; i++)
+        //{
+
+        //    if (idvessel > 0)
+        //    {
+        //        cari_isi = string.Format("select id_unit,id_vessel, from report_daily where tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), idvessel);
+        //    }
+        //    else
+        //    {
+        //        cari_unit = string.Format("select id_unit,id_vessel from report_daily where tgl > '{0}' and tgl <= '{1}'", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
+        //    }
+        //    con.query(cari_unit);
+        //    while (con.result.Read())
+        //    {
+        //        unit_id.Add(con.result["id_unit"]);
+        //        ves_id.Add(con.result["id_unit"]);
+
+        //    }
+        //    con.Close();
+
+
+
+        //    cc.vessel = ves_id;
+        //    cc.un = unit_id;
+        //    cc.tgl = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+        //    date.Add(cc);
+        //}
+        //aa.ddd = date;
+        //aa.vessel = idvessel;
+        //aa.data = ll;
+        //aa.unit = unit;
+        //Response.Write(ambilTanggal);
+        //return Json(new { nama = "Jono" },
+        //    JsonRequestBehavior.AllowGet);
+
+        //return Json(aa, JsonRequestBehavior.AllowGet);
+        //    Response.ContentType = "text/json";
+        //    //var json = Newtonsoft.Json.JsonConvert.SerializeObject(aa);
+        //    var json = JsonConvert.SerializeObject(aa);
+        //    //*/
+        //    //Response.Write(json);
+        //    //return "success";
+        //    return json;
+        //}
 
         public ActionResult Index()
         {
@@ -84,7 +313,7 @@ namespace chevron.Controllers
             List<SelectListItem> vessel = new List<SelectListItem>();
             vessel.Insert(0, (new SelectListItem
                 {
-                    Text = "All",
+                    Text = "",
                     Value = "0",
                     Selected = true
                 }
@@ -127,6 +356,7 @@ namespace chevron.Controllers
             {
                 case "fl":
                     column = "fuel_litre";
+
                     break;
                 case "fc":
                     column = "fuel_price, fuel_curr";
@@ -148,10 +378,10 @@ namespace chevron.Controllers
             JArray unit = new JArray();
             JArray date = new JArray();
 
-            con.select("unit_table", "name");
+            con.select("unit_table", "id");
             while (con.result.Read())
             {
-                unit.Add(con.result["name"]);
+                unit.Add(con.result["id"]);
             }
             con.Close();
 
@@ -165,8 +395,8 @@ namespace chevron.Controllers
                 dynamic c = new JObject(
                         new JProperty("vessel", vsl)
                     );
-
-                String whrrr = String.Format("vessel = '{0}' and tgl = '{1}'", vsl, tgl);
+                //cek jika vessel dan tgl exist
+                String whrrr = String.Format("id_vessel = '{0}' and tgl = '{1}'", vsl, tgl);
                 con.select("report_daily", "tgl", whrrr);
 
                 if (con.result.HasRows)
@@ -174,7 +404,7 @@ namespace chevron.Controllers
                     JArray data = new JArray();
                     foreach (var unt in unit)
                     {
-                        var whrrrr = String.Format("vessel = '{0}' and tgl = '{1}' and user_unit = '{2}'", vsl, tgl, unt);
+                        var whrrrr = String.Format("id_vessel = '{0}' and tgl = '{1}' and id_unit = '{2}'", vsl, tgl, unt);
                         con.select("report_daily", column, whrrrr);
                         con.result.Read();
                         if (con.result.HasRows)
