@@ -72,7 +72,7 @@ $(document).ready(function () {
         format: "MM/DD/YYYY"
     });
 
-    var reportUnit = $("#reportUnitTable").DataTable();
+    //var reportUnit = $("#reportUnitTable").DataTable();
 
     $("#report1").click(function (e) {
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
@@ -83,6 +83,29 @@ $(document).ready(function () {
         var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
         var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
 
+        $.ajax({
+            //"url": 'arrays_short.txt',
+            "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
+            "success": function (json) {
+                console.log(json.columns);
+                var tableHeaders;
+                $.each(json.columns, function (i, val) {
+                    //console.log(val);
+                    tableHeaders += "<th>" + val + "</th>";
+                });
+
+                $("#reportUnitTable").empty();
+                $("#reportUnitTable").append('<table id="rUnit" class="table display table-bordered" style="width:100%" ><thead><tr>' + tableHeaders + '</tr></thead></table>');
+                //$("#reportUnitTable").append('<table class="display" cellspacing="0" width="100%"><thead><tr>' + tableHeaders + '</tr></thead></table>');
+                //$("#reportUnitTable").find("table thead tr").append(tableHeaders);
+
+                //$('#displayTable').dataTable(json);
+            },
+            "dataType": "json"
+        });
+
+
+        /*
         //console.log(tgl1, tgl2, tipe, ves);
         reportUnit.destroy();
         $.ajax({
@@ -131,7 +154,7 @@ $(document).ready(function () {
                 ]
             })
         });
-
+        */
     });
 
 })

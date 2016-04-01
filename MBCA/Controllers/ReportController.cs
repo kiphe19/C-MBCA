@@ -49,6 +49,18 @@ namespace chevron.Controllers
             JArray unitall = new JArray();
             JArray unitnama = new JArray();
             JArray date = new JArray();
+            JArray kolom = new JArray();
+            JArray datay = new JArray();
+            JArray isix = new JArray();
+            JArray isi = new JArray();
+
+            ///<summary>
+            /// Create Array for Heading Table firstly
+            /// columns : ["date","vessel","unitx#","unitx#"]
+            /// </summary>
+
+            kolom.Add("Date");
+            kolom.Add("Vessel");
 
             var cr = string.Format("tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), ves);
             con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
@@ -56,54 +68,113 @@ namespace chevron.Controllers
             {
                 unitall.Add(con.result["id_unit"]);
                 unitnama.Add(con.result["nama"]);
+                kolom.Add(con.result["nama"]);
             }
-            for (var i = 0; i < ambilTanggal.TotalDays; i++)
+
+            ///<summary>
+            ///end of create head table
+            /// </summary>
+
+
+            ///<summary>
+            ///create data if each rows of tables
+            /// </summary>
+            /// 
+            for (var i = 0; i <= ambilTanggal.TotalDays; i++)
             {
                 dynamic ii = new JObject();
-                JArray isi = new JArray();
-                ii.ves = vesselname;
+                JArray kk = new JArray();
+               
+                var tgl = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
                 ii.tg = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
-                //Response.Write(dateFrom.AddDays(i).ToString("yyyy-MM-dd")+"\n");
-                foreach (var u in unitall)
+                ii.ves = vesselname;
+
+                //Response.Write(dateFrom.AddDays(i).ToString("yyyy-MM-dd") + "\n");
+
+
+                kk.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
+                kk.Add(vesselname);
+                foreach (var ss in kk)
                 {
-                    var ww = string.Format("select round(fuel_litre,3) fuel_litre,round(fuel_price,3) fuel_price,fuel_curr,round(charter_price,3) charter_price,round(mob_price,3) mob_price,charter_curr from report_daily where tgl = '{0}' and id_unit = {1} and id_vessel = {2};", dateFrom.AddDays(i).ToString("yyyy-MM-dd"), u, ves);
-                    //Response.Write(ww + "\n");
-                    con.query(ww);
-                    con.result.Read();
-                    if (con.result.HasRows)
-                    {
-                        switch (tipe)
-                        {
-                            case "fl":
-                                isi.Add(con.result["fuel_litre"]);
-                                break;
-                            case "fc":
-                                //isi.Add(con.result["fuel_price"]);
-                                if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
-                                else isi.Add("IDR " + con.result["fuel_price"]);
-                                break;
-                            case "ch":
-                                isi.Add(con.result["charter_price"]);
-                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
-                                //else isi.Add("IDR " + con.result["charter_price"]);
-                                break;
-                            case "mb":
-                                isi.Add(con.result["mob_price"]);
-                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
-                                //else isi.Add("IDR " + con.result["mob_price"]);
-                                break;
-                            default:
-                                break;
-                        }
-                        //isi.Add(con.result["fuel_litre"]);
-                    }
-                    else isi.Add(0);
+                    isix.Add(kk);
                 }
-                ii.datax = isi;
-                all.Add(ii);
+                
+                kk.Clear();
+
+                //datay.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
+                //datay.Add(vesselname);
+
+
+                //isi
+
+                //foreach (var u in unitall)
+                //{
+
+                //    /*
+                //    var ww = string.Format("select round(fuel_litre,3) fuel_litre,round(fuel_price,3) fuel_price,fuel_curr,round(charter_price,3) charter_price,round(mob_price,3) mob_price,charter_curr from report_daily where tgl = '{0}' and id_unit = {1} and id_vessel = {2};", dateFrom.AddDays(i).ToString("yyyy-MM-dd"), u, ves);
+                //    //Response.Write(ww + "\n");
+                //    con.query(ww);
+                //    con.result.Read();
+                //    if (con.result.HasRows)
+                //    {
+
+                //        switch (tipe)
+                //        {
+                //            case "fl":
+                //                //isi.Add(con.result["fuel_litre"]);
+
+                //                //isix.Add(con.result["fuel_litre"]);
+                //                break;
+                //            case "fc":
+                //                //isi.Add(con.result["fuel_price"]);
+                //                //if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
+                //                //else isi.Add("IDR " + con.result["fuel_price"]);
+                //                //isix.Add(con.result["fuel_price"]);
+                //                break;
+                //            case "ch":
+                //                isi.Add(con.result["charter_price"]);
+                //                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
+                //                //else isi.Add("IDR " + con.result["charter_price"]);
+                //                //isix.Add(con.result["charter_price"]);
+                //                break;
+                //            case "mb":
+                //                isi.Add(con.result["mob_price"]);
+                //                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
+                //                //else isi.Add("IDR " + con.result["mob_price"]);
+                //                //isix.Add(con.result["mob_price"]);
+                //                break;
+                //            default:
+                //                break;
+                //        }
+                //        //isi.Add(con.result["fuel_litre"]);
+                //    }
+                //    else isi.Add(0);
+                //    */
+                //}
+                //ii.datax = isi;
+                //all.Add(ii["tg"]);
+                //all.Add(ii["ves"]);
+                //datay.Add(isi);
+                //isix.Add(isi);
+                //datay.Add(isix);
+
+
+                //isi.Add(tgl);
+                //isi.Add(vesselname);
+                //isix.Add(isi);
+                //isi.Clear();
             }
-            aa.data = all;
-            aa.unit = unitnama;
+
+            //datay.Add(isi);
+
+            //kolom.Add(unitnama);
+
+            aa.data = isix;
+            //aa.data = all;
+            //aa.unit = unitnama;
+
+            aa.columns = kolom;
+            //aa.data = isix;
             Response.ContentType = "text/json";
             var json = JsonConvert.SerializeObject(aa);
             return json;
