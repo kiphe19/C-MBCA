@@ -123,5 +123,50 @@ $(document).ready(function () {
             "dataType": "json"
         });
 
+        $.ajax({
+            "url": "api/reportDC/" + tgl1 + "/" + tgl2,
+            "success": function (json) {
+                console.log(json);
+
+                $('#tbDC').DataTable({
+                    dom: "Brtip",
+                    destroy: true,
+                    data: json.data,
+                    columns: [
+                        {   
+                            data : "unit",
+                            title: "Unit"
+                        },
+                        {   
+                            data : "litre" ,
+                            title: "Fuel (L)",
+                            render: function (d) {
+                                return parseFloat(d).toFixed(3);
+                            }
+                        },
+                        {   
+                            data : "fuel",
+                            title: "Fuel Price"
+                        },
+                        {   
+                            data : "charter",
+                            title: "Charter Price" 
+                        },
+                        { 
+                            data : "boat",
+                            title: "Boat Hours"
+                        }
+                    ],
+                    buttons: [
+                        {
+                            extend: "excelHtml5",
+                            text: "Excel D&C",
+                            filename: "ReportDC_" + tgl1 + "_" + tgl2
+                        }
+                    ]
+                });
+            }
+        });
+
     });
 })

@@ -8,81 +8,6 @@
         <h3 class="panel-title">MBCA - Reporting</h3>
     </div>
     <div class="panel-body">
-        @*<div class="row">
-            <div class="col-md-12">
-                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                    <div class="panel panel" style="border-color: #ccc;">
-                        <div class="panel-heading" role="tab" id="headingOne">
-                            <h4 class="panel-title">
-                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Generate Export Table
-                                </a>
-                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" style="position:relative; left:84%;">
-                                    <i class="glyphicon glyphicon-chevron-down"></i>
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                            <div class="panel-body">
-                                <form class="form-horizontal" id="formGenerate">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">Vessel</label>
-                                            <div class="col-sm-10">
-                                                @Html.DropDownList("vessel", null, new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">Periode</label>
-                                            <div class="col-sm-5">
-                                                <input type="text" placeholder="Date From" class="form-control" name="dateFrom" />
-                                            </div>
-                                            <div class="col-sm-5">
-                                                <input type="text" placeholder="Date To" class="form-control" name="dateTo" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-2">Type</label>
-                                            <div class="col-sm-10">
-                                                <select class="form-control" name="type" id="ReportType">
-                                                    <option value="fl" selected="selected">Fuel Litre</option>
-                                                    <option value="fc">Fuel Cost</option>
-                                                    <option value="ch">Charter Cost</option>
-                                                    <option value="mb">Mob/Demob Cost</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <footer class="text-right">
-                                            <button class="btn btn-success" type="submit"><i class="glyphicon glyphicon-refresh"></i> Generate</button>
-                                        </footer>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>*@
-        @*<div class="row">
-            <div class="col-md-12">
-                <div class="table-responsive">
-                    <table class="table table-hover" style="display:none;">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Vessel</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>*@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -124,9 +49,6 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        @*<footer class="text-right">
-                                            <button class="btn btn-success" type="submit"><i class="glyphicon glyphicon-refresh"></i> Generate</button>
-                                        </footer>*@
                                     </div>
                                     <div class="col-md-1">
                                         <div class="col-md-1">
@@ -138,22 +60,34 @@
                             <div class="col-md-12">
                                 <div id="reportUnitTable" class="table-responsive">
                                     <table id="tbUnit" class="table table-bordered" style="width:100%">
-
                                     </table>
-                                    @*<table class="table display table-bordered" style="">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Vessel</th>
-                                            </tr>
-                                        </thead>
-                                    </table>*@
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="reportDandC" class="table-responsive">
+                                    <table id="tbDC" class="table table-bordered" style="width:100%"></table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            @*<div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Drilling And Compeltion</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="reportDandC" class="table-responsive">
+                                    <table id="tbDC" class="table table-bordered" style="width:100%"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
         </div>
 
 
@@ -175,38 +109,6 @@
                     </div>
                 </form>
             </div>*@
-        @{
-//var grid = new WebGrid(source: ViewBag.report);
-//var grid = new WebGrid(source: ViewBag.reportd);
-        }
-        @*@grid.GetHtml(
-            tableStyle: "table table-bordered table-hover",
-            htmlAttributes: new { id = "reportTable" },
-            columns: grid.Columns(
-                grid.Column(null, "Date", format: (item) => item.tanggal),
-                grid.Column(null, "Vessel", format: (item) => item.vessel),
-                grid.Column(null, "User", format: (item) => item.user_unit),
-                grid.Column(null, "Fuel (L)", format: (item) => item.fuel_litre + " L"),
-                   grid.Column(null, "Fuel Cost", format: (item) => (item.fuel_curr == 1) ? item.fuel_price.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US")) : item.fuel_price.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("id-ID"))),
-
-                   grid.Column(null, "Charter Cost", format: (item) => item.charter_price),
-                   grid.Column(null, "Mob/Demob", format: (item) => item.mob_price)
-
-                   //grid.Column(null, "Date", format: (item) => item.date),
-                   //grid.Column(null, "Vessel", format: (item) => item.vessel_name),
-                   //grid.Column(null, "Unit", format: (item) => item.unit ),
-                   //grid.Column(null, "Standby", format: (item) => item.standby_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                   //grid.Column(null, "Load", format: (item) => item.load_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                   //grid.Column(null, "Steaming", format: (item) => item.steaming_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                   //grid.Column(null, "Downtime", format: (item) => item.down_time.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                   //grid.Column(null, "Fuel Cost (USD)", format: (item) => item.fuel_usd.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
-                   //grid.Column(null, "Fuel Cost (Rp)", format: (item) => item.fuel_rp.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("id-ID"))),
-                   //grid.Column(null, "Charter Cost (USD)", format: (item) => item.charter_usd.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
-                   //grid.Column(null, "Charter Cost (Rp)", format: (item) => item.charter_rp.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("id-ID"))),
-                   //grid.Column(null, "Demob Cost (USD)", format: (item) => item.demob_usd.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))),
-                   //grid.Column(null, "Demob Cost (Rp)", format: (item) => item.demob_rp.ToString("c0", System.Globalization.CultureInfo.CreateSpecificCulture("id-ID")))
-                   )
-               )*@
     </div>
     
     <div class="panel-footer">
