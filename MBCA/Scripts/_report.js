@@ -5,7 +5,7 @@
 $("#DataTables_Table_0_wrapper").hide();
 
 function loadTableData(data) {
-    console.log(data);
+    //console.log(data);
     var buka = '<tr>';
     var tutup = '</tr>';
     $("table").html(null);
@@ -83,94 +83,48 @@ $(document).ready(function () {
         $.ajax({
             "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
             "success": function (json) {
+
+                $("#reportUnitTable").empty();
+                $("#reportUnitTable").append("<table id='rUnit' class='table display table-bordered' style='width:100%'></table>");
                 //console.log(json.data[3].datax[1]);
-                var tableHeaders;
+                var t_head = $("#reportUnitTable").children();
+                var tableHeaders, isi;
+                //$('#here_table').append('<table></table>');
                 $.each(json.columns, function (i, val) {
                     //console.log(val);
                     tableHeaders += "<th>" + val + "</th>";
                 });
-
-                $("#reportUnitTable").empty();
-                $("#reportUnitTable").append('<table id="rUnit" class="table display table-bordered" style="width:100%" ><thead><tr>' + tableHeaders + '</tr></thead></table>');
+                t_head.append("<thead><tr>" + tableHeaders + "</tr></thead>");
+                
+                
+                //$("#reportUnitTable").append('<table id="rUnit" class="table display table-bordered" style="width:100%" ><thead><tr>' + tableHeaders + '</tr></thead></table>');
 
                 $.each(json.data, function(i,val){
                     //console.log(val.tg);
-                    var isi = '<td>' + val.tg + '</td><td>' + val.ves + '</td>';
+                    isi = '<td>' + val.tg + '</td><td>' + val.ves + '</td>';
                     for (var k = 0; k < val.datax.length; k++) {
                         //console.log(val.datax[k]);
                         isi += '<td>' + val.datax[k] + '</td>';
                     }
-                    $("#rUnit").append('<tr>' + isi + '</tr>');
+                    //$("#rUnit").append('<tr>' + isi + '</tr>');
+                    t_head.append("<tbody><tr>" + isi + "</tr></tbody>");
                 });
+               
 
-                var d = $('#rUnit').dataTable({
+
+                //var d = $('#rUnit').dataTable({
+                var d = t_head.dataTable({
                     dom: "Brtip",
-                    buttons: [
-                        {
-                            extend: "excelHtml5",
-                            text: "Excel",
-                            filename: "Reporttt",
-                        }
-                    ]
+                        buttons: [
+                            {
+                                extend: "excelHtml5",
+                                text: "Excel",
+                                filename: "Reporttt",
+                            }
+                        ]
                 });
-
-                //d.column().data()
             },
-
-            //"dataType": "json"
+            "dataType": "json"
         });
-
-
-        /*
-        //console.log(tgl1, tgl2, tipe, ves);
-        reportUnit.destroy();
-        $.ajax({
-            url: "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
-            type: "post",
-            //success: function (s) {
-            //    alert("adsasdasd");
-            //}
-        })
-        .done(function (dt) {
-            //alert("Data Saved: ");
-            //console.log(dt.unit);
-
-            $.each(dt.unit, function (key, value) {
-                //console.log(key + ": " + value);
-                $("#reportUnitTable thead tr").append('<th>' + value + '</th>');
-            });
-
-            //$.each
-            for (var data in dt.data) {
-                console.log(dt.data[data].tg + "  === " + dt.data[data].ves);
-                var isi = "<td>" + dt.data[data].tg + "</td>" + "<td>" + dt.data[data].ves + "</td>";
-                var dtx = dt.data[data].datax;
-                console.log(isi);
-                $.each(dtx, function (k, v) {
-                    console.log(k + ": " + v);
-                    isi += "<td>" + v + "</td>";
-                    //$("#reportUnitTable thead tr").append('<th>' + value + '</th>');
-                });
-                console.log(isi);
-                $("#reportUnitTable ").append('<tr>' + isi + '</tr>');
-
-            }
-        })
-        .always(function () {
-            //$("table").show();
-            //$("#collapseOne").collapse('hide')
-            $("reportUnitTable").DataTable({
-                dom: "Brtip",
-                buttons: [
-                {
-                    extend: "excelHtml5",
-                    text: "Excel",
-                    filename: "Reporttt",
-                }
-                ]
-            })
-        });
-        */
     });
-
 })
