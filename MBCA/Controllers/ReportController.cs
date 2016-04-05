@@ -154,7 +154,13 @@ namespace chevron.Controllers
             return json;
         }
 
+        [Route('api/rMain/{tg1}/{tg2}')]
+        public string _reportTiga(string tg1, string tg2)
+        {
+            string q = "";
+            //select max(unit_table.name)nama, sum(round(fuel_litre, 3)) litre, sum(fuel_price) fuel, sum(charter_price) chart, sum(mob_price) mob, sum(t_boat_h) boat from report_daily join unit_table on unit_table.id = report_daily.id_unit where tgl > '2016-03-27' and tgl <= '2016-04-04' group by id_mainunit order by nama;
 
+        }
 
 
 
@@ -339,7 +345,6 @@ namespace chevron.Controllers
             Response.Write(json);
 
         }
-
 
 
     }

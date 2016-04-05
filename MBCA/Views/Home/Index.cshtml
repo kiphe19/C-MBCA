@@ -90,10 +90,6 @@
                                                 </tr>
                                             </thead>
                                         </table>
-                                        @*<div class="btn-group pull-right" role="group" style="display: none;" id="btnEditGroup">
-                                            <button type="submit" class="btn btn-warning"><i class="glyphicon glyphicon-edit"></i> Update</button>
-                                            <button type="button" class="btn btn-default" id="btnCancelDaily"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
-                                        </div>*@
                                         <div class="dailyButton">
                                             <div class="floatright">
                                                 <button type="button" class="btn btn-default" id="btnCancelDaily" ><i class="glyphicon glyphicon-remove"></i> Cancel</button>
@@ -212,9 +208,7 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        <div class="col-md-6">
-
-                                        </div>
+                                        <div class="col-md-6"></div>
                                     </div>
                                     <form class="form-horizontal" id="filterDrill">
                                         <div class="col-md-5">
@@ -226,12 +220,6 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            @*@{ 
-                                                DateTime tgl = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 25);
-
-                                                var tgl2 = tgl;
-                                                var tgl1 = tgl.AddMonths(-1);
-                                            }*@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2">Periode</label>
                                                 <div class="col-sm-5">
@@ -245,18 +233,13 @@
                                         <div class="col-md-1">
                                             <button type="button" id="drillcari" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
                                         </div>
-                                    
                                     </form>
-
-                                    <div class="row">
-                                    </div>
-
-
+                                    <div class="row"></div>
                                     <div class="table-responsive">
                                         <table id="drillTable" class="table display table-bordered" style="width:100%">
                                             <thead>
                                                 <tr>
-                                                    @*<th>No</th>*@
+                                                    <th>No</th>
                                                     <th>Unit</th>
                                                     <th>Date</th>
                                                     <th>Well</th>

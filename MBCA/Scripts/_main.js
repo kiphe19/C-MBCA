@@ -77,10 +77,10 @@ $(document).ready(function () {
         tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
         tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
     }
-    console.log(tg1, tg2);
+    //console.log(tg1, tg2);
     var dailyLogEditor = new $.fn.dataTable.Editor({
             
-        url: path + "/api/dailylog/" + tg1 + "/" + tg2,
+        url: "api/dailylog/" + tg1 + "/" + tg2+"/0",
         table: "#DailyLogTable",
         //fields: [{
         //    //label: "First name:",
@@ -100,7 +100,7 @@ $(document).ready(function () {
         //dom: 'B<"floatright">rtip',
         dom: "Bfrtip",
         ajax: {
-            url: path + "/api/dailylog/" + tg1 + "/" + tg2,
+            url: "api/dailylog/" + tg1 + "/" + tg2+"/0",
             type: "post"
         },
         select : true,
@@ -118,11 +118,11 @@ $(document).ready(function () {
             {
                 extend:'edit',
                 text : 'Edit Activity',
-                action : function(){
+                action: function (e, dt, node, config) {
                     var a = dailylogTable.rows('.selected').indexes();
                     var b = dailylogTable.row(a).data();
-                    console.log(a);
-                    console.log(b);
+                    //console.log(a);
+                    //console.log(b);
                     $("#btnCancelDaily").show();
                     $("#activityForm input[name='action']").val("update");
                     $("#activityForm input[name='id']").val(b.id_dt);
@@ -140,8 +140,6 @@ $(document).ready(function () {
 
                     //ambilUnitDailyVes(b.id_dt);
                     dailyTable.ajax.url('/api/daily/' + b.id_dt).load();
-
-                        
                 }
             },
             { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
@@ -163,19 +161,18 @@ $(document).ready(function () {
         }
     });
 
-    
-
-    drillEditor = new $.fn.dataTable.Editor({
+    var drillEditor = new $.fn.dataTable.Editor({
         ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
         table: "#drillTable"
     });
-    drillcompTable = $("#drillTable").DataTable({
+    var drillcompTable = $("#drillTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
             method: "post"
         },
         columns: [
+            { data: null},
             { data: 'unit_table.name' },
             { data: "drilling_table.tgl" },
             { data: 'drilling_table.well' },
@@ -210,17 +207,16 @@ $(document).ready(function () {
                 }
             },
             { extend: 'remove', text: 'Delete Dril Completion', editor: drillEditor }
-        ]
+        ],
+        fnDrawCallback: function (oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+                for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                    $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                }
+            }
+        }
     });
 
-    //$("#activityForm input[name='daily_date']").bind("input", function () {
-    //    //$("#timeatForm input[name = 'date_timeat']").val($(this).val());
-    //    alert($(this).val());
-    //});
-
-    //$("#daily_tgl").live("input",function () {
-    //    alert("tara");
-    //});
     $("#timeatForm").submit(function (e) {
         $("#timeatForm input[name = 'date_timeat']").val($("#activityForm input[name='daily_date']").val());
         var data = $(this).serialize();
@@ -277,23 +273,6 @@ $(document).ready(function () {
         showMeridian: false
     });
 
-    //var today = new Date();
-    //var today = new Date();
-    //var yyyy = tgl.getFullYear();
-    ////var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
-    //var mm = (tgl.getMonth() + 1);
-    //var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
-    //var tg11, tg21;
-    //if (dd <= 25) {
-    //    tg11 = (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "/" + 25 + "/" + yyyy;
-    //    tg21 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
-    //}
-    //else {
-    //    tg11 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
-    //    tg21 = (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "/" + 25 + "/" + yyyy;
-    //}
-
-
     $("#filterDrill input[name='fd_t_from']").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date(),
@@ -341,7 +320,6 @@ $(document).ready(function () {
                 var lod = ($("#activityForm input[name='load']").val() === "") ? 0 : $("#activityForm input[name='load']").val();
                 var stm = ($("#activityForm input[name='steaming']").val() === "") ? 0 : $("#activityForm input[name='steaming']").val();
                 var dtm = ($("#activityForm input[name='downtime']").val() === "") ? 0 : $("#activityForm input[name='downtime']").val();
-                //console.log(stb,lod,stm,dtm);
 
                 duration += parseFloat(stb) + parseFloat(lod) + parseFloat(stm) + parseFloat(dtm);
                 //console.log(duration);
@@ -373,88 +351,43 @@ $(document).ready(function () {
     });
 
     $("#drillcari").click(function () {
-        console.log("klik cari drill");
+        //console.log("klik cari drill");
         var dari = new Date($("#filterDrill input[name = 'fd_t_from']").val());
         var ke = new Date($("#filterDrill input[name = 'fd_t_to']").val());
         var unit = $("#filterDrill select[name='daily_unitid'] option:selected").val();
         var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
         var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
         drillcompTable.ajax.url('api/drill/' + dari1 + '/' + ke1 + '/' + unit).load();
-        console.log(unit);
+        //console.log(unit);
         //drillcompTable.ajax.url('api/drill').load();
     });
 
-    //$("#btnSaveDataDaily").click(function () {
-    //    var data = dailyTable.data();
-    //    //console.log(data);
+    $("#dailycari").click(function () {
+        console.log("klik cari dilycari");
+        var dari = new Date($("#filterDailyLog input[name = 'f_daily_from']").val());
+        var ke = new Date($("#filterDailyLog input[name = 'f_daily_to']").val());
+        var ves = $("#filterDailyLog select[name='daily_vesselid'] option:selected").val();
+        var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
+        var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
+        dailylogTable.ajax.url("/api/dailylog/" + dari1 + "/" + ke1 + "/"+ves).load();
+        console.log(dari1 + " = " + ke1 + " -- " + ves);
+        console.log(dailylogTable);
+    });
 
-    //    var saveDaily = function () {
-    //        $.post(path + "/api/save/daily")
-    //        .success(function (res) {
-    //            if (res) {
-    //                monthlyTable.ajax.reload();
-    //                dailyTable.ajax.reload();
-    //            } else {
-    //                alert(res);
-    //            }
-    //        })
-    //    }
 
-    //    if (data.length == 0) {
-    //        alert("apa yang mau disimpen?");
-    //    } else {
-    //        var a = confirm("Apakah Anda yakin ingin menyimpan Data ini?");
-    //        if (a) {
-    //            var duration = 0,
-    //                downTime = false;
+    $("#filterDailyLog input[name='f_daily_from']").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date(),
+        //defaultDate : new Date("2018-03-02")
+    });
+    $("#filterDailyLog input[name='f_daily_from']").val(tg1);
+    $("#filterDailyLog input[name='f_daily_to']").datetimepicker({
+        format: "MM/DD/YYYY",
+        maxDate: new Date()
+    });
+    //$("#filterDrill input[name='fd_t_to']").val(new Date(2011,02,20))
+    $("#filterDailyLog input[name='f_daily_to']").val(tg2);
 
-    //            for (var i = 0; i < data.length; i++) {
-    //                duration += data[i].duration;
-    //                //if (data[i].daily_activity == "Downtime") {
-    //                //    downTime = true;
-    //                //}
-    //            }
-    //            var stb = ($("#dailyForm input[name='standby']").val() === "") ? 0 : $("#dailyForm input[name='standby']").val();
-    //            var lod = ($("#dailyForm input[name='load']").val() === "") ? 0 : $("#dailyForm input[name='load']").val();
-    //            var stm = ($("#dailyForm input[name='steaming']").val() === "") ? 0 : $("#dailyForm input[name='steaming']").val();
-    //            var dtm = ($("#dailyForm input[name='downtime']").val() === "") ? 0 : $("#dailyForm input[name='downtime']").val();
-    //            //console.log(stb,lod,stm,dtm);
-
-    //            duration += parseFloat(stb) + parseFloat(lod) + parseFloat(stm) + parseFloat(dtm);
-    //            //console.log(duration);
-    //            var b = 24 - duration;
-    //            if (dtm <= 0 && duration < 24) {
-    //                var c = confirm("Durasi Aktivitas kurang dari 24 jam, apakah " + b + " jam akan ditambahkan ke Downtime?");
-    //                if (c) {
-    //                    $("#dailyForm input[name='downtime']").val(b);
-    //                }
-    //            } else if (dtm <= 0 && duration > 24) {
-    //                alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
-    //            } else if (dtm >= 0 && duration < 24) {
-    //                alert("Durasi Aktivitas kurang 24 Jam, Mohon di periksa kembali!");
-    //            } else if (dtm >= 0 && duration > 24) {
-    //                alert("Durasi Aktivitas melebihi 24 Jam, Mohon di periksa kembali!")
-    //            } else {
-    //                saveDaily.apply();
-    //            }
-    //        }
-    //    }
-    //})
-    //$("#monthlyPanel form").submit(function (e) {
-    //    var data = $(this).serialize();
-    //    $.post("api/filter/monthly", data)
-    //    .done(function (res) {
-    //        $("#monthlyView").html(res);
-    //    })
-    //    e.preventDefault();
-    //})
-    //var dailyCancel = function () {
-    //    dailyTable.rows('.selected').deselect();
-    //    $("#btnEditGroup").hide();
-    //    $("#btnSaveGroup").show();
-    //    $("#dailyForm input[name='daily_duration']").val(null);
-    //    $("#dailyForm input[name='action']").val("create");
-    //}
     $("#btnCancelDaily").click(function () {
         //dailyCancel.apply();
         console.log("ini cancel di klik", $("#activityForm")[0]);
@@ -465,7 +398,7 @@ $(document).ready(function () {
         $("#activityForm")[0].reset();
         $("#activityForm input[name='action']").val("create");
 
-        
+        dailyTable.ajax.url('api/daily/0').load();
     })
     $("#accordion").on('hide.bs.collapse', function () {
         $("#accordion h4 i").removeClass("glyphicon-chevron-down");
