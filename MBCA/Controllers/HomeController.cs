@@ -111,7 +111,8 @@ namespace chevron.Controllers
                 });
             }
             con.Close();
-
+            //unit_id.Insert(0, "All");
+            unit_id.Insert(0, (new SelectListItem { Text = "All Unit", Value = "0" }));
             var unitidSorted = (from li in unit_id orderby li.Text select li).ToList();
 
             return unitidSorted;

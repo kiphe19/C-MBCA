@@ -18,9 +18,7 @@ $(document).ready(function () {
             //{ label: "User Unit", name: "user_unit", type: "select" },
             //{ label: "Duration", name: "daily_duration" }
         ]
-    }).on('preOpen', function () {
-        dailyEditor.title('Add new Daily Activity');
-    })
+    });
 
     var dailyTable = $("#dailyTable").DataTable({
         dom: '<"dailyButton"B<"floatright">>rt',
@@ -249,8 +247,6 @@ $(document).ready(function () {
                 $("#drillForm input").val(null);
                 $("#drillForm input[name='action']").val("create");
                 $("#drillForm button[type='submit']").text("Simpan Drill");
-
-
             }
             else {
                 alert(res);
@@ -283,19 +279,19 @@ $(document).ready(function () {
 
     //var today = new Date();
     //var today = new Date();
-    var yyyy = tgl.getFullYear();
-    //var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
-    var mm = (tgl.getMonth() + 1);
-    var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
-    var tg11, tg21;
-    if (dd <= 25) {
-        tg11 = (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "/" + 25 + "/" + yyyy;
-        tg21 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
-    }
-    else {
-        tg11 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
-        tg21 = (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "/" + 25 + "/" + yyyy;
-    }
+    //var yyyy = tgl.getFullYear();
+    ////var mm = ((today.getMonth() + 1) < 10) ? "0" + (today.getMonth() + 1) : (today.getMonth() + 1);
+    //var mm = (tgl.getMonth() + 1);
+    //var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
+    //var tg11, tg21;
+    //if (dd <= 25) {
+    //    tg11 = (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "/" + 25 + "/" + yyyy;
+    //    tg21 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
+    //}
+    //else {
+    //    tg11 = ((mm < 10) ? "0" + mm : mm) + "/" + 25 + "/" + yyyy;
+    //    tg21 = (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "/" + 25 + "/" + yyyy;
+    //}
 
 
     $("#filterDrill input[name='fd_t_from']").datetimepicker({
@@ -303,13 +299,13 @@ $(document).ready(function () {
         maxDate: new Date(),
         //defaultDate : new Date("2018-03-02")
     });
-    $("#filterDrill input[name='fd_t_from']").val(tg11);
+    $("#filterDrill input[name='fd_t_from']").val(tg1);
     $("#filterDrill input[name='fd_t_to']").datetimepicker({
         format: "MM/DD/YYYY",
         maxDate: new Date()
     });
     //$("#filterDrill input[name='fd_t_to']").val(new Date(2011,02,20))
-    $("#filterDrill input[name='fd_t_to']").val(tg21);
+    $("#filterDrill input[name='fd_t_to']").val(tg2);
 
 
     $("#btnSaveDailyAct").click(function () {
@@ -377,12 +373,14 @@ $(document).ready(function () {
     });
 
     $("#drillcari").click(function () {
+        console.log("klik cari drill");
         var dari = new Date($("#filterDrill input[name = 'fd_t_from']").val());
         var ke = new Date($("#filterDrill input[name = 'fd_t_to']").val());
-        var unit = $("#cb_unit").val();
+        var unit = $("#filterDrill select[name='daily_unitid'] option:selected").val();
         var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
         var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
         drillcompTable.ajax.url('api/drill/' + dari1 + '/' + ke1 + '/' + unit).load();
+        console.log(unit);
         //drillcompTable.ajax.url('api/drill').load();
     });
 
