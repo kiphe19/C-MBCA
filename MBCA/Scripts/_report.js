@@ -124,7 +124,10 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
                         var date = new Date(d);
                         return ((date.getHours() < 10) ? ("0" + date.getHours()) : date.getHours()) + ":" + ((date.getMinutes() < 10) ? ("0" + date.getMinutes()) : date.getMinutes());
                     }
-                },{
+                }, {
+                    data: "dur",
+                    title : "Durasi"
+                }, {
                     data: "litre",
                     title: "Fuel (L)",
                     render: function (d) {

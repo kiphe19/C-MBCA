@@ -50,24 +50,6 @@ namespace chevron.Controllers
             }
         }
 
-        //[Route("activity")]
-        //public ActionResult _ApiActivity()
-        //{
-        //    var request = System.Web.HttpContext.Current.Request;
-
-        //    using (var db = new Database(setting.DbType, setting.DbConnection))
-        //    {
-        //        var response = new Editor(db, "activity_table")
-        //        .Model<ActivityModel>()
-        //        .Field(new Field("name")
-        //            .Validator(Validation.NotEmpty())
-        //        )
-        //        .Process(request)
-        //        .Data();
-
-        //        return Json(response);
-        //    }
-        //}
 
         [Route("unit/{tg}")]
         [HttpPost]
@@ -175,16 +157,16 @@ namespace chevron.Controllers
             }
         }
 
-        [Route("fuel")]
-        public ActionResult _ApiFuel()
+        [Route("fuel/{tg1}/{tg2}")]
+        public ActionResult _ApiFuel(string tg1, string tg2)
         {
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
                 var response = new Editor(db, "fuel_table")
                 .Model<FuelModel>()
-                .Where("tgl", DateTime.Today.ToString("yyyy-MM-dd"), "<=")
-                .Where("tgl", DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd"), ">=")
+                .Where("tgl", tg1, ">=")
+                .Where("tgl", tg2, "<=")
                 .Field(new Field("tgl")
                     .Validator(Validation.DateFormat("MM/dd/yyyy"))
                     .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
@@ -272,23 +254,6 @@ namespace chevron.Controllers
             return currency;
         }
 
-        //private List<SelectListItem> _getVessel()
-        //{
-        //    List<SelectListItem> vessel = new List<SelectListItem>();
-        //    con.select("vessel_table", "name");
-
-        //    while (con.result.Read())
-        //    {
-        //        vessel.Add(new SelectListItem
-        //        {
-        //            Text = con.result["name"].ToString(),
-        //            Value = con.result["name"].ToString()
-        //        });
-        //    }
-        //    con.Close();
-        //    var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
-        //    return VesselSorted;
-        //}
         private List<SelectListItem> _getVesselId()
         {
             List<SelectListItem> vessel_id = new List<SelectListItem>();
@@ -429,7 +394,6 @@ namespace chevron.Controllers
             TimeSpan ts = tanggal2.Subtract(tanggal1);
             var jml = (int)ts.TotalDays;
 
-
             //Response.Write(jml);
             try
             {
@@ -472,7 +436,6 @@ namespace chevron.Controllers
             TimeSpan ts = tanggal2.Subtract(tanggal1);
             var jml = (int)ts.TotalDays;
 
-
             //Response.Write(jml);
             try
             {
@@ -483,19 +446,13 @@ namespace chevron.Controllers
                     con.select("unit_distance_table", "*", cari);
                     con.result.Read();
                     if (con.result.HasRows)
-                    {
-                        //query = string.Format("update unit_distance_table set distance= {0} where id_unit = {1} and tgl = '{2}'", input["distance"], input["userunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
                         continue;
-                    }
                     else
-                    {
                         query = string.Format("insert into unit_distance_table (id_unit,id_mainunit,tgl) values({0},{1},'{2}')", input["userunit"], input["mainunit"], tanggal1.AddDays(i).ToString("yyyy-MM-dd"));
-                    }
                     con.Close();
                     //Response.Write(query);
                     con.queryExec(query);
                 }
-
                 //Response.Write(input);
                 return "success";
             }

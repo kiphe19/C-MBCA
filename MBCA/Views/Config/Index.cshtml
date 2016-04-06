@@ -51,8 +51,6 @@
                         </span>
                     </div>
                 </div>
-                
-                
                 <table id="bargeTable" class="table display table-bordered" style="width:100%">
                     <thead>
                         <tr>
@@ -79,16 +77,43 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="fuelPanel">
-                <table id="fuelTable" class="display table table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Date</th>
-                            <th>Cost</th>
-                            <th>Currency</th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form id="fuelCari" class="form-horizontal">
+                            <div class="col-md-3 col-md-offset-5">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <input type="text" name="fuel_tg_From" class="form-control" placeholder="Date From">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <input type="text" name="fuel_tg_To" class="form-control" placeholder="Date To">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="col-sm-12">
+                                    <button class="btn btn-primary pull-right" type="button" id="tbl_cari_fuel"><i class="glyphicon glyphicon-search"></i> Cari</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-12">
+                        <table id="fuelTable" class="display table table-bordered" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Date</th>
+                                    <th>Cost</th>
+                                    <th>Currency</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div role="tabpanel" class="tab-pane" id="hirePanel">
@@ -118,6 +143,7 @@
                     </thead>
                 </table>
             </div>
+
             <div role="tabpanel" class="tab-pane" id="userPanel">
                 <table id="userTable" class="display table table-bordered" style="width:100%">
                     <thead>

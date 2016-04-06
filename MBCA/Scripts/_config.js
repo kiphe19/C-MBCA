@@ -1,21 +1,6 @@
-﻿var editor,
-    unitEditor,
-    unitTable,
-    HireEditor,
-    i = 1;
-
-//function SetSelectedIndex(dropdownlist, sVal) {
-//    var a = $(dropdownlist)[0];
-
-//    for (i = 0; i < a.options.length; i++) {
-//        if (a.options[i].value == sVal) {
-//            a.selectedIndex = i;
-//        }
-//    }
-//}
-
+﻿
 $(document).ready(function () {
-    editor = new $.fn.dataTable.Editor({
+    var editorVes = new $.fn.dataTable.Editor({
         ajax: "api/vessel",
         table: "#vesselTable",
         fields: [
@@ -29,15 +14,6 @@ $(document).ready(function () {
             }
         ]
     });
-    //    .on('initCreate', function () {
-    //    i = vesselTable.data().length + 1;
-    //}).on('remove', function () {
-    //    i = 1;
-    //    vesselTable.ajax.reload()
-    //}).on('edit', function () {
-    //    i = 1;
-    //    vesselTable.ajax.reload()
-    //})
 
     vesselTable = $('#vesselTable').DataTable({
         dom: "Bfrtip",
@@ -46,20 +22,15 @@ $(document).ready(function () {
             type: 'post'
         },
         columns: [
-            {
-                data: null
-                //, render: function (data, type, row) {
-                //    return i++;
-                //}
-            },
+            { data: null },
             { data: "name" },
             { data: "vs_desc" }
         ],
         select: true,
         buttons: [
-            { extend: 'create', editor: editor, text: "Add New Vessel" },
-            { extend: 'edit', editor: editor },
-            { extend: 'remove', editor: editor },
+            { extend: 'create', editor: editorVes, text: "Add New Vessel" },
+            { extend: 'edit', editor: editorVes },
+            { extend: 'remove', editor: editorVes },
         ],
         fnDrawCallback: function (oSettings) {
             if (oSettings.bSorted || oSettings.bFiltered) {
@@ -76,7 +47,7 @@ $(document).ready(function () {
     var dd  = (today.getDate() <10)? "0"+today.getDate() : today.getDate();
     var hari = yyyy+"-"+mm+"-"+dd; 
 
-    unitEditor = new $.fn.dataTable.Editor({
+    var unitEditor = new $.fn.dataTable.Editor({
         //ajax: "api/unit",
         ajax: "api/unit/"+hari,
         table: "#bargeTable",
@@ -90,15 +61,13 @@ $(document).ready(function () {
             //label: "Manager:",
             name: "unit_distance_table.id",
             type: "select"
-        }
-        ]
+        }]
     });
-    unitTable = $("#bargeTable").DataTable({
+    var unitTable = $("#bargeTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             //url: "api/unit",
             url: "api/unit/" + hari,
-
             type: "post",
         },
         columns: [
@@ -163,7 +132,7 @@ $(document).ready(function () {
         }
     });
 
-    editorMainunit = new $.fn.dataTable.Editor({
+    var editorMainunit = new $.fn.dataTable.Editor({
         ajax: "api/mainunit",
         table: "#mainunitTable"
         //fields: [
@@ -224,19 +193,16 @@ $(document).ready(function () {
     });
 
 
-    editor = new $.fn.dataTable.Editor({
+    var editorDist = new $.fn.dataTable.Editor({
         ajax: "api/distance",
         table: "#distanceTable",
         fields: [
             { label: "Area Name", name: "distance_name" },
             { label: "Distance", name: "distance" }
         ]
-    })
-    editor.on('edit', function () {
-        getNewDistance();
-    })
+    });
 
-    $("#distanceTable").DataTable({
+    var distanceDT = $("#distanceTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/distance",
@@ -254,9 +220,9 @@ $(document).ready(function () {
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: editor, text: "Create new Area" },
-            { extend: "edit", editor: editor },
-            { extend: "remove", editor: editor }
+            { extend: "create", editor: editorDist, text: "Create new Area" },
+            { extend: "edit", editor: editorDist },
+            { extend: "remove", editor: editorDist }
         ],
         fnDrawCallback: function (oSettings) {
             if (oSettings.bSorted || oSettings.bFiltered) {
@@ -267,16 +233,29 @@ $(document).ready(function () {
         }
     });
 
-    Fueleditor = new $.fn.dataTable.Editor({
-        ajax: "api/fuel",
+
+
+    var yyyy = today.getFullYear();
+    var mm = (today.getMonth() + 1);
+    var dd = (today.getDate() < 10) ? "0" + today.getDate() : today.getDate();
+    var tg1, tg2;
+    if (dd <= 25) {
+        tg1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
+        tg2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+    }
+    else {
+        tg1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+        tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
+    }
+    var Fueleditor = new $.fn.dataTable.Editor({
+        ajax: "api/fuel/" + tg1 + "/" + tg2,
         table: "#fuelTable"
     })
 
-    fuelTable = $("#fuelTable").DataTable({
+    var fuelTable = $("#fuelTable").DataTable({
         dom: "Bfrtip",
-        //"order": [[ 2, "desc" ]],
         ajax: {
-            url: "api/fuel",
+            url: "api/fuel/"+tg1+"/"+tg2,
             type: "post"
         },
         columns: [
@@ -306,20 +285,6 @@ $(document).ready(function () {
                     $("#modalFuel input[name='action']").val("create");
                 }
             },
-            //{
-            //    text: "Edit",
-            //    action: function () {
-            //        var a = fuelTable.rows('.selected').indexes();
-            //        var b = fuelTable.row(a).data();
-            //        if (a.length !== 0) {
-            //            $("#modalFuel").modal({ backdrop: false })
-            //            $("#modalFuel input[name='tgl']").val(b.tgl);
-            //            $("#modalFuel input[name='cost']").val(b.cost_usd);
-            //            $("#modalFuel input[name='action']").val("update");
-            //            $("#modalFuel input[name='id']").val(b.id);
-            //        }
-            //    }
-            //},
             { extend: "remove", editor: Fueleditor }
         ],
         fnDrawCallback: function (oSettings) {
@@ -331,12 +296,12 @@ $(document).ready(function () {
         }
     });
 
-    CharterEditor = new $.fn.dataTable.Editor({
+    var CharterEditor = new $.fn.dataTable.Editor({
         ajax: "api/charter",
         table: "#hireTable"
     })
 
-    CharterTable = $("#hireTable").DataTable({
+    var CharterTable = $("#hireTable").DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/charter",
@@ -400,12 +365,12 @@ $(document).ready(function () {
     });
 
 
-    userEditor = new $.fn.dataTable.Editor({
+    var userEditor = new $.fn.dataTable.Editor({
         ajax: "api/users",
         table: "#userTable"
     })
 
-    userTable = $("#userTable").DataTable({
+    var userTable = $("#userTable").DataTable({
         //dom: "<'top'Bf>rt<'bottom'lp><'clear'>",
         dom: "Brftip",
         ajax: {
@@ -435,7 +400,6 @@ $(document).ready(function () {
                 }
             },
             {
-                //extend: "edit',
                 text: "Edit",
                 action: function () {
                     var a = userTable.rows('.selected').indexes();
@@ -580,7 +544,12 @@ $(document).ready(function () {
         e.preventDefault();
     })
     
-
+    $("#fuelCari input[name='fuel_tg_From']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+    $("#fuelCari input[name='fuel_tg_To']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
 
     $("#modalUnitDistance form input[name='tgl_from']").datetimepicker({
         format: "MM/DD/YYYY"
@@ -626,5 +595,13 @@ $(document).ready(function () {
             }
         })
         e.preventDefault();
+    });
+
+    $("#tbl_cari_fuel").click(function () {
+        var dari = new Date($("#fuelCari input[name = 'fuel_tg_From']").val());
+        var ke = new Date($("#fuelCari input[name = 'fuel_tg_To']").val());
+        var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
+        var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
+        fuelTable.ajax.url("api/fuel/"+dari1+"/"+ke1).load();
     })
 });

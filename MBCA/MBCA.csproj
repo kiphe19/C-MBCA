@@ -263,7 +263,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Views\Report\Index.cshtml" />
-    <Content Include="Views\Home\_MonthlyGrid.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
