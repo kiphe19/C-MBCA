@@ -76,6 +76,68 @@ function loadTableDrillComptUnit(tg1, tg2) {
     });
 }
 
+function loadTableDailyDrillUnit(tg1, tg2, unit) {
+    $.ajax({
+        "url": "api/reportDCU/" + tg1 + "/" + tg2+"/"+unit,
+        "success": function (json) {
+            console.log(json);
+
+            $('#tbDCU').DataTable({
+                dom: "Brtip",
+                destroy: true,
+                data: json.data,
+                columns: [{
+                    data: null,
+                    title: "No"
+                }, {
+                    data: "tg",
+                    title: "Date"
+                },{
+                    data: "unit",
+                    title: "Unit"
+                },{
+                    data : "well",
+                    title : "Well"
+                },{
+                    data : "afe",
+                    title : "AFE"
+                },{
+                    data : "psc",
+                    title : "PSC"
+                },{
+                    data : "start",
+                    title : "From"
+                },{
+                    data : "end",
+                    title : "To"
+                },{
+                    data: "litre",
+                    title: "Fuel (L)",
+                    render: function (d) {
+                        return parseFloat(d).toFixed(3);
+                    }
+                }, {
+                    data: "fuel",
+                    title: "Fuel Price"
+                }, {
+                    data: "charter",
+                    title: "Charter Price"
+                }, {
+                    data: "mob",
+                    title: "Mob/Demob"
+                }],
+                buttons: [
+                    {
+                        extend: "excelHtml5",
+                        text: "Excel D&C",
+                        filename: "ReportDC_" + tg1 + "_" + tg2
+                    }
+                ]
+            });
+        }
+    });
+}
+
 $(document).ready(function () {
     var tgl = new Date();
     var yyyy = tgl.getFullYear();
@@ -123,6 +185,10 @@ $(document).ready(function () {
     $("#f_dcReport input[type='text']").datetimepicker({
         format: "MM/DD/YYYY"
     });
+    $("#f_RepDailyDC input[type='text']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+    
 
     $("#report1").click(function (e) {
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
@@ -199,6 +265,18 @@ $(document).ready(function () {
 
         //console.log("asd " + tgl1 + "  === " + tgl2);
         loadTableDrillComptUnit(tgl1, tgl2)
+    });
+
+    $("#report2").click(function () {
+        var tg1 = new Date($("#f_RepDailyDC input[name='tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_RepDailyDC input[name='tgTo']").val());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        var unit = $("#f_RepDailyDC select[name='unitId'] option:selected").val();
+        //var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+        console.log("==> " + tgl1 + " ===> " + tgl2 + " ====> " + unit);
+        loadTableDailyDrillUnit(tgl1, tgl2,unit);
+
     });
 
 
