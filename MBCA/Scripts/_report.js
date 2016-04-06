@@ -91,7 +91,13 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
                     title: "No"
                 }, {
                     data: "tg",
-                    title: "Date"
+                    title: "Date",
+                    render: function (d) {
+                        var date = new Date(d);
+                        var month = date.getMonth() + 1;
+                        var day = date.getDate();
+                        return ((month < 10) ? (month + "0") : month) + "/" + ((day < 10)? ("0"+day) : day)  + "/" + date.getFullYear();
+                    }
                 },{
                     data: "unit",
                     title: "Unit"
@@ -106,10 +112,18 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
                     title : "PSC"
                 },{
                     data : "start",
-                    title : "From"
+                    title: "From",
+                    render: function (d) {
+                        var date = new Date(d);
+                        return ((date.getHours() < 10) ? ("0" + date.getHours()) : date.getHours()) + ":" + ((date.getMinutes() < 10) ? ("0" + date.getMinutes()) : date.getMinutes());
+                    }
                 },{
                     data : "end",
-                    title : "To"
+                    title: "To",
+                    render: function (d) {
+                        var date = new Date(d);
+                        return ((date.getHours() < 10) ? ("0" + date.getHours()) : date.getHours()) + ":" + ((date.getMinutes() < 10) ? ("0" + date.getMinutes()) : date.getMinutes());
+                    }
                 },{
                     data: "litre",
                     title: "Fuel (L)",
@@ -130,9 +144,16 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
                     {
                         extend: "excelHtml5",
                         text: "Excel D&C",
-                        filename: "ReportDC_" + tg1 + "_" + tg2
+                        filename: "ReportDCU_" + tg1 + "_" + tg2
                     }
-                ]
+                ],
+                fnDrawCallback: function (oSettings) {
+                    if (oSettings.bSorted || oSettings.bFiltered) {
+                        for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                            $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                        }
+                    }
+                }
             });
         }
     });
