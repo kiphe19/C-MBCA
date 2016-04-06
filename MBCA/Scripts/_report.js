@@ -4,7 +4,99 @@
 //var tablee = tablee = $("table").DataTable({ "scrollX": true });
 //$("#DataTables_Table_0_wrapper").hide();
 
+function loadTableMainUnit(tg1, tg2) {
+    $.ajax({
+        "url": "api/rMain/" + tg1 + "/" + tg2,
+        "success": function (json) {
+            //console.log(json);
+
+            $('#tbMainUnit').DataTable({
+                //dom: "Brtip",
+                destroy: true,
+                data: json.data,
+                columns: [{
+                        data: "main",
+                        title: "Main Unit"
+                    },{
+                        data: "litre",
+                        title: "Fuel (L)",
+                        render: function (d) {
+                            return parseFloat(d).toFixed(3);
+                        }
+                    },{
+                        data: "fuel",
+                        title: "Fuel Price"
+                    },{
+                        data: "charter",
+                        title: "Charter Price"
+                    }]
+            });
+        }
+    });
+}
+
+function loadTableDrillComptUnit(tg1, tg2) {
+    $.ajax({
+        "url": "api/reportDC/" + tg1 + "/" + tg2,
+        "success": function (json) {
+            console.log(json);
+
+            $('#tbDC').DataTable({
+                //dom: "Brtip",
+                destroy: true,
+                data: json.data,
+                columns: [{   
+                        data : "unit",
+                        title: "Unit"
+                    },{   
+                        data : "litre" ,
+                        title: "Fuel (L)",
+                        render: function (d) {
+                            return parseFloat(d).toFixed(3);
+                        }
+                    },{   
+                        data : "fuel",
+                        title: "Fuel Price"
+                    },{   
+                        data : "charter",
+                        title: "Charter Price" 
+                    },{ 
+                        data : "boat",
+                        title: "Boat Hours"
+                    }],
+                //buttons: [
+                //    {
+                //        extend: "excelHtml5",
+                //        text: "Excel D&C",
+                //        filename: "ReportDC_" + tg1 + "_" + tg2
+                //    }
+                //]
+            });
+        }
+    });
+}
+
 $(document).ready(function () {
+    var tgl = new Date();
+    var yyyy = tgl.getFullYear();
+    var mm = (tgl.getMonth() + 1);
+    var dd = (tgl.getDate() < 10) ? "0" + tgl.getDate() : tgl.getDate();
+    var t1, t2;
+    if (dd <= 25) {
+        t1 = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
+        t2 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+    }
+    else {
+        t1 = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+        t2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
+    }
+
+    loadTableMainUnit(t1, t2);
+    loadTableDrillComptUnit(t1, t2);
+
+
+    //console.log("dibuka saat klik report");
+
     $("#formGenerate").submit(function (e) {
         var data = $(this).serialize();
         loadTableData(data);
@@ -28,7 +120,9 @@ $(document).ready(function () {
     $("#f_MainReport input[type='text']").datetimepicker({
         format: "MM/DD/YYYY"
     });
-    
+    $("#f_dcReport input[type='text']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
 
     $("#report1").click(function (e) {
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
@@ -80,56 +174,12 @@ $(document).ready(function () {
             },
             "dataType": "json"
         });
-
-        $.ajax({
-            "url": "api/reportDC/" + tgl1 + "/" + tgl2,
-            "success": function (json) {
-                console.log(json);
-
-                $('#tbDC').DataTable({
-                    dom: "Brtip",
-                    destroy: true,
-                    data: json.data,
-                    columns: [
-                        {   
-                            data : "unit",
-                            title: "Unit"
-                        },
-                        {   
-                            data : "litre" ,
-                            title: "Fuel (L)",
-                            render: function (d) {
-                                return parseFloat(d).toFixed(3);
-                            }
-                        },
-                        {   
-                            data : "fuel",
-                            title: "Fuel Price"
-                        },
-                        {   
-                            data : "charter",
-                            title: "Charter Price" 
-                        },
-                        { 
-                            data : "boat",
-                            title: "Boat Hours"
-                        }
-                    ],
-                    buttons: [
-                        {
-                            extend: "excelHtml5",
-                            text: "Excel D&C",
-                            filename: "ReportDC_" + tgl1 + "_" + tgl2
-                        }
-                    ]
-                });
-            }
-        });
+       
 
     });
 
     $("#reportMain").click(function () {
-        console.log("klik main unti report");
+        //console.log("klik main unti report");
         
         var tg1 = new Date($("#f_MainReport input[name='main_tgFrom']").val());
         var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
@@ -138,45 +188,18 @@ $(document).ready(function () {
 
         console.log("asd " + tgl1 + "  === " + tgl2);
 
-        $.ajax({
-            "url": "api/rMain/" + tgl1 + "/" + tgl2,
-            "success": function (json) {
-                console.log(json);
-
-                $('#tbMainUnit').DataTable({
-                    //dom: "Brtip",
-                    destroy: true,
-                    data: json.data,
-                    columns: [
-                        {
-                            data: "main",
-                            title: "Main Unit"
-                        },
-                        {
-                            data: "litre",
-                            title: "Fuel (L)",
-                            render: function (d) {
-                                return parseFloat(d).toFixed(3);
-                            }
-                        },
-                        {
-                            data: "fuel",
-                            title: "Fuel Price"
-                        },
-                        {
-                            data: "charter",
-                            title: "Charter Price"
-                        }
-                    ],
-                    //buttons: [
-                    //    {
-                    //        extend: "excelHtml5",
-                    //        text: "Excel D&C",
-                    //        filename: "ReportDC_" + tgl1 + "_" + tgl2
-                    //    }
-                    //]
-                });
-            }
-        });
+        loadTableMainUnit(tgl1, tgl2);
     });
+
+    $("#reportDC").click(function () {
+        var tg1 = new Date($("#f_dcReport input[name='dc_tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_dcReport input[name='dc_tgTo']").val());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+
+        //console.log("asd " + tgl1 + "  === " + tgl2);
+        loadTableDrillComptUnit(tgl1, tgl2)
+    });
+
+
 })

@@ -129,7 +129,7 @@ namespace chevron.Controllers
             //select max(unit_table.name)nama, sum(round(fuel_litre, 3)) litre, sum(fuel_price) fuel, sum(charter_price) chart, sum(mob_price) mob, sum(t_boat_h) boat from report_daily join unit_table on unit_table.id = report_daily.id_unit where id_mainunit = 1 and tgl > '2016-03-27' and tgl <= '2016-04-04' group by id_unit order by nama;
 
             string qq = string.Format("select max(unit_table.name) nama, sum(fuel_litre) litre, sum(fuel_price) fuel, sum(charter_price) charter, sum(mob_price) mob, sum(t_boat_h) boat from report_daily join unit_table on unit_table.id = report_daily.id_unit "+
-                "where id_mainunit = 1 and tgl > '2016-03-27' and tgl <= '2016-04-04' group by id_unit order by nama " ,
+                "where id_mainunit = 1 and tgl > '{0}' and tgl <= '{1}' group by id_unit order by nama " ,
                 //" where id_mainunit = 1 and tgl > '{0}' and tgl <= '{1}' group by id_unit ;",
                 dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
 
