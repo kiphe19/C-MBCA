@@ -8,11 +8,15 @@ using Newtonsoft.Json.Linq;
 using System.Globalization;
 using AttributeRouting.Web.Mvc;
 using Newtonsoft.Json;
+using DataTables;
 
 namespace chevron.Controllers
 {
+   
     public class ReportController : Controller
     {
+        Properties.Settings setting = chevron.Properties.Settings.Default;
+
         Connection con = new Connection();
         JArray vessel = new JArray();
 
@@ -134,7 +138,7 @@ namespace chevron.Controllers
             while (con.result.Read())
             {
                 dynamic k = new JObject();
-                JArray a = new JArray();
+                //JArray a = new JArray();
                 //k.idunit = con.result["unit"];
                 k.unit = con.result["nama"];
                 k.litre = con.result["litre"];
@@ -154,11 +158,34 @@ namespace chevron.Controllers
             return json;
         }
 
-        [Route('api/rMain/{tg1}/{tg2}')]
+        [Route("api/rMain/{tg1}/{tg2}")]
         public string _reportTiga(string tg1, string tg2)
         {
-            string q = "";
-            //select max(unit_table.name)nama, sum(round(fuel_litre, 3)) litre, sum(fuel_price) fuel, sum(charter_price) chart, sum(mob_price) mob, sum(t_boat_h) boat from report_daily join unit_table on unit_table.id = report_daily.id_unit where tgl > '2016-03-27' and tgl <= '2016-04-04' group by id_mainunit order by nama;
+            dynamic isi = new JObject();
+            JArray pp = new JArray();
+            string q = string.Format("select max(mainunit_table.nama) nama, sum(round(fuel_litre, 3)) litre, sum(fuel_price) fuel, sum(charter_price) chart, sum(mob_price) mob, sum(t_boat_h) boat " +
+                            " from report_daily join mainunit_table on mainunit_table.id = report_daily.id_mainunit " +
+                            " where tgl > '{0}' and tgl <= '{1}' group by id_mainunit order by nama",
+                            tg1,tg2);
+            con.query(q);
+            while (con.result.Read())
+            {
+                dynamic m = new JObject();
+                JArray n = new JArray();
+                m.main = con.result["nama"];
+                m.litre = con.result["litre"];
+                m.fuel = con.result["fuel"];
+                m.charter = con.result["chart"];
+                m.mob = con.result["mob"];
+
+                pp.Add(m);
+            }
+            con.Close();
+            isi.data = pp;
+            //aa.nama = "jono";
+            Response.ContentType = "text/json";
+            var json = JsonConvert.SerializeObject(isi);
+            return json;
 
         }
 

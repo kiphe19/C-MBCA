@@ -25,6 +25,10 @@ $(document).ready(function () {
     $("#f_generateReport input[type='text']").datetimepicker({
         format: "MM/DD/YYYY"
     });
+    $("#f_MainReport input[type='text']").datetimepicker({
+        format: "MM/DD/YYYY"
+    });
+    
 
     $("#report1").click(function (e) {
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
@@ -122,5 +126,57 @@ $(document).ready(function () {
             }
         });
 
+    });
+
+    $("#reportMain").click(function () {
+        console.log("klik main unti report");
+        
+        var tg1 = new Date($("#f_MainReport input[name='main_tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_MainReport input[name='main_tgTo']").val());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+
+        console.log("asd " + tgl1 + "  === " + tgl2);
+
+        $.ajax({
+            "url": "api/rMain/" + tgl1 + "/" + tgl2,
+            "success": function (json) {
+                console.log(json);
+
+                $('#tbMainUnit').DataTable({
+                    //dom: "Brtip",
+                    destroy: true,
+                    data: json.data,
+                    columns: [
+                        {
+                            data: "main",
+                            title: "Main Unit"
+                        },
+                        {
+                            data: "litre",
+                            title: "Fuel (L)",
+                            render: function (d) {
+                                return parseFloat(d).toFixed(3);
+                            }
+                        },
+                        {
+                            data: "fuel",
+                            title: "Fuel Price"
+                        },
+                        {
+                            data: "charter",
+                            title: "Charter Price"
+                        }
+                    ],
+                    //buttons: [
+                    //    {
+                    //        extend: "excelHtml5",
+                    //        text: "Excel D&C",
+                    //        filename: "ReportDC_" + tgl1 + "_" + tgl2
+                    //    }
+                    //]
+                });
+            }
+        });
     });
 })

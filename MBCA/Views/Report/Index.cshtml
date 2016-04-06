@@ -72,6 +72,69 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Report Main Unit</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form class="form-horizontal" id="f_MainReport">
+                                    @*<div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Vessel</label>
+                                            <div class="col-sm-10">
+                                                @Html.DropDownList("vesselId", null, new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Periode</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" placeholder="Date From" class="form-control" name="main_tgFrom" />
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <input type="text" placeholder="Date To" class="form-control" name="main_tgTo" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">Type</label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control" name="type" id="ReportType">
+                                                    <option value="fl" selected="selected">Fuel Litre</option>
+                                                    <option value="fc">Fuel Cost</option>
+                                                    <option value="ch">Charter Cost</option>
+                                                    <option value="mb">Mob/Demob Cost</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div class="col-md-4">
+                                        <div class="col-md-8">
+                                            <button type="button" id="reportMain" class="btn btn-primary">Create</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="reportMainUnitTable" class="table-responsive">
+                                    <table id="tbMainUnit" class="table table-bordered" style="width:100%"></table>
+                                </div>
+                            </div>
+                            @*<div class="col-md-12">
+                                <div id="reportDandC" class="table-responsive">
+                                    <table id="tbDC" class="table table-bordered" style="width:100%"></table>
+                                </div>
+                            </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
             @*<div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
