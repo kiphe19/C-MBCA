@@ -1,13 +1,21 @@
-﻿var editor,
-    dailyTable,
-    path = '',
+﻿var path = '';
+var dailylogTable;
     //path = window.location.pathname,
-    monthlyTable;
 var tgl = new Date();
+
+function lihatDetail(a) {
+    console.log("di klik");
+    console.log(a);
+    //console.log(b);
+
+    //console.log(dailylogTable);
+    $("#modalDailyDetail").modal({ backdrop: false });
+}
 
 $(document).ready(function () {
     $("#btnCancelDaily").hide();
     $("#btnUpdateDailyAct").hide();
+
     var dailyEditor = new $.fn.dataTable.Editor({
         ajax: path + "/api/daily/0",
         table: "#dailyTable",
@@ -96,7 +104,7 @@ $(document).ready(function () {
         //]
     });
 
-    var dailylogTable = $("#DailyLogTable").DataTable({
+    dailylogTable = $("#DailyLogTable").DataTable({
         //dom: 'B<"floatright">rtip',
         dom: "Bfrtip",
         ajax: {
@@ -112,7 +120,19 @@ $(document).ready(function () {
             { data: "ld" },
             { data: "stm" },
             { data: "dt" },
-            { data: "fuel_t" }
+            { data: "fuel_t" },
+            {
+                data: null,
+                render: function (d) {
+                    console.log(d);
+                    //var a = this;
+                    //console.log(a);
+                    //var b = this.row(a).data();
+                    //data-target="#modalDailyDetail";
+                    return '<a class="btn btn-info btn-xs"  onclick="lihatDetail('+d.id_dt +');" > Detail </a> <a class="btn btn-danger btn-xs" href="#" > Hapus </a> ';
+                }
+
+            }
         ],
         buttons: [
             {
@@ -160,6 +180,8 @@ $(document).ready(function () {
             }
         }
     });
+
+    
 
     var drillEditor = new $.fn.dataTable.Editor({
         ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",

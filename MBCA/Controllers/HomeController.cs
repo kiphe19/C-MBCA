@@ -26,8 +26,6 @@ namespace chevron.Controllers
         {
             ViewBag.daily_vessel = getListVessel();
             ViewBag.daily_vesselid = getListVesselId();
-
-            //ViewBag.daily_activity = getListActivity();
             ViewBag.daily_unit = getUserUnit();
             ViewBag.daily_unitid = getUserUnitId();
             return View();
@@ -53,7 +51,6 @@ namespace chevron.Controllers
             con.Close();
 
             var VesselSorted = (from li in vessel orderby li.Text select li).ToList();
-
             return VesselSorted;
         }
         private List<SelectListItem> getListVesselId()
@@ -75,8 +72,6 @@ namespace chevron.Controllers
 
             return VesselSorted;
         }
-
-
         private List<SelectListItem> getUserUnit()
         {
             List<SelectListItem> unit = new List<SelectListItem>();
@@ -96,7 +91,6 @@ namespace chevron.Controllers
 
             return unitSorted;
         }
-
         private List<SelectListItem> getUserUnitId()
         {
             List<SelectListItem> unit_id = new List<SelectListItem>();
@@ -169,19 +163,10 @@ namespace chevron.Controllers
                         .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                         .Validator(Validation.NotEmpty())
                     )
-                    //.LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
                     .LeftJoin("vessel_table", "vessel_table.id", "=", "daily_table.id_vessel")
-
                     .Where("daily_table.tgl", tg1, ">")
                     .Where("daily_table.tgl", tg2, "<=")
                     .Where("daily_table.id_vessel", vesx, "=")
-                    //.Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
-                    //.Where("user_log", Session["userid"], "=")
-
-                    //.Field(new Field("date_input")
-                    //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                    //    .Validator(Validation.NotEmpty())
-                    //)
                     .Process(request)
                     .Data();
                     return Json(response);
@@ -194,24 +179,13 @@ namespace chevron.Controllers
                         .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
                         .Validator(Validation.NotEmpty())
                     )
-                    //.LeftJoin("unit_table", "unit_table.id", "=", "daily_table.id_unit")
                     .LeftJoin("vessel_table", "vessel_table.id", "=", "daily_table.id_vessel")
-
                     .Where("daily_table.tgl", tg1, ">")
                     .Where("daily_table.tgl", tg2, "<=")
-                    //.Where("date_input", DateTime.Today.ToString("yyyy-MM-dd"), "=")
-                    //.Where("user_log", Session["userid"], "=")
-
-                    //.Field(new Field("date_input")
-                    //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                    //    .Validator(Validation.NotEmpty())
-                    //)
                     .Process(request)
                     .Data();
                     return Json(response);
                 }
-
-                
             }
         }
 
@@ -272,7 +246,6 @@ namespace chevron.Controllers
                     //Response.Write(unitx);
                     return Json(response);
                 }
-                //var response1 =  new Editor(db.Select("drilling_table",))
             }
         }
 
