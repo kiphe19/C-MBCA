@@ -12,7 +12,6 @@ namespace chevron.Controllers
     public class ReportController : Controller
     {
         Properties.Settings setting = chevron.Properties.Settings.Default;
-
         Connection con = new Connection();
         JArray vessel = new JArray();
 
@@ -42,7 +41,7 @@ namespace chevron.Controllers
             kolom.Add("Date");
             kolom.Add("Vessel");
 
-            var cr = string.Format("tgl > '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), ves);
+            var cr = string.Format("tgl >= '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), ves);
             con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
             while (con.result.Read())
             {
@@ -71,25 +70,18 @@ namespace chevron.Controllers
                         {
                             case "fl":
                                 isi.Add(con.result["fuel_litre"]);
-                                //isix.Add(con.result["fuel_litre"]);
                                 break;
                             case "fc":
-                                //isi.Add(con.result["fuel_price"]);
                                 if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
                                 else isi.Add("IDR " + con.result["fuel_price"]);
-                                //isix.Add(con.result["fuel_price"]);
                                 break;
                             case "ch":
-                                //isi.Add(con.result["charter_price"]);
                                 if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
                                 else isi.Add("IDR " + con.result["charter_price"]);
-                                //isix.Add(con.result["charter_price"]);
                                 break;
                             case "mb":
-                                //isi.Add(con.result["mob_price"]);
                                 if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
                                 else isi.Add("IDR " + con.result["mob_price"]);
-                                //isix.Add(con.result["mob_price"]);
                                 break;
                             default:
                                 break;
@@ -121,30 +113,24 @@ namespace chevron.Controllers
             JArray zz = new JArray();
 
             string qq = string.Format("select max(unit_table.name) nama, sum(fuel_litre) litre, sum(fuel_price) fuel, sum(charter_price) charter, sum(mob_price) mob, sum(t_boat_h) boat from report_daily join unit_table on unit_table.id = report_daily.id_unit "+
-                "where id_mainunit = 1 and tgl > '{0}' and tgl <= '{1}' group by id_unit order by nama " ,
+                "where id_mainunit = 1 and tgl >= '{0}' and tgl <= '{1}' group by id_unit order by nama " ,
                 //" where id_mainunit = 1 and tgl > '{0}' and tgl <= '{1}' group by id_unit ;",
                 dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
-
             //Response.Write(qq);
             con.query(qq);
             while (con.result.Read())
             {
                 dynamic k = new JObject();
-                //JArray a = new JArray();
-                //k.idunit = con.result["unit"];
                 k.unit = con.result["nama"];
                 k.litre = con.result["litre"];
                 k.fuel = con.result["fuel"];
                 k.charter = con.result["charter"];
                 k.mob = con.result["mob"];
                 k.boat = con.result["boat"];
-                //a.Add(k);
                 zz.Add(k);
             }
             con.Close();
-
             aa.data = zz;
-            //aa.nama = "jono";
             Response.ContentType = "text/json";
             var json = JsonConvert.SerializeObject(aa);
             return json;
@@ -169,7 +155,6 @@ namespace chevron.Controllers
                 m.fuel = con.result["fuel"];
                 m.charter = con.result["chart"];
                 m.mob = con.result["mob"];
-
                 pp.Add(m);
             }
             con.Close();

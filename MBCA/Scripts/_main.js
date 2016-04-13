@@ -1,5 +1,4 @@
-﻿var path = '';
-var dailylogTable;
+﻿var dailylogTable;
     //path = window.location.pathname,
 var tgl = new Date();
 
@@ -23,7 +22,7 @@ $(document).ready(function () {
     $("#btnUpdateDailyAct").hide();
 
     var dailyEditor = new $.fn.dataTable.Editor({
-        ajax: path + "/api/daily/0",
+        ajax: "api/daily/0",
         table: "#dailyTable",
         fields: [
             //{ label: "Date", name: "daily_date", type: "datetime", format: "MM/DD/YYYY" },
@@ -168,7 +167,7 @@ $(document).ready(function () {
                     $("#btnSaveDailyAct").hide();
 
                     //ambilUnitDailyVes(b.id_dt);
-                    dailyTable.ajax.url('/api/daily/' + b.id_dt).load();
+                    dailyTable.ajax.url('api/daily/' + b.id_dt).load();
                 }
             },
             { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
@@ -194,14 +193,12 @@ $(document).ready(function () {
     
 
     var drillEditor = new $.fn.dataTable.Editor({
-        //ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
         ajax: "api/drill/" + tg1 + "/" + tg2 + "/0",
         table: "#drillTable"
     });
     var drillcompTable = $("#drillTable").DataTable({
         dom: "Bfrtip",
         ajax: {
-            //url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
             url: "api/drill/" + tg1 + "/" + tg2 + "/0",
             method: "post"
         },
@@ -254,8 +251,7 @@ $(document).ready(function () {
     $("#timeatForm").submit(function (e) {
         $("#timeatForm input[name = 'date_timeat']").val($("#activityForm input[name='daily_date']").val());
         var data = $(this).serialize();
-        //console.log(data);
-        $.post(path + "/api/cs/daily", data, function (res) {
+        $.post("api/cs/daily", data, function (res) {
             if (res === "success") {
                 //alert(res);
                 dailyTable.ajax.reload();
@@ -270,7 +266,7 @@ $(document).ready(function () {
     $("#drillForm").submit(function (e) {
         var data = $(this).serialize();
         //console.log(data);
-        $.post(path + "/api/save/drill", data, function (res) {
+        $.post("api/save/drill", data, function (res) {
             //console.log(res);
             if (res === "success") {
                 drillcompTable.ajax.reload();
@@ -322,23 +318,17 @@ $(document).ready(function () {
 
 
     $("#btnSaveDailyAct").click(function () {
-        //alert("clik button save akticiti bro");
         var isi_form = $("#activityForm").serialize();
-        //console.log(isi_form);
         var saveDaily = function () {
-            $.post(path + "/api/save/daily", isi_form, function (res) {
+            $.post("api/save/daily", isi_form, function (res) {
                 //console.log($("#activityForm")[0]);
                 $("#activityForm")[0].reset();
                 //$("#activityForm input[name='action']").val("create");
-
                 dailyTable.ajax.reload();
                 dailylogTable.ajax.reload();
-
             })
         }
         var data = dailyTable.data();
-        //console.log(data);
-        //console.log(data.length);
 
         if (data.length == 0) {
             alert("Belum ada data Durasi Time At, Periksa dulu input Time At");
@@ -403,7 +393,7 @@ $(document).ready(function () {
         var ves = $("#filterDailyLog select[name='daily_vesselid'] option:selected").val();
         var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
         var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
-        dailylogTable.ajax.url("/api/dailylog/" + dari1 + "/" + ke1 + "/"+ves).load();
+        dailylogTable.ajax.url("api/dailylog/" + dari1 + "/" + ke1 + "/"+ves).load();
         //console.log(dari1 + " = " + ke1 + " -- " + ves);
         //console.log(dailylogTable);
     });

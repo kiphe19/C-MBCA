@@ -66,7 +66,6 @@ $(document).ready(function () {
     var unitTable = $("#bargeTable").DataTable({
         dom: "Bfrtip",
         ajax: {
-            //url: "api/unit",
             url: "api/unit/" + hari,
             type: "post",
         },
@@ -108,14 +107,12 @@ $(document).ready(function () {
                 text: "Edit Unit",
                 action: function () {
                     var a = unitTable.rows('.selected').data(), b = a[0];
-                    //console.log(b);
                     if (a.length > 0) {
                         $("#modalBarge").modal({ backdrop: false })
                         $("#modalBarge input[name='action']").val("update")
                         $("#modalBarge button[type='submit']").text("Update")
                         $("#modalBarge input[name='unit_name']").val(b.unit_table.name)
                         $("#modalBarge input[name='unit_afe']").val(b.unit_table.afe)
-
                         $("#modalBarge input[name='id']").val(b.unit_table.id)
                         $("#modalBarge input[name='unit_desc'").val(b.unit_table.ket)
                     }
@@ -232,8 +229,6 @@ $(document).ready(function () {
             }
         }
     });
-
-
 
     var yyyy = today.getFullYear();
     var mm = (today.getMonth() + 1);
@@ -404,14 +399,12 @@ $(document).ready(function () {
                 action: function () {
                     var a = userTable.rows('.selected').indexes();
                     var b = userTable.row(a).data();
-                    //console.log(b);
                     if (a.length > 0) {
                         $("#modalUser").modal({ backdrop: false });
                         $("#modalUser input[name='action']").val("update");
                         $("#modalUser input[name='id']").val(b.id);
                         $("#modalUser input[name='username']").val(b.username);
                         $("#modalUser input[name='password']").attr("placeholder", "New Password");
-                        //$("#modalUser select[name='level'] option:selected").text(b.tingkat);
                         $("#modalUser select[name='level'] option[value='" + b.tingkat + "']").prop("selected", true);
                         $("#modalUser button[type='submit']").text("Update")
                     }
@@ -430,8 +423,6 @@ $(document).ready(function () {
 
     $("#modalBarge form").submit(function (e) {
         var data = $(this).serialize();
-        //console.log(data);
-
         $.post("api/cs/unit", data, function (res) {
             if (res == "success") {
                 $("#modalBarge").modal('hide');
@@ -448,8 +439,6 @@ $(document).ready(function () {
             if (res == "success") {
                 $("#modalUnitDistance").modal('hide');
                 unitTable.ajax.url('api/unit/' + hari).load();
-            //    //        unitTable.ajax.reload();
-            //    //console.log("masukkk");
             } else {
                 alert(res);
             }
@@ -460,8 +449,6 @@ $(document).ready(function () {
         var data = $(this).serialize();
         //console.log(data);
         $.post("api/cs/unit_mainunit", data, function (res) {
-            //console.log(res);
-            //    //onload("/config");
             if (res == "success") {
                 $("#modalUnittoMainUnit").modal('hide');
                 $("#modalUnittoMainUnit input").val(null);
@@ -475,7 +462,6 @@ $(document).ready(function () {
 
     $("#modalMainUnit form").submit(function (e) {
         var data = $(this).serialize();
-        //console.log(data);
         $.post("api/cs/mainunit", data, function (res) {
             if (res == "success") {
                 $("#modalMainUnit").modal('hide');
@@ -485,7 +471,6 @@ $(document).ready(function () {
             }
         });
         e.preventDefault();
-
     });
     $("#modalCharter form").submit(function (e) {
         var data = $(this).serialize();
@@ -512,22 +497,9 @@ $(document).ready(function () {
         e.preventDefault();
     })
 
-    //$("#modalCurrency form").submit(function (e) {
-    //    var data = $(this).serialize();
-    //    $.post("api/cs/currency", data, function (res) {
-    //        if (res == "success") {
-    //            $("#modalCurrency").modal('hide');
-    //            CharterTable.ajax.reload();
-    //        } else {
-    //            alert(res);
-    //        }
-    //    })
-    //    e.preventDefault();
-    //});
     $('#tbl_cari').click(function () {
         var sss = new Date($('#tgl_cari').val());
         var carii = sss.getFullYear() + "-" + (sss.getMonth() + 1) + "-" + sss.getDate();
-        //console.log(sss.getFullYear(), sss.getMonth()+1, sss.getDate());
         unitTable.ajax.url('api/unit/' + carii).load();
     });
     $("#modalUser form").submit(function (e) {
