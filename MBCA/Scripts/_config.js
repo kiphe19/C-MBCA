@@ -465,7 +465,7 @@ $(document).ready(function () {
             if (res == "success") {
                 $("#modalUnittoMainUnit").modal('hide');
                 $("#modalUnittoMainUnit input").val(null);
-                userTable.ajax.reload();
+                unitTable.ajax.reload();
             } else {
                 alert(res);
             }

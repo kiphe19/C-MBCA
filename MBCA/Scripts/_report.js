@@ -39,7 +39,7 @@ function loadTableDrillComptUnit(tg1, tg2) {
     $.ajax({
         "url": "api/reportDC/" + tg1 + "/" + tg2,
         "success": function (json) {
-            console.log(json);
+            //console.log(json);
 
             $('#tbDC').DataTable({
                 //dom: "Brtip",
@@ -80,7 +80,7 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
     $.ajax({
         "url": "api/reportDCU/" + tg1 + "/" + tg2+"/"+unit,
         "success": function (json) {
-            console.log(json);
+            //console.log(json);
 
             $('#tbDCU').DataTable({
                 dom: "Brtip",
@@ -237,17 +237,12 @@ $(document).ready(function () {
                 $.each(json.data, function (i, val) {
                     aa.push(val.tg);
                     aa.push(val.ves);
-                    //aa.push(val.datax)
-                    //console.log(val.datax);
                     for (var k = 0; k < val.datax.length; k++) {
-                        //console.log(val.datax[k]);
                         aa.push(val.datax[k]);
                     }
                     dd.push(aa);
                     aa = [];
                 });
-
-                //console.log(dd);
                 $('#tbUnit').DataTable({
                     dom: "Brtip",
                     destroy: true,
@@ -276,7 +271,7 @@ $(document).ready(function () {
         var tg2 = new Date($("#f_MainReport input[name='main_tgTo']").val());
         var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
 
-        console.log("asd " + tgl1 + "  === " + tgl2);
+        //console.log("asd " + tgl1 + "  === " + tgl2);
 
         loadTableMainUnit(tgl1, tgl2);
     });
@@ -298,7 +293,7 @@ $(document).ready(function () {
         var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
         var unit = $("#f_RepDailyDC select[name='unitId'] option:selected").val();
         //var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-        console.log("==> " + tgl1 + " ===> " + tgl2 + " ====> " + unit);
+        //console.log("==> " + tgl1 + " ===> " + tgl2 + " ====> " + unit);
         loadTableDailyDrillUnit(tgl1, tgl2,unit);
 
     });

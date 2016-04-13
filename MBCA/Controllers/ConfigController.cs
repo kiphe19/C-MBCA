@@ -52,7 +52,6 @@ namespace chevron.Controllers
 
 
         [Route("unit/{tg}")]
-        [HttpPost]
         public ActionResult _ApiUserUnitParam(string tg)
         {
             var request = System.Web.HttpContext.Current.Request;
@@ -77,8 +76,8 @@ namespace chevron.Controllers
                 .Process(request)
                 .Data();
 
-                return Json(response);
-                //return Json(new { response }, JsonRequestBehavior.AllowGet);
+                //return Json(response);
+                return Json(response, JsonRequestBehavior.AllowGet);
 
             }
             //return Json(new { a }, JsonRequestBehavior.AllowGet);

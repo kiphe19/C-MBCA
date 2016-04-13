@@ -4,11 +4,17 @@ var dailylogTable;
 var tgl = new Date();
 
 function lihatDetail(a) {
-    console.log("di klik");
-    console.log(a);
+    //console.log("di klik");
+    //console.log(a);
+    ////console.log(b);
+
+    //console.log(dailylogTable.data());
+    //var c = dailylogTable.rows('.selected').data();
+    //var b = dailylogTable.rows('.selected');
+    ////var b = dailylogTable.row(a).data();
+    //console.log(c);
     //console.log(b);
 
-    //console.log(dailylogTable);
     $("#modalDailyDetail").modal({ backdrop: false });
 }
 
@@ -31,7 +37,7 @@ $(document).ready(function () {
     var dailyTable = $("#dailyTable").DataTable({
         dom: '<"dailyButton"B<"floatright">>rt',
         ajax: {
-            url: path + "/api/daily/0",
+            url: "api/daily/0",
             method: "post"
         },
         serverSide: true,
@@ -123,11 +129,14 @@ $(document).ready(function () {
             { data: "fuel_t" },
             {
                 data: null,
-                render: function (d) {
+                render: function (d, type, row, meta) {
                     console.log(d);
+                    console.log(meta);
+                    console.log(meta.row);
                     //var a = this;
-                    //console.log(a);
-                    //var b = this.row(a).data();
+                    //console.log(dailylogTable.row().data());
+                    //var b = this.row(dailylogTable).data();
+                    //console.log(b);
                     //data-target="#modalDailyDetail";
                     return '<a class="btn btn-info btn-xs"  onclick="lihatDetail('+d.id_dt +');" > Detail </a> <a class="btn btn-danger btn-xs" href="#" > Hapus </a> ';
                 }
@@ -172,25 +181,28 @@ $(document).ready(function () {
             //    buttons: ['excel']
             //}
         ],
-        fnDrawCallback: function (oSettings) {
+        fnDrawCallback: function (oSettings,a,b) {
             if (oSettings.bSorted || oSettings.bFiltered) {
                 for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
                     $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
                 }
             }
+            
         }
     });
 
     
 
     var drillEditor = new $.fn.dataTable.Editor({
-        ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
+        //ajax: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
+        ajax: "api/drill/" + tg1 + "/" + tg2 + "/0",
         table: "#drillTable"
     });
     var drillcompTable = $("#drillTable").DataTable({
         dom: "Bfrtip",
         ajax: {
-            url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
+            //url: path + "/api/drill/" + tg1 + "/" + tg2 + "/0",
+            url: "api/drill/" + tg1 + "/" + tg2 + "/0",
             method: "post"
         },
         columns: [
@@ -242,7 +254,7 @@ $(document).ready(function () {
     $("#timeatForm").submit(function (e) {
         $("#timeatForm input[name = 'date_timeat']").val($("#activityForm input[name='daily_date']").val());
         var data = $(this).serialize();
-        console.log(data);
+        //console.log(data);
         $.post(path + "/api/cs/daily", data, function (res) {
             if (res === "success") {
                 //alert(res);
@@ -257,7 +269,7 @@ $(document).ready(function () {
     });
     $("#drillForm").submit(function (e) {
         var data = $(this).serialize();
-        console.log(data);
+        //console.log(data);
         $.post(path + "/api/save/drill", data, function (res) {
             //console.log(res);
             if (res === "success") {
@@ -312,7 +324,7 @@ $(document).ready(function () {
     $("#btnSaveDailyAct").click(function () {
         //alert("clik button save akticiti bro");
         var isi_form = $("#activityForm").serialize();
-        console.log(isi_form);
+        //console.log(isi_form);
         var saveDaily = function () {
             $.post(path + "/api/save/daily", isi_form, function (res) {
                 //console.log($("#activityForm")[0]);
@@ -385,15 +397,15 @@ $(document).ready(function () {
     });
 
     $("#dailycari").click(function () {
-        console.log("klik cari dilycari");
+        //console.log("klik cari dilycari");
         var dari = new Date($("#filterDailyLog input[name = 'f_daily_from']").val());
         var ke = new Date($("#filterDailyLog input[name = 'f_daily_to']").val());
         var ves = $("#filterDailyLog select[name='daily_vesselid'] option:selected").val();
         var dari1 = dari.getFullYear() + "-" + (dari.getMonth() + 1) + "-" + dari.getDate();
         var ke1 = ke.getFullYear() + "-" + (ke.getMonth() + 1) + "-" + ke.getDate();
         dailylogTable.ajax.url("/api/dailylog/" + dari1 + "/" + ke1 + "/"+ves).load();
-        console.log(dari1 + " = " + ke1 + " -- " + ves);
-        console.log(dailylogTable);
+        //console.log(dari1 + " = " + ke1 + " -- " + ves);
+        //console.log(dailylogTable);
     });
 
 
@@ -412,7 +424,7 @@ $(document).ready(function () {
 
     $("#btnCancelDaily").click(function () {
         //dailyCancel.apply();
-        console.log("ini cancel di klik", $("#activityForm")[0]);
+        //console.log("ini cancel di klik", $("#activityForm")[0]);
         $("#btnCancelDaily").hide();
         $("#btnSaveGroup").show();
         $("#btnUpdateDailyAct").hide();

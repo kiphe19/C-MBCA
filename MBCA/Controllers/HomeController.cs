@@ -189,6 +189,12 @@ namespace chevron.Controllers
             }
         }
 
+        //[Route("viewLog/{id_dt}")]
+        //public ActionResult _viewDailyLog(int id_dt)
+        //{
+        //    var request = System.Web.Http
+        //}
+
 
         [Route("drill/{tg1}/{tg2}/{unitx}")]
         public ActionResult _dataDrillCompletion(string tg1, string tg2, int unitx)
@@ -218,33 +224,30 @@ namespace chevron.Controllers
                          .Where("drilling_table.tgl", tg2, "<=")
                          .Where("drilling_table.id_unit", unitx, "=")
                         .Process(request).Data();
-                    return Json(response);
+                    return Json(response, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
                     var response = new Editor(db, "drilling_table")
-                        .Model<DrillModel>()
-                        .Field(new Field("drilling_table.tgl")
-                            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                            .Validator(Validation.NotEmpty())
-                        )
-                        .Field(new Field("drilling_table.t_start")
-                            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-                            .Validator(Validation.NotEmpty())
-                        )
-                        .Field(new Field("drilling_table.t_end")
-                            .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
-                            .Validator(Validation.NotEmpty())
-                        )
-                        .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
-                        //.LeftJoin("mainunit_table","")
-                        .Where("drilling_table.tgl", tg1, ">")
-                        .Where("drilling_table.tgl", tg2, "<=")
-
-                        .Process(request).Data();
-
-                    //Response.Write(unitx);
-                    return Json(response);
+                    .Model<DrillModel>()
+                    .Field(new Field("drilling_table.tgl")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Field(new Field("drilling_table.t_start")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .Field(new Field("drilling_table.t_end")
+                        .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "H:m"))
+                        .Validator(Validation.NotEmpty())
+                    )
+                    .LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit")
+                    //.LeftJoin("mainunit_table","")
+                    .Where("drilling_table.tgl", tg1, ">")
+                    .Where("drilling_table.tgl", tg2, "<=")
+                    .Process(request).Data();
+                    return Json(response, JsonRequestBehavior.AllowGet);
                 }
             }
         }
@@ -288,14 +291,11 @@ namespace chevron.Controllers
                 }
                 con.queryExec(query);
                 return "success";
-                
             }
             else
             {
                 return "Unit " + input["daily_unitid"] + " pada tanggal " + tanggal + " tidak ditemukan, hubungi Administrator";
             }
-           
-           
         }
 
         [Route("save/daily")]

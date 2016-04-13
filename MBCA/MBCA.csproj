@@ -255,6 +255,8 @@
     <Content Include="Views\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\localnya _feris.pubxml" />
+    <None Include="Properties\PublishProfiles\local_jono.pubxml" />
     <None Include="Properties\PublishProfiles\MBCA.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
