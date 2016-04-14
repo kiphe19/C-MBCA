@@ -17,8 +17,28 @@ namespace chevron.Controllers
         {
             return View();
         }
-
-
+        private void logoGb(ExcelWorksheet ws) 
+        {
+            Image logo = Image.FromFile(Server.MapPath("~/images/chevron.jpg"));
+            ExcelPicture pic = ws.Drawings.AddPicture("logo", logo);
+            pic.SetPosition(5, 5);
+            pic.SetSize(90, 90);
+            //pic.Border.LineStyle = eLineStyle.Solid;
+            //pic.Border.Fill.Color = Color.DarkCyan;
+            //pic.Fill.Style = eFillStyle.SolidFill;
+            //pic.Fill.Color = Color.White;
+            //pic.Fill.Transparancy = 50;
+        }
+        private void headerTbl(JArray judul, ExcelWorksheet ws)
+        {
+            int colidx = 1;
+            int rowstart = 11;
+            foreach (var tt in judul)
+            {
+                ws.Cells[rowstart, colidx].Value = tt;
+                colidx++;
+            }
+        }
         public void r_dailyUnit(string tg1,string tg2, int v)
         {
             DateTime dateFrom = DateTime.ParseExact(tg1, "yyyyMMdd", CultureInfo.InvariantCulture);
@@ -34,22 +54,12 @@ namespace chevron.Controllers
 
 
 
-
-
             using (ExcelPackage pkg = new ExcelPackage())
             {
                 ExcelWorksheet ws = pkg.Workbook.Worksheets.Add("coba");
-                Image logo = Image.FromFile(Server.MapPath("~/images/chevron.jpg"));
-                //var gb = ws.Drawings.AddPicture()
-                ExcelPicture pic = ws.Drawings.AddPicture("logo", logo);
-                pic.SetPosition(5,5);
-                //pic.Border.LineStyle = eLineStyle.Solid;
-                //pic.Border.Fill.Color = Color.DarkCyan;
-                //pic.Fill.Style = eFillStyle.SolidFill;
-                //pic.Fill.Color = Color.White;
-                //pic.Fill.Transparancy = 50;
-                pic.SetSize(90,90);
-                //[row, col]
+                //buat gambar
+                this.logoGb(ws);
+
                 ws.Cells[7, 1].Value = "Month :"; ws.Cells[7, 3].Value = dateFrom.ToString("dd MMM") + " - " + dateTo.ToString("dd MMM yy"); 
                 ws.Cells[8, 1].Value = "Boat Name :"; ws.Cells[8, 3].Value = vesselname;
                 ws.Cells[9, 1].Value = "Boat Owner :";
@@ -58,8 +68,8 @@ namespace chevron.Controllers
                     cel.Style.Font.SetFromFont(new Font("Arial Narrow", 11, FontStyle.Bold));
                 }
 
-                int colidx = 0, rowidx = 1;
-                int rowstart = 11;
+                //int colidx = 0, rowidx = 1;
+                //int rowstart = 11;
 
                 JArray header = new JArray();
                 header.Add("Date");
@@ -73,19 +83,14 @@ namespace chevron.Controllers
                     header.Add(con.result["nama"]);
                 }
 
-                int leng = header.Count;
-
-
-                //for (int i= 0; i<= leng; i++)
+                //buat header judul
+                this.headerTbl(header, ws);
+                
+                //foreach (var tt in header)
                 //{
-                //    ws.Cells[12, 2 + i].Value = header[i+1].ToString();
+                //    ws.Cells[rowstart, colidx+1].Value = tt;
+                //    colidx++;
                 //}
-
-                foreach (var tt in header)
-                {
-                    ws.Cells[rowstart, colidx+1].Value = tt;
-                    colidx++;
-                }
                 //for 
 
 
