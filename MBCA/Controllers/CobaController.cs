@@ -21,7 +21,7 @@ namespace chevron.Controllers
         //    wb.Save(@"d:\testing.xls");
         //    Response.End();
         //}
-        public ActionResult excel()
+        public ActionResult excel(string dt1, string dt2)
         {
             using (ExcelPackage pkg = new ExcelPackage())
             {
@@ -30,6 +30,8 @@ namespace chevron.Controllers
                 ws.Cells[1, 2].Value = "halo ini satu dua";
                 ws.Cells[2, 1].Value = "halo ini dua satu";
                 ws.Cells[2, 2].Value = "halo ini dua dua";
+                ws.Cells["C5"].Value = dt1;
+                ws.Cells["C7"].Value = dt2;
 
 
                 Byte[] fileBytes = pkg.GetAsByteArray();

@@ -74,16 +74,19 @@ namespace chevron.Controllers
                                 isi.Add(con.result["fuel_litre"]);
                                 break;
                             case "fc":
-                                if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
-                                else isi.Add("IDR " + con.result["fuel_price"]);
+                                //if (con.result["fuel_curr"].ToString() == "1") isi.Add("USD " + con.result["fuel_price"]);
+                                //else isi.Add("IDR " + con.result["fuel_price"]);
+                                isi.Add(con.result["fuel_price"]);
                                 break;
                             case "ch":
-                                if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
-                                else isi.Add("IDR " + con.result["charter_price"]);
+                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["charter_price"]);
+                                //else isi.Add("IDR " + con.result["charter_price"]);
+                                isi.Add(con.result["charter_price"]);
                                 break;
                             case "mb":
-                                if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
-                                else isi.Add("IDR " + con.result["mob_price"]);
+                                //if (con.result["charter_curr"].ToString() == "1") isi.Add("USD " + con.result["mob_price"]);
+                                //else isi.Add("IDR " + con.result["mob_price"]);
+                                isi.Add(con.result["mob_price"]);
                                 break;
                             default:
                                 break;

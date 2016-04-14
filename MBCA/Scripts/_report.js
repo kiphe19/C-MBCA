@@ -286,21 +286,20 @@ $(document).ready(function () {
                             text: "exc", action: function () {
                                 console.log("klik tombl datatable");
                                 //$("#jajal").load("api/xls");
-                                window.open("/coba/excel");
+                                //window.open("/coba/excel?dt1=kasjdkasjda&dt2=lkhdflkasf");
+                                window.open("/export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
                             }
                         }
                     ]
                 });
-                //document.getElementById('tbUnit').createTFoot().insertRow(0);
-                //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th></tr></tfoot>');
                 var aa = $('#tbUnit').DataTable();
                 //var kol = $('#tbUnit').DataTable().column(2, { page: 'current' });
                 //var tot = kol.data().reduce(function (a, b) {
                 //    return parseFloat(a) + parseFloat(b);
                 //});
                 //console.log(tot);
-                console.log(aa);
-                var iColumns = $('#tbUnit thead th').length;
+                //console.log(aa);
+                //var iColumns = $('#tbUnit thead th').length;
                 //console.log(iColumns2);
                 var numCols = aa.columns(':visible').nodes().length;
                 var tb;
@@ -310,13 +309,13 @@ $(document).ready(function () {
                         console.log('isi b ' + i + ' : ' + b);
                         return parseFloat(a) + parseFloat(b);
                     });
-                    console.log('isi kol ke ' + i + ': = ' + isi);
-                    tb += '<th>' + isi + '</th>';
+                    console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
+                    tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
                 }
 
                 
-                console.log(iColumns);
-                console.log(numCols);
+                //console.log(iColumns);
+                //console.log(numCols);
                 $("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
                 //console.log(kol.data().reduce(function (a, b) {
                 //    return parseFloat(a) + parseFloat(b);

@@ -169,6 +169,7 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Controllers\CobaController.cs" />
     <Compile Include="Controllers\ConfigController.cs" />
+    <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
