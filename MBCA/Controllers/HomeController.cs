@@ -197,6 +197,21 @@ namespace chevron.Controllers
             var request = System.Web.HttpContext.Current.Request;
             using (var db = new Database(setting.DbType, setting.DbConnection))
             {
+                //var response = new Editor(db, "a_table");
+                //response.Model<DrillModel>();
+                //response.LeftJoin("unit_table", "unit_table.id", "=", "drilling_table.id_unit");
+                //response.Where("drilling_table.tgl", tg1, ">");
+                //response.Where("drilling_table.tgl", tg2, "<=");
+                //if (unitx > 0)
+                //{
+                //    response.Where("drilling_table.id_unit", unitx, "=");
+                //}
+                //response.Process(request);
+                //response.Data();
+                //return Json(response, JsonRequestBehavior.AllowGet);
+
+
+
                 if (unitx > 0)
                 {
                     var response = new Editor(db, "drilling_table")

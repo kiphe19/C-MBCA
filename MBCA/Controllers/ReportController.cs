@@ -5,6 +5,8 @@ using System.Web.Mvc;
 using Newtonsoft.Json.Linq;
 using AttributeRouting.Web.Mvc;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using System.IO;
 
 namespace chevron.Controllers
 {
@@ -207,6 +209,30 @@ namespace chevron.Controllers
             return json;
         }
 
+        [Route("api/xls")]
+        public void buatReport1()
+        {
+            using (ExcelPackage pkg = new ExcelPackage())
+            {
+                ExcelWorksheet ws = pkg.Workbook.Worksheets.Add("coba");
+                ws.Cells[1, 1].Value = "halo ini satu satu";
+                ws.Cells[1, 2].Value = "halo ini satu dua";
+                ws.Cells[2, 1].Value = "halo ini dua satu";
+                ws.Cells[2, 2].Value = "halo ini dua dua";
+
+
+                Byte[] fileBytes = pkg.GetAsByteArray();
+                Response.Clear();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment;filename=buataattt.xlsx");
+                Response.Charset = "";
+
+                Response.ContentType = "application/vnd.ms-excel";
+                StringWriter sw = new StringWriter();
+                Response.BinaryWrite(fileBytes);
+                Response.End();
+            }
+        }
 
         public ActionResult Index()
         {

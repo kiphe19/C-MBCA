@@ -129,9 +129,9 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (d, type, row, meta) {
-                    console.log(d);
-                    console.log(meta);
-                    console.log(meta.row);
+                    //console.log(d);
+                    //console.log(meta);
+                    //console.log(meta.row);
                     //var a = this;
                     //console.log(dailylogTable.row().data());
                     //var b = this.row(dailylogTable).data();

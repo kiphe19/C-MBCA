@@ -8,8 +8,6 @@ function loadTableMainUnit(tg1, tg2) {
     $.ajax({
         "url": "api/rMain/" + tg1 + "/" + tg2,
         "success": function (json) {
-            //console.log(json);
-
             $('#tbMainUnit').DataTable({
                 //dom: "Brtip",
                 destroy: true,
@@ -29,6 +27,12 @@ function loadTableMainUnit(tg1, tg2) {
                     },{
                         data: "charter",
                         title: "Charter Price"
+                    }, {
+                        data: null,
+                        title: "Total",
+                        render: function (data, type, row) {
+                            return parseFloat(data.fuel) + parseFloat(data.charter);
+                        }
                     }]
             });
         }
@@ -47,7 +51,8 @@ function loadTableDrillComptUnit(tg1, tg2) {
                 data: json.data,
                 columns: [{   
                         data : "unit",
-                        title: "Unit"
+                        title: "Unit",
+                        footer : "aaa"
                     },{   
                         data : "litre" ,
                         title: "Fuel (L)",
@@ -64,6 +69,16 @@ function loadTableDrillComptUnit(tg1, tg2) {
                         data : "boat",
                         title: "Boat Hours"
                     }],
+                //footerCallback: function (tfoot, data, start, end, display) {
+                drawCallback: function (tfoot, data, start, end, display) {
+                    //console.log(tfoot);
+                    var api = this.api();
+                    $(api.column(2).footer()).html(
+                        api.column(2).data().reduce(function (a, b) {
+                            return parseFloat(a) + parseFloat(b);
+                        }, 0)
+                    );
+                }
                 //buttons: [
                 //    {
                 //        extend: "excelHtml5",
@@ -234,6 +249,7 @@ $(document).ready(function () {
 
                 var dd = [];
                 var aa = [];
+                $("#tbUnit").empty();
                 $.each(json.data, function (i, val) {
                     aa.push(val.tg);
                     aa.push(val.ves);
@@ -248,14 +264,70 @@ $(document).ready(function () {
                     destroy: true,
                     data: dd,
                     columns: kolom,
+                    footerCallback: function (row, data, start, end, display) {
+                        var api = this.api(), data;
+                        var total = api
+                            .column(2)
+                            .data()
+                            .reduce(function (a, b) {
+                                return parseFloat(a) + parseFloat(b);
+                            }, 0);
+                        //console.log(total);
+                        $(api.column(2).footer()).html('totalnya : '+total
+                            );
+                    },
                     buttons: [
                         {
                             extend: "excelHtml5",
                             text: "Excel",
                             filename: "Report_" + tgl1 + "_" + tgl2
+                        },
+                        {
+                            text: "exc", action: function () {
+                                console.log("klik tombl datatable");
+                                //$("#jajal").load("api/xls");
+                                window.open("/coba/excel");
+                            }
                         }
                     ]
                 });
+                //document.getElementById('tbUnit').createTFoot().insertRow(0);
+                //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th></tr></tfoot>');
+                var aa = $('#tbUnit').DataTable();
+                //var kol = $('#tbUnit').DataTable().column(2, { page: 'current' });
+                //var tot = kol.data().reduce(function (a, b) {
+                //    return parseFloat(a) + parseFloat(b);
+                //});
+                //console.log(tot);
+                console.log(aa);
+                var iColumns = $('#tbUnit thead th').length;
+                //console.log(iColumns2);
+                var numCols = aa.columns(':visible').nodes().length;
+                var tb;
+                for (var i = 2; i < 7; i++) {
+                    var isi = aa.column(i).data().reduce(function (a, b) {
+                        console.log('isi a '+i+' : '+a);
+                        console.log('isi b ' + i + ' : ' + b);
+                        return parseFloat(a) + parseFloat(b);
+                    });
+                    console.log('isi kol ke ' + i + ': = ' + isi);
+                    tb += '<th>' + isi + '</th>';
+                }
+
+                
+                console.log(iColumns);
+                console.log(numCols);
+                $("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
+                //console.log(kol.data().reduce(function (a, b) {
+                //    return parseFloat(a) + parseFloat(b);
+                //}));
+                //console.log(kol.footer());
+                //$(aa.table().footer()).html(
+                //    kol.data().reduce(function (a,b) {
+                //        return parseFloat(a) + parseFloat(b);
+                //    })
+                //);
+
             },
             "dataType": "json"
         });
