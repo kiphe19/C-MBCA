@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml;
+﻿using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
 using System;
 using System.Drawing;
@@ -56,16 +57,48 @@ namespace chevron.Controllers
                 {
                     cel.Style.Font.SetFromFont(new Font("Arial Narrow", 11, FontStyle.Bold));
                 }
-                    //    using (ExcelRange cell = worksheet.Cells["A2:G2"])
-                    //{
-                    //    cell.Merge = true;
-                    //    cell.Style.Font.SetFromFont(new Font("Britannic Bold", 18, FontStyle.Italic));
-                    //    cell.Style.Font.Color.SetColor(Color.Black);
-                    //    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                    //    cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    //    cell.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-                    //    cell.Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
-                    //}
+
+                int colidx = 0, rowidx = 1;
+                int rowstart = 11;
+
+                JArray header = new JArray();
+                header.Add("Date");
+                //header.Add("Vesse")
+                var cr = string.Format("tgl >= '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), v);
+                con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
+                while (con.result.Read())
+                {
+                    //unitall.Add(con.result["id_unit"]);
+                    //unitnama.Add(con.result["nama"]);
+                    header.Add(con.result["nama"]);
+                }
+
+                int leng = header.Count;
+
+
+                //for (int i= 0; i<= leng; i++)
+                //{
+                //    ws.Cells[12, 2 + i].Value = header[i+1].ToString();
+                //}
+
+                foreach (var tt in header)
+                {
+                    ws.Cells[rowstart, colidx+1].Value = tt;
+                    colidx++;
+                }
+                //for 
+
+
+                //    using (ExcelRange cell = worksheet.Cells["A2:G2"])
+                //{
+                //    cell.Merge = true;
+                //    cell.Style.Font.SetFromFont(new Font("Britannic Bold", 18, FontStyle.Italic));
+                //    cell.Style.Font.Color.SetColor(Color.Black);
+                //    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                //    cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                //    cell.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+                //    cell.Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
+                //}
 
                 //    ws.Cells[1, 1].Value = "halo ini satu satu";
                 //ws.Cells[1, 2].Value = "halo ini satu dua";
