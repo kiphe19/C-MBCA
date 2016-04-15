@@ -287,7 +287,7 @@ $(document).ready(function () {
                                 console.log("klik tombl datatable");
                                 //$("#jajal").load("api/xls");
                                 //window.open("/coba/excel?dt1=kasjdkasjda&dt2=lkhdflkasf");
-                                window.open("/export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
+                                window.open("export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
                             }
                         }
                     ]
