@@ -377,7 +377,7 @@ $(document).ready(function () {
         var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
         var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
 
-        window.open("export/r_dailyUnit?tg1="+tgl1+"&tg2="+tgl2+"&v="+ves);
+        window.open("export/r_daily?tg1="+tgl1+"&tg2="+tgl2+"&v="+ves);
     });
 
 
