@@ -369,5 +369,16 @@ $(document).ready(function () {
 
     });
 
+    $("#btExc_1").click(function () {
+        var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
+        var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
+        var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+
+        window.open("export/r_dailyUnit?tg1="+tgl1+"&tg2="+tgl2+"&v="+ves);
+    });
+
 
 })

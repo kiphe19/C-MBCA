@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
+using OfficeOpenXml.Style;
 using System;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -23,11 +26,6 @@ namespace chevron.Controllers
             ExcelPicture pic = ws.Drawings.AddPicture("logo", logo);
             pic.SetPosition(5, 5);
             pic.SetSize(90, 90);
-            //pic.Border.LineStyle = eLineStyle.Solid;
-            //pic.Border.Fill.Color = Color.DarkCyan;
-            //pic.Fill.Style = eFillStyle.SolidFill;
-            //pic.Fill.Color = Color.White;
-            //pic.Fill.Transparancy = 50;
         }
         private void headerTbl(JArray judul, ExcelWorksheet ws)
         {
@@ -35,7 +33,12 @@ namespace chevron.Controllers
             int rowstart = 11;
             foreach (var tt in judul)
             {
-                ws.Cells[rowstart, colidx].Value = tt;
+                var isi = ws.Cells[rowstart, colidx];
+                isi.Value = tt;
+                isi.Style.Font.Bold = true;
+                isi.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                isi.Style.Border.BorderAround(ExcelBorderStyle.Medium);
+                isi.AutoFitColumns();
                 colidx++;
             }
         }
@@ -52,6 +55,42 @@ namespace chevron.Controllers
             }
 
 
+            var periode = dateFrom.ToString("dd MMM") + " - " + dateTo.ToString("dd MMM yy");
+            var period = dateFrom.ToString("dd MMM") + "_" + dateTo.ToString("dd MMM yy");
+
+            JArray header = new JArray();
+            JArray unitid = new JArray();
+            JArray unitnama = new JArray();
+            var dt = new DataTable();
+            header.Add("Date");
+            //header.Add("Vesse")
+            var cr = string.Format("tgl >= '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), v);
+            con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
+            while (con.result.Read())
+            {
+                unitid.Add(con.result["id_unit"]);
+                unitnama.Add(con.result["nama"]);
+                header.Add(con.result["nama"]);
+
+
+            }
+
+            dt.Columns.Add("date");
+
+            for (var i = 0; i <= ambilTanggal.TotalDays; i++)
+            {
+                //dt.NewRow();
+                var baris = dt.NewRow();
+
+                baris["date"] = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+
+                //foreach (var u in unitid)
+                //{
+
+                //}
+            }
+
+
 
 
             using (ExcelPackage pkg = new ExcelPackage())
@@ -59,8 +98,8 @@ namespace chevron.Controllers
                 ExcelWorksheet ws = pkg.Workbook.Worksheets.Add("coba");
                 //buat gambar
                 this.logoGb(ws);
-
-                ws.Cells[7, 1].Value = "Month :"; ws.Cells[7, 3].Value = dateFrom.ToString("dd MMM") + " - " + dateTo.ToString("dd MMM yy"); 
+                
+                ws.Cells[7, 1].Value = "Month :"; ws.Cells[7, 3].Value = periode; 
                 ws.Cells[8, 1].Value = "Boat Name :"; ws.Cells[8, 3].Value = vesselname;
                 ws.Cells[9, 1].Value = "Boat Owner :";
                 using (ExcelRange cel = ws.Cells["A7:D9"])
@@ -68,66 +107,79 @@ namespace chevron.Controllers
                     cel.Style.Font.SetFromFont(new Font("Arial Narrow", 11, FontStyle.Bold));
                 }
 
-                //int colidx = 0, rowidx = 1;
-                //int rowstart = 11;
 
-                JArray header = new JArray();
-                header.Add("Date");
-                //header.Add("Vesse")
-                var cr = string.Format("tgl >= '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), v);
-                con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
-                while (con.result.Read())
+                    //buat header judul
+                this.headerTbl(header, ws);
+
+                // isi tanggal
+                var mulai = 11;
+
+                for (var i = 0; i <= ambilTanggal.TotalDays; i++)
                 {
-                    //unitall.Add(con.result["id_unit"]);
-                    //unitnama.Add(con.result["nama"]);
-                    header.Add(con.result["nama"]);
+                    //dt.NewRow();
+                    //var baris = dt.NewRow();
+
+                    //baris["date"] = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+                    var br = ws.Cells[mulai + 1 + i, 1];
+                    br.Value = dateFrom.AddDays(i).ToString("dd-MMM-yyyy");
+                    br.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    br.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    br.AutoFitColumns();
+
+                    //foreach (var u in unitid)
+                    //{
+
+                    //}
                 }
 
-                //buat header judul
-                this.headerTbl(header, ws);
-                
-                //foreach (var tt in header)
-                //{
-                //    ws.Cells[rowstart, colidx+1].Value = tt;
-                //    colidx++;
-                //}
-                //for 
 
 
-                //    using (ExcelRange cell = worksheet.Cells["A2:G2"])
-                //{
-                //    cell.Merge = true;
-                //    cell.Style.Font.SetFromFont(new Font("Britannic Bold", 18, FontStyle.Italic));
-                //    cell.Style.Font.Color.SetColor(Color.Black);
-                //    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                //    cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                //    cell.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-                //    cell.Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Black);
-                //}
 
-                //    ws.Cells[1, 1].Value = "halo ini satu satu";
-                //ws.Cells[1, 2].Value = "halo ini satu dua";
-                //ws.Cells[2, 1].Value = "halo ini dua satu";
-                //ws.Cells[2, 2].Value = "halo ini dua dua";
-                //ws.Cells["C5"].Value = tg1;
-                //ws.Cells["D5"].Value = dateFrom.ToShortDateString();
-                //ws.Cells["C7"].Value = tg2;
-                //ws.Cells["C9"].Value = v;
+                //create excel
+                this.createxls(pkg, "daily_" + period);
 
-
-                Byte[] fileBytes = pkg.GetAsByteArray();
-                Response.Clear();
-                Response.Buffer = true;
-                Response.AddHeader("content-disposition", "attachment;filename=export"+tg1+".xlsx");
-                Response.Charset = "";
-
-                Response.ContentType = "application/vnd.ms-excel";
-                StringWriter sw = new StringWriter();
-                Response.BinaryWrite(fileBytes);
-                Response.End();
             }
             //return RedirectToAction("Index");
         }
+
+        private void createxls (ExcelPackage pkg, string filenama)
+        {
+            Byte[] fileBytes = pkg.GetAsByteArray();
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment;filename=" + filenama + ".xlsx");
+            Response.Charset = "";
+
+            Response.ContentType = "application/vnd.ms-excel";
+            StringWriter sw = new StringWriter();
+            Response.BinaryWrite(fileBytes);
+            Response.End();
+        }
+
+        public ActionResult coba()
+        {
+            //this.getData();
+            var json = JsonConvert.SerializeObject(this.getData());
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+
+        public DataTable getData()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("UserId", typeof(Int32));
+            dt.Columns.Add("UserName", typeof(string));
+            dt.Columns.Add("Education", typeof(string));
+            dt.Columns.Add("Location", typeof(string));
+            dt.Rows.Add(1, "Satinder Singh", "Bsc Com Sci", "Mumbai");
+            dt.Rows.Add(2, "Amit Sarna", "Mstr Com Sci", "Mumbai");
+            dt.Rows.Add(3, "Andrea Ely", "Bsc Bio-Chemistry", "Queensland");
+            dt.Rows.Add(4, "Leslie Mac", "MSC", "Town-ville");
+            dt.Rows.Add(5, "Vaibhav Adhyapak", "MBA", "New Delhi");
+            return dt;
+        }
+
+        
     }
 
 }
