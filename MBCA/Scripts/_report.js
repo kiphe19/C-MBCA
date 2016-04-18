@@ -376,8 +376,21 @@ $(document).ready(function () {
         var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
         var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
         var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        var t = $("#f_generateReport select[name='type'] option:selected").val();
+        console.log(tgl1, tgl2, ves, t);
 
-        window.open("export/r_daily?tg1="+tgl1+"&tg2="+tgl2+"&v="+ves);
+        if (ves == 0 ) {
+            alert("Pilih Vessel");
+            
+        }
+        else {
+            if (tgl1 == NaN || tgl2 == NaN){
+                alert ("Pilih Periode Laporan");
+            }
+            else {
+                window.open("export/r_daily?tg1=" + tgl1 + "&tg2=" + tgl2 + "&v=" + ves+"&t="+t);
+            }
+        }
     });
 
 
