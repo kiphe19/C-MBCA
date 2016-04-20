@@ -555,7 +555,6 @@ namespace chevron.Controllers
             JArray cc = new JArray();
             while (con.result.Read())
             {
-                
                 bb.nm = con.result["nm"];
                 bb.dur = con.result["dur"];
                 cc.Add(bb);
@@ -563,8 +562,6 @@ namespace chevron.Controllers
 
             aa.detail = cc;
             Response.ContentType = "text/json";
-            //aa.nama = "jono";
-            //aa.alamat = "aaaaa";
             var jj = JsonConvert.SerializeObject(aa);
             //return Json(new { nam = "asdasd"}, JsonRequestBehavior.AllowGet);
             return jj;
@@ -576,7 +573,6 @@ namespace chevron.Controllers
             con.queryExec(q1);
             string q2 = string.Format("delete from detail_daily_table where id_daily_table = {0}", id);
             con.queryExec(q2);
-
             //Response.Write(id.ToString());
             return "success";
         }
