@@ -3,21 +3,31 @@
 var tgl = new Date();
 
 function lihatDetail(id) {
-    //console.log("di klik");
-    //console.log(a);
-    ////console.log(b);
-
-    //console.log(dailylogTable.data());
-    //var c = dailylogTable.rows('.selected').data();
-    //var b = dailylogTable.rows('.selected');
-    ////var b = dailylogTable.row(a).data();
-    //console.log(c);
-    //console.log(b);
 
     $("#modalDailyDetail").modal({ backdrop: false });
 
     $.ajax({
-        url:"api/view/daily/"+id
+        url: "api/view/daily/" + id
+    })
+    .done(function (data) {
+        //console.log(data);
+        var tgtg = new Date(data.tg);
+        var yyyy = tgtg.getFullYear(),
+            m = tgtg.getMonth() + 1,
+            d = tgtg.getDate(),
+            mm = (m < 10) ? ("0" + m) : m,
+            dd = (d < 10) ? ("0" + d) : d;
+
+        //console.log(tgtg);
+        $("#detail_activity input[name='daily_date']").val(mm+"/"+dd+"/"+yyyy);
+        $("#detail_activity input[name = 'daily_vesselid']").val(data.nm);
+        $("#detail_activity input[name='daily_fuel']").val(data.fl);
+        $("#detail_activity input[name='standby']").val(data.stb);
+        $("#detail_activity input[name='load']").val(data.ld);
+        $("#detail_activity input[name='steaming']").val(data.stm);
+        $("#detail_activity input[name='downtime']").val(data.dt);
+        (data.mob == 1) ? $("#detail_activity input[name='mob']").prop("checked", true) : $("#detail_activity input[name='mob']").prop("checked", false);
+
     });
 }
 
@@ -133,7 +143,7 @@ $(document).ready(function () {
 
     dailylogTable = $("#DailyLogTable").DataTable({
         //dom: 'B<"floatright">rtip',
-        dom: "Bfrtip",
+        //dom: "Bfrtip",
         ajax: {
             url: "api/dailylog/" + tg1 + "/" + tg2+"/0",
             type: "post"
@@ -164,44 +174,44 @@ $(document).ready(function () {
 
             }
         ],
-        buttons: [
-            {
-                extend:'edit',
-                text : 'Edit Activity',
-                action: function (e, dt, node, config) {
-                    var a = dailylogTable.rows('.selected').indexes();
-                    var b = dailylogTable.row(a).data();
-                    //console.log(a);
-                    //console.log(b);
-                    $("#btnCancelDaily").show();
-                    $("#activityForm input[name='action']").val("update");
-                    $("#activityForm input[name='id']").val(b.id_dt);
+        //buttons: [
+        //    {
+        //        extend:'edit',
+        //        text : 'Edit Activity',
+        //        action: function (e, dt, node, config) {
+        //            var a = dailylogTable.rows('.selected').indexes();
+        //            var b = dailylogTable.row(a).data();
+        //            //console.log(a);
+        //            //console.log(b);
+        //            $("#btnCancelDaily").show();
+        //            $("#activityForm input[name='action']").val("update");
+        //            $("#activityForm input[name='id']").val(b.id_dt);
 
-                    $("#activityForm input[name='daily_date']").val(b.tg);
-                    $("#activityForm select[name = 'daily_vesselid'] option[value=" + b.id_ves+ "]").prop("selected", true);
-                    $("#activityForm input[name='daily_fuel']").val(b.fuel_t);
-                    $("#activityForm input[name='standby']").val(b.stb);
-                    $("#activityForm input[name='load']").val(b.ld);
-                    $("#activityForm input[name='steaming']").val(b.stm);
-                    $("#activityForm input[name='downtime']").val(b.dt);
-                    (b.mob == 1) ? $("#activityForm input[name='mob']").prop("checked", true) : $("#activityForm input[name='mob']").prop("checked", false);
-                    $("#btnUpdateDailyAct").show();
-                    $("#btnSaveDailyAct").hide();
+        //            $("#activityForm input[name='daily_date']").val(b.tg);
+        //            $("#activityForm select[name = 'daily_vesselid'] option[value=" + b.id_ves+ "]").prop("selected", true);
+        //            $("#activityForm input[name='daily_fuel']").val(b.fuel_t);
+        //            $("#activityForm input[name='standby']").val(b.stb);
+        //            $("#activityForm input[name='load']").val(b.ld);
+        //            $("#activityForm input[name='steaming']").val(b.stm);
+        //            $("#activityForm input[name='downtime']").val(b.dt);
+        //            (b.mob == 1) ? $("#activityForm input[name='mob']").prop("checked", true) : $("#activityForm input[name='mob']").prop("checked", false);
+        //            $("#btnUpdateDailyAct").show();
+        //            $("#btnSaveDailyAct").hide();
 
-                    //ambilUnitDailyVes(b.id_dt);
-                    dailyTable.ajax.url('api/daily/' + b.id_dt).load();
-                }
-            },
-            { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
-            //{
-            //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
-            //}
-            //{
-            //    extend: "collection",
-            //    text: "Export to ..",
-            //    buttons: ['excel']
-            //}
-        ],
+        //            //ambilUnitDailyVes(b.id_dt);
+        //            dailyTable.ajax.url('api/daily/' + b.id_dt).load();
+        //        }
+        //    },
+        //    { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
+        //    //{
+        //    //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
+        //    //}
+        //    //{
+        //    //    extend: "collection",
+        //    //    text: "Export to ..",
+        //    //    buttons: ['excel']
+        //    //}
+        //],
         fnDrawCallback: function (oSettings,a,b) {
             if (oSettings.bSorted || oSettings.bFiltered) {
                 for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {

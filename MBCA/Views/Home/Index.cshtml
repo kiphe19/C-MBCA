@@ -252,14 +252,57 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Modal title</h4>
+                <h4 class="modal-title">Daily Log Detail</h4>
             </div>
             <div class="modal-body">
-                <p>One fine body&hellip;</p>
+                <p>@*One fine body&hellip;*@</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        @*<p>kiri</p>*@
+                        <form class="form-horizontal" id="detail_activity">
+                            <div class="form-group">
+                                <label class="col-sm-3">Date</label>
+                                <div class="col-sm-9"><input type="text" name="daily_date" class="form-control" disabled /></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Vessel</label>
+                                <div class="col-sm-9"><input type="text" name="daily_vesselid" class="form-control" disabled/></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Fuel Total</label>
+                                <div class="col-sm-9"><input type="text" name="daily_fuel" class="form-control" disabled /></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Standby</label>
+                                <div class="col-sm-9"><input type="text" name="standby" class="form-control" disabled /></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Load/Disch</label>
+                                <div class="col-sm-9"><input type="text" name="load" class="form-control" disabled/></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Steaming</label>
+                                <div class="col-sm-9"><input type="text" name="steaming" class="form-control" disabled/></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3">Downtime</label>
+                                <div class="col-sm-9"><input type="text" name="downtime" class="form-control" disabled/></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4">Mob/Demob</label>
+                                <div class="col-sm-4"><input type="checkbox" name="mob" value="1" disabled> Hitung<br></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        @*<p>kiri</p>*@
+                        <div id="tabel_detail_dur"></div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
             </div>
         </div>
     </div>
