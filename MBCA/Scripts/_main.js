@@ -2,7 +2,7 @@
     //path = window.location.pathname,
 var tgl = new Date();
 
-function lihatDetail(a) {
+function lihatDetail(id) {
     //console.log("di klik");
     //console.log(a);
     ////console.log(b);
@@ -15,6 +15,28 @@ function lihatDetail(a) {
     //console.log(b);
 
     $("#modalDailyDetail").modal({ backdrop: false });
+
+    $.ajax({
+        url:"api/view/daily/"+id
+    });
+}
+
+function delDetail(id,t,v) {
+    var r = confirm("Yakin delete data "+v+" tanggal "+t+" ??");
+    if (r == true) {
+        $.ajax({
+            url: "api/del/daily/" + id
+        })
+        .done(function (res) {
+            //alert(res);
+            if (res == "success") {
+                dailylogTable.ajax.reload();
+            }
+            else{
+                alert("gagal hapus");
+            }
+        });
+    } 
 }
 
 $(document).ready(function () {
@@ -137,7 +159,7 @@ $(document).ready(function () {
                     //var b = this.row(dailylogTable).data();
                     //console.log(b);
                     //data-target="#modalDailyDetail";
-                    return '<a class="btn btn-info btn-xs"  onclick="lihatDetail('+d.id_dt +');" > Detail </a> <a class="btn btn-danger btn-xs" href="#" > Hapus </a> ';
+                    return '<a class="btn btn-info btn-xs"  onclick="lihatDetail(' + d.id_dt + ');" > Detail </a> <a class="btn btn-danger btn-xs" onclick="delDetail('+d.id_dt+',\''+d.tg+'\',\''+d.nm_ves+'\');" > Hapus </a> ';
                 }
 
             }

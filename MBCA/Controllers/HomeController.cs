@@ -7,6 +7,8 @@ using System.Web.Mvc;
 using DataTables;
 using chevron.Models;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace chevron.Controllers
 {
@@ -521,12 +523,63 @@ namespace chevron.Controllers
 
             //delete setelah input
             var qdelete = string.Format("delete temp_daily where date_input = '{0}' and user_log = '{1}'", skr, Session["userid"]);
-            Response.Write(qdelete);
+            //Response.Write(qdelete);
             con.queryExec(qdelete);
 
             return "success";
         }
 
+        [Route("view/daily/{id}")]
+        public string _viewDailyId(int id)
+        {
+            dynamic aa = new JObject();
+            string q1 = string.Format("select d.tgl tg, v.name nm, d.standby stb, d.loading ld, d.steaming stm, d.downtime dt, fuel_tot,mob_status from daily_table d join vessel_table v on v.id = d.id_vessel where d.id = {0}", id);
+            //Response.Write(q1);
+            con.query(q1);
+            while(con.result.Read())
+            {
+                aa.tg = con.result["tg"];
+                aa.nm = con.result["nm"];
+                aa.stb = con.result["stb"];
+                aa.ld = con.result["ld"];
+                aa.stm = con.result["stm"];
+                aa.dt = con.result["dt"];
+                aa.fl = con.result["fuel_tot"];
+                aa.mob = con.result["mob_status"];
+            }
+
+            string q2 = string.Format("select u.name nm, d.duration dur from detail_daily_table d join unit_table u on u.id =d.id_unit where id_daily_table = {0}",id);
+            //Response.Write(q2);
+            con.query(q2);
+            dynamic bb = new JObject();
+            JArray cc = new JArray();
+            while (con.result.Read())
+            {
+                
+                bb.nm = con.result["nm"];
+                bb.dur = con.result["dur"];
+                cc.Add(bb);
+            }
+
+            aa.detail = cc;
+            Response.ContentType = "text/json";
+            //aa.nama = "jono";
+            //aa.alamat = "aaaaa";
+            var jj = JsonConvert.SerializeObject(aa);
+            //return Json(new { nam = "asdasd"}, JsonRequestBehavior.AllowGet);
+            return jj;
+        }
+        [Route("del/daily/{id}")]
+        public string _delDailyId(int id)
+        {
+            string q1 = string.Format("delete from daily_table where id = {0}", id);
+            con.queryExec(q1);
+            string q2 = string.Format("delete from detail_daily_table where id_daily_table = {0}", id);
+            con.queryExec(q2);
+
+            //Response.Write(id.ToString());
+            return "success";
+        }
 
         [Route("filter/monthly")]
         [HttpPost]
@@ -583,5 +636,7 @@ namespace chevron.Controllers
             con.queryExec(qq);
             return "success";
         }
+
+        //public
     }
 }
