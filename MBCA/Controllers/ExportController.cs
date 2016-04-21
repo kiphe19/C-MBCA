@@ -145,8 +145,7 @@ namespace chevron.Controllers
             for (var i = 0; i <= ambilTanggal.TotalDays; i++)
             {
                 DataRow brs = dt.NewRow();
-                
-                brs[0] = dateFrom.AddDays(i).ToString("yyyy-MM-dd");
+                brs[0] = dateFrom.AddDays(i).ToString("dd-MMM-yy");
                 int k = 1;
                 //decimal tot_row = 0;
                 foreach (var id in unitid)

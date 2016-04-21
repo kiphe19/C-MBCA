@@ -7,17 +7,17 @@ namespace chevron
     {
         public static void RegisterBundles(BundleCollection bundles)
         {
+            //bundles.Add(new ScriptBundle("~/Scripts/jquery").Include(
+            //        "~/Scripts/jquery-1.10.2.min.js"
+            //    ));
             bundles.Add(new ScriptBundle("~/Scripts/main").Include(
                     "~/Scripts/jquery-1.10.2.min.js",
-                    "~/Scripts/datatables.min.js",
                     "~/Scripts/bootstrap.min.js",
+                    "~/Scripts/datatables.min.js",
                     "~/Scripts/dataTables.editor.min.js",
                     "~/Scripts/moment.min.js",
                     "~/Scripts/bootstrap-datetimepicker.min.js",
                     "~/Scripts/bootstrap-timepicker.min.js"
-                //"~/DataTables/pdfmake-0.1.18/build/pdfmake.min.js",
-                //"~/DataTables/JSZip-2.5.0/jszip.min.js",
-                //"~/DataTables/pdfmake-0.1.18/build/vfs_fonts.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(

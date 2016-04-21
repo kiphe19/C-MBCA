@@ -2,6 +2,7 @@
     ViewBag.Title = "Report";
     Layout = "~/Views/_Layout.cshtml";
 }
+@*@Scripts.Render("~/Script/main");*@
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -113,11 +114,28 @@
                                         </div>
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" id="report1" class="btn btn-primary">Create</button>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default btn-md dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                Generate <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu " role="menu">
+                                                <li><a href="#" id="r_layar">on Screen</a></li>
+                                                <li><a href="#" id="r_excel">Excel</a></li>
+                                                @*<li><a href="#">Something else here</a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="#">Separated link</a></li>*@
+                                            </ul>
+                                        </div>
+
+
                                     </div>
-                                    <div class="col-md-1">
+                                    @*<div class="col-md-1">
                                         <button type="button" id="btExc_1" class="btn btn-primary">Excel</button>
-                                    </div>
+
+
+
+
+                                    </div>*@
                                 </form>
                             </div>
                             <div class="col-md-12">
@@ -170,21 +188,6 @@
                     </div>
                 </div>  
             </div>
-
-
-
-            @*<div role="tabpanel" class="tab-pane" id="mainunitPanel">
-                <table id="mainunitTable" class="display table table-bordered" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Name Main Unit</th>
-                            <th>Description</th>
-
-                        </tr>
-                    </thead>
-                </table>
-            </div>*@
         </div>
     </div>
     <div class="panel-footer">
@@ -194,5 +197,4 @@
     </div>
 </div>
 
-<div id="jajal"></div>
-@Scripts.Render("~/Script/report")
+@Scripts.Render("~/Script/report");

@@ -3,14 +3,12 @@
 var tgl = new Date();
 
 function lihatDetail(id) {
-
     $("#modalDailyDetail").modal({ backdrop: false });
-
     $.ajax({
         url: "api/view/daily/" + id
     })
     .done(function (data) {
-        console.log(data);
+        //console.log(data);
         var tgtg = new Date(data.tg);
         var yyyy = tgtg.getFullYear(),
             m = tgtg.getMonth() + 1,
@@ -18,7 +16,6 @@ function lihatDetail(id) {
             mm = (m < 10) ? ("0" + m) : m,
             dd = (d < 10) ? ("0" + d) : d;
 
-        //console.log(tgtg);
         $("#detail_activity input[name='daily_date']").val(mm+"/"+dd+"/"+yyyy);
         $("#detail_activity input[name = 'daily_vesselid']").val(data.nm);
         $("#detail_activity input[name='daily_fuel']").val(data.fl);
@@ -27,7 +24,6 @@ function lihatDetail(id) {
         $("#detail_activity input[name='steaming']").val(data.stm);
         $("#detail_activity input[name='downtime']").val(data.dt);
         (data.mob == 1) ? $("#detail_activity input[name='mob']").prop("checked", true) : $("#detail_activity input[name='mob']").prop("checked", false);
-
 
         $("#tabel_detail_dur").DataTable({
             sDom: 't',
@@ -148,23 +144,6 @@ $(document).ready(function () {
         tg2 = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
     }
     //console.log(tg1, tg2);
-    var dailyLogEditor = new $.fn.dataTable.Editor({
-            
-        url: "api/dailylog/" + tg1 + "/" + tg2+"/0",
-        table: "#DailyLogTable",
-        //fields: [{
-        //    //label: "First name:",
-        //    name: "daily_table.tgl"
-        //}, {
-        //    //label: "Last name:",
-        //    name: "daily_table.id_vessel"
-        //}, {
-        //    //label: "Manager:",
-        //    name: "daily_table.id",
-        //    type: "select"
-        //}
-        //]
-    });
 
     dailylogTable = $("#DailyLogTable").DataTable({
         //dom: 'B<"floatright">rtip',
@@ -186,68 +165,19 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (d, type, row, meta) {
-                    //console.log(d);
-                    //console.log(meta);
-                    //console.log(meta.row);
-                    //var a = this;
-                    //console.log(dailylogTable.row().data());
-                    //var b = this.row(dailylogTable).data();
-                    //console.log(b);
-                    //data-target="#modalDailyDetail";
                     return '<a class="btn btn-info btn-xs"  onclick="lihatDetail(' + d.id_dt + ');" > Detail </a> <a class="btn btn-danger btn-xs" onclick="delDetail('+d.id_dt+',\''+d.tg+'\',\''+d.nm_ves+'\');" > Hapus </a> ';
                 }
 
             }
         ],
-        //buttons: [
-        //    {
-        //        extend:'edit',
-        //        text : 'Edit Activity',
-        //        action: function (e, dt, node, config) {
-        //            var a = dailylogTable.rows('.selected').indexes();
-        //            var b = dailylogTable.row(a).data();
-        //            //console.log(a);
-        //            //console.log(b);
-        //            $("#btnCancelDaily").show();
-        //            $("#activityForm input[name='action']").val("update");
-        //            $("#activityForm input[name='id']").val(b.id_dt);
-
-        //            $("#activityForm input[name='daily_date']").val(b.tg);
-        //            $("#activityForm select[name = 'daily_vesselid'] option[value=" + b.id_ves+ "]").prop("selected", true);
-        //            $("#activityForm input[name='daily_fuel']").val(b.fuel_t);
-        //            $("#activityForm input[name='standby']").val(b.stb);
-        //            $("#activityForm input[name='load']").val(b.ld);
-        //            $("#activityForm input[name='steaming']").val(b.stm);
-        //            $("#activityForm input[name='downtime']").val(b.dt);
-        //            (b.mob == 1) ? $("#activityForm input[name='mob']").prop("checked", true) : $("#activityForm input[name='mob']").prop("checked", false);
-        //            $("#btnUpdateDailyAct").show();
-        //            $("#btnSaveDailyAct").hide();
-
-        //            //ambilUnitDailyVes(b.id_dt);
-        //            dailyTable.ajax.url('api/daily/' + b.id_dt).load();
-        //        }
-        //    },
-        //    { extend: 'remove', text: 'Delete', editor: dailyLogEditor }
-        //    //{
-        //    //    extend: "remove", text: "Delete Unit Daily", editor: dailyLogEditor
-        //    //}
-        //    //{
-        //    //    extend: "collection",
-        //    //    text: "Export to ..",
-        //    //    buttons: ['excel']
-        //    //}
-        //],
         fnDrawCallback: function (oSettings,a,b) {
             if (oSettings.bSorted || oSettings.bFiltered) {
                 for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
                     $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
                 }
             }
-            
         }
     });
-
-    
 
     var drillEditor = new $.fn.dataTable.Editor({
         ajax: "api/drill/" + tg1 + "/" + tg2 + "/0",
@@ -280,8 +210,6 @@ $(document).ready(function () {
                 action: function (e, dt, node, config) {
                     var a = drillcompTable.rows('.selected').indexes();
                     var b = drillcompTable.row(a).data();
-                    //console.log(a);
-                    //console.log(b);
                     $("#drillForm option[value='" + b.drilling_table.id_unit + "']").prop("selected", true);
                     $("#drillForm input[name='drill_date']").val(b.drilling_table.tgl);
                     $("#drillForm input[name='well']").val(b.drilling_table.well);
