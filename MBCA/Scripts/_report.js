@@ -249,7 +249,7 @@ $(document).ready(function () {
 
                 var dd = [];
                 var aa = [];
-                $("#tbUnit").empty();
+                //$("#tbUnit").empty();
                 $.each(json.data, function (i, val) {
                     aa.push(val.tg);
                     aa.push(val.ves);
@@ -316,7 +316,7 @@ $(document).ready(function () {
                 
                 //console.log(iColumns);
                 //console.log(numCols);
-                $("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
+                //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
                 //console.log(kol.data().reduce(function (a, b) {
                 //    return parseFloat(a) + parseFloat(b);
                 //}));
