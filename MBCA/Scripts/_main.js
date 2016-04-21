@@ -28,43 +28,29 @@ function lihatDetail(id) {
         $("#detail_activity input[name='downtime']").val(data.dt);
         (data.mob == 1) ? $("#detail_activity input[name='mob']").prop("checked", true) : $("#detail_activity input[name='mob']").prop("checked", false);
 
-        //$("#tabel_detail_dur").empty();
-
-        //var isi;
-
-
-        //$.each(data.detail, function (i, value) {
-        //    //var obj = { sTitle: value };
-        //    //var obj = { title: value };
-        //    //kolom.push(obj);
-        //    console.log(value.nm ," == ",value.dur );
-        //    isi += "<tr><td>" + value.nm + "</td><td>" + value.dur + "</td></tr>";
-        //});
-        //var tabel = "<table id='tabel_dt' class= 'table display table-bordered' style='width:100%'><thead><tr><td>Unit<td><td>Durasi</td></tr></thead><tbody>" + isi + "</tbody></table>";
-
-        ////table id="tabel_detail_dur" class="table display table-bordered" style="width:100%
-        //$("#tabel_detail_dur").append(tabel);
 
         $("#tabel_detail_dur").DataTable({
+            sDom: 't',
+            pageLength: 50,
             destroy: true,
             data: data.detail,
             columns: [{
+                data: null,
+                title : "No"
+            }, {
                 data: "nm",
                 title: "Unit"
             }, {
                 data: "dur",
                 title: "Duration"
             }],
-            //footerCallback: function (tfoot, data, start, end, display) {
-            //drawCallback: function (tfoot, data, start, end, display) {
-            //    //console.log(tfoot);
-            //    var api = this.api();
-            //    $(api.column(2).footer()).html(
-            //        api.column(2).data().reduce(function (a, b) {
-            //            return parseFloat(a) + parseFloat(b);
-            //        }, 0)
-            //    );
-            //}
+            fnDrawCallback: function (oSettings) {
+                if (oSettings.bSorted || oSettings.bFiltered) {
+                    for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
+                        $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
+                    }
+                }
+            }
         });
 
     });
