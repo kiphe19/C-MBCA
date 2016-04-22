@@ -181,7 +181,37 @@ function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
         url: "api/report1/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
     })
     .done(function (json) {
-        console.log(json);
+        //console.log(json);
+
+        var tableHeaders;
+        $.each(json.columns, function (i, val) {
+            tableHeaders += "<th>" + val + "</th>";
+        });
+
+        //$("#reportUnitTable").html("");
+        $("#reportUnitTable").empty();
+
+        //Crate table html tag
+        var table = $("<table id='displayTable' class='table table-bordered' width='100%'></table>").appendTo("#reportUnitTable");
+
+        //Create table header row
+        var rowHeader = $("<thead>"+tableHeaders+"</thead>").appendTo(table);
+        //$("<td></td>").text("Name").appendTo(rowHeader);
+        //$("<td></td").text("ID").appendTo(rowHeader);
+        //$("<td></td>").text("Department").appendTo(rowHeader)
+        //$("<td></td>").text("Salary").appendTo(rowHeader);
+
+        //$("#reportUnitTable").empty();
+        //var s = $("#reportUnitTable").html('<table id=\'displayTable\' class=\'table table-bordered\' width=\'100%\'><thead><tr>' + tableHeaders + '</tr></thead></table>');
+
+        console.log(rowHeader);
+        $('#displayTable').dataTable({
+            dom: 'tp',
+            pageLength: 30,
+            destroy: true,
+            data : json.data
+        });
+
         //var kolom = [];
         //console.log(kolom);
         //$.each(json.columns, function (i, value) {
