@@ -17,6 +17,84 @@ namespace chevron.Controllers
         Connection con = new Connection();
         JArray vessel = new JArray();
 
+        [Route("api/report1/{tg1}/{tg2}/{tipe}/{ves}")]
+        public string _report1(string tg1, string tg2, string tipe, int ves)
+        {
+            //Response.Write(tg1 + " " + tg2 + " " + tipe);
+            DateTime dateFrom = Convert.ToDateTime(tg1);
+            DateTime dateTo = Convert.ToDateTime(tg2);
+            TimeSpan ambilTanggal = dateTo - dateFrom;
+            var vesselname = "";
+            con.select("vessel_table", "name", string.Format("id={0}", ves));
+            while (con.result.Read())
+            {
+                vesselname = con.result["name"].ToString();
+            }
+
+            dynamic dd = new JObject();
+            var d1 = new JArray();
+            var unit = new JArray();
+            var judul = new JArray();
+
+            judul.Add("Date");
+            judul.Add("Vessel");
+
+            var cr = string.Format("tgl >= '{0}' and tgl <= '{1}' and id_vessel = {2}", dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"), ves);
+            con.select("report_daily join unit_table on unit_table.id = report_daily.id_unit", "distinct(id_unit) id_unit,unit_table.name nama", cr);
+            while (con.result.Read())
+            {
+                unit.Add(con.result["id_unit"]);
+                judul.Add(con.result["nama"]);
+                //unitnama.Add(con.result["nama"]);
+                //kolom.Add(con.result["nama"]);
+            }
+
+            
+            for (var i = 0; i <= ambilTanggal.TotalDays; i++)
+            {
+                var isi = new JArray();
+                isi.Add(dateFrom.AddDays(i).ToString("yyyy-MM-dd"));
+                isi.Add(vesselname);
+                foreach (var u in unit)
+                {
+                    
+
+                    var ww = string.Format("select round(fuel_litre,3) fuel_litre,round(fuel_price,3) fuel_price,fuel_curr,round(charter_price,3) charter_price,round(mob_price,3) mob_price,charter_curr from report_daily where tgl = '{0}' and id_unit = {1} and id_vessel = {2};", dateFrom.AddDays(i).ToString("yyyy-MM-dd"), u, ves);
+                    //Response.Write(ww + "\n");
+                    con.query(ww);
+                    con.result.Read();
+                    if (con.result.HasRows)
+                    {
+                        switch (tipe)
+                        {
+                            case "fl":
+                                isi.Add(con.result["fuel_litre"]);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        isi.Add(0);
+                    }
+
+                   
+                }
+                d1.Add(isi);
+                //isi.Clear();
+            }
+
+            dd.data = d1;
+            dd.columns = judul;
+            Response.ContentType = "text/json";
+            var json = JsonConvert.SerializeObject(dd);
+            return json;
+
+
+            //return "success";
+        }
+
         [Route("api/report/{tg1}/{tg2}/{tipe}/{ves}")]
         public string _reportSatu(string tg1, string tg2, string tipe, int ves)
         {

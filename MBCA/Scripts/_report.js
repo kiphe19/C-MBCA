@@ -43,8 +43,6 @@ function loadTableDrillComptUnit(tg1, tg2) {
     $.ajax({
         "url": "api/reportDC/" + tg1 + "/" + tg2,
         "success": function (json) {
-            //console.log(json);
-
             $('#tbDC').DataTable({
                 //dom: "Brtip",
                 destroy: true,
@@ -177,6 +175,100 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
     });
 }
 
+function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
+    //console.log(ves, tgl1, tgl2, tipe);
+    $.ajax({
+        url: "api/report1/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
+    })
+    .done(function (json) {
+        console.log(json);
+        //var kolom = [];
+        //console.log(kolom);
+        //$.each(json.columns, function (i, value) {
+        //    var obj = { sTitle: value };
+        //    console.log(obj);
+        //    kolom.push(obj);
+        //});
+
+        //console.log(kolom);
+
+        //var dd = [];
+        //var aa = [];
+        //$.each(json.data, function (i, val) {
+        //    aa.push(val.tg);
+        //    aa.push(val.ves);
+        //    for (var k = 0; k < val.datax.length; k++) {
+        //        aa.push(val.datax[k]);
+        //    }
+        //    dd.push(aa);
+        //    aa = [];
+        //});
+        //console.log(dd);
+        
+        //$('#tbUnit').DataTable({
+        //    //dom: "..tp",
+        //    //pageLength: 30,
+        //    destroy: true,
+        //    data: dd,
+        //    columns: kolom
+        //});
+    });
+
+    //$.ajax({
+    //    "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
+    //    "success": function (json) {
+    //        var kolom = [];
+    //        $.each(json.columns, function (i, value) {
+    //            //var obj = { sTitle: value };
+    //            var obj = { title: value };
+    //            kolom.push(obj);
+    //        });
+    //        var dd = [];
+    //        var aa = [];
+    //        $.each(json.data, function (i, val) {
+    //            aa.push(val.tg);
+    //            aa.push(val.ves);
+    //            for (var k = 0; k < val.datax.length; k++) {
+    //                aa.push(val.datax[k]);
+    //            }
+    //            dd.push(aa);
+    //            aa = [];
+    //        });
+    //        $('#tbUnit').DataTable({
+    //            dom: "..t.p",
+    //            pageLength : 40,
+    //            destroy: true,
+    //            data: dd,
+    //            columns: kolom
+    //            //footerCallback: function (row, data, start, end, display) {
+    //            //    var api = this.api(), data;
+    //            //    var total = api
+    //            //        .column(2)
+    //            //        .data()
+    //            //        .reduce(function (a, b) {
+    //            //            return parseFloat(a) + parseFloat(b);
+    //            //        }, 0);
+    //            //    //console.log(total);
+    //            //    $(api.column(2).footer()).html('totalnya : ' + total
+    //            //        );
+    //            //}
+    //        });
+    //        //var aa = $('#tbUnit').DataTable();
+    //        //var numCols = aa.columns(':visible').nodes().length;
+    //        //var tb;
+    //        //for (var i = 2; i < 7; i++) {
+    //        //    var isi = aa.column(i).data().reduce(function (a, b) {
+    //        //        console.log('isi a ' + i + ' : ' + a);
+    //        //        console.log('isi b ' + i + ' : ' + b);
+    //        //        return parseFloat(a) + parseFloat(b);
+    //        //    });
+    //        //    console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
+    //        //    tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
+    //        //}
+    //    },
+    //    "dataType": "json"
+    //});
+}
 $(document).ready(function () {
     $('.dropdown-toggle').dropdown();
 
@@ -231,110 +323,110 @@ $(document).ready(function () {
     });
     
 
-    $("#report1").click(function (e) {
-        var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
-        var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
-        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
-        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
-        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
-        //$('#tbUnit').DataTable().destroy();
-        $.ajax({
-            "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
-            "success": function (json) {
-                var kolom = [];
-                $.each(json.columns, function(i, value){
-                    //var obj = { sTitle: value };
-                    var obj = { title: value };
-                    kolom.push(obj);
-                });
+    //$("#report1").click(function (e) {
+    //    var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
+    //    var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+    //    var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
+    //    var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+    //    var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
+    //    var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+    //    //$('#tbUnit').DataTable().destroy();
+    //    $.ajax({
+    //        "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
+    //        "success": function (json) {
+    //            var kolom = [];
+    //            $.each(json.columns, function(i, value){
+    //                //var obj = { sTitle: value };
+    //                var obj = { title: value };
+    //                kolom.push(obj);
+    //            });
 
-                var dd = [];
-                var aa = [];
-                //$("#tbUnit").empty();
-                $.each(json.data, function (i, val) {
-                    aa.push(val.tg);
-                    aa.push(val.ves);
-                    for (var k = 0; k < val.datax.length; k++) {
-                        aa.push(val.datax[k]);
-                    }
-                    dd.push(aa);
-                    aa = [];
-                });
-                $('#tbUnit').DataTable({
-                    dom: "Brtip",
-                    destroy: true,
-                    data: dd,
-                    columns: kolom,
-                    footerCallback: function (row, data, start, end, display) {
-                        var api = this.api(), data;
-                        var total = api
-                            .column(2)
-                            .data()
-                            .reduce(function (a, b) {
-                                return parseFloat(a) + parseFloat(b);
-                            }, 0);
-                        //console.log(total);
-                        $(api.column(2).footer()).html('totalnya : '+total
-                            );
-                    },
-                    buttons: [
-                        {
-                            extend: "excelHtml5",
-                            text: "Excel",
-                            filename: "Report_" + tgl1 + "_" + tgl2
-                        },
-                        {
-                            text: "exc", action: function () {
-                                console.log("klik tombl datatable");
-                                //$("#jajal").load("api/xls");
-                                //window.open("/coba/excel?dt1=kasjdkasjda&dt2=lkhdflkasf");
-                                window.open("export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
-                            }
-                        }
-                    ]
-                });
-                var aa = $('#tbUnit').DataTable();
-                //var kol = $('#tbUnit').DataTable().column(2, { page: 'current' });
-                //var tot = kol.data().reduce(function (a, b) {
-                //    return parseFloat(a) + parseFloat(b);
-                //});
-                //console.log(tot);
-                //console.log(aa);
-                //var iColumns = $('#tbUnit thead th').length;
-                //console.log(iColumns2);
-                var numCols = aa.columns(':visible').nodes().length;
-                var tb;
-                for (var i = 2; i < 7; i++) {
-                    var isi = aa.column(i).data().reduce(function (a, b) {
-                        console.log('isi a '+i+' : '+a);
-                        console.log('isi b ' + i + ' : ' + b);
-                        return parseFloat(a) + parseFloat(b);
-                    });
-                    console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
-                    tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
-                }
+    //            var dd = [];
+    //            var aa = [];
+    //            //$("#tbUnit").empty();
+    //            $.each(json.data, function (i, val) {
+    //                aa.push(val.tg);
+    //                aa.push(val.ves);
+    //                for (var k = 0; k < val.datax.length; k++) {
+    //                    aa.push(val.datax[k]);
+    //                }
+    //                dd.push(aa);
+    //                aa = [];
+    //            });
+    //            $('#tbUnit').DataTable({
+    //                dom: "..tip",
+    //                destroy: true,
+    //                data: dd,
+    //                columns: kolom,
+    //                footerCallback: function (row, data, start, end, display) {
+    //                    var api = this.api(), data;
+    //                    var total = api
+    //                        .column(2)
+    //                        .data()
+    //                        .reduce(function (a, b) {
+    //                            return parseFloat(a) + parseFloat(b);
+    //                        }, 0);
+    //                    //console.log(total);
+    //                    $(api.column(2).footer()).html('totalnya : '+total
+    //                        );
+    //                },
+    //                buttons: [
+    //                    {
+    //                        extend: "excelHtml5",
+    //                        text: "Excel",
+    //                        filename: "Report_" + tgl1 + "_" + tgl2
+    //                    },
+    //                    {
+    //                        text: "exc", action: function () {
+    //                            console.log("klik tombl datatable");
+    //                            //$("#jajal").load("api/xls");
+    //                            //window.open("/coba/excel?dt1=kasjdkasjda&dt2=lkhdflkasf");
+    //                            window.open("export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
+    //                        }
+    //                    }
+    //                ]
+    //            });
+    //            var aa = $('#tbUnit').DataTable();
+    //            //var kol = $('#tbUnit').DataTable().column(2, { page: 'current' });
+    //            //var tot = kol.data().reduce(function (a, b) {
+    //            //    return parseFloat(a) + parseFloat(b);
+    //            //});
+    //            //console.log(tot);
+    //            //console.log(aa);
+    //            //var iColumns = $('#tbUnit thead th').length;
+    //            //console.log(iColumns2);
+    //            var numCols = aa.columns(':visible').nodes().length;
+    //            var tb;
+    //            for (var i = 2; i < 7; i++) {
+    //                var isi = aa.column(i).data().reduce(function (a, b) {
+    //                    console.log('isi a '+i+' : '+a);
+    //                    console.log('isi b ' + i + ' : ' + b);
+    //                    return parseFloat(a) + parseFloat(b);
+    //                });
+    //                console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
+    //                tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
+    //            }
 
                 
-                //console.log(iColumns);
-                //console.log(numCols);
-                //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
-                //console.log(kol.data().reduce(function (a, b) {
-                //    return parseFloat(a) + parseFloat(b);
-                //}));
-                //console.log(kol.footer());
-                //$(aa.table().footer()).html(
-                //    kol.data().reduce(function (a,b) {
-                //        return parseFloat(a) + parseFloat(b);
-                //    })
-                //);
+    //            //console.log(iColumns);
+    //            //console.log(numCols);
+    //            //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
+    //            //console.log(kol.data().reduce(function (a, b) {
+    //            //    return parseFloat(a) + parseFloat(b);
+    //            //}));
+    //            //console.log(kol.footer());
+    //            //$(aa.table().footer()).html(
+    //            //    kol.data().reduce(function (a,b) {
+    //            //        return parseFloat(a) + parseFloat(b);
+    //            //    })
+    //            //);
 
-            },
-            "dataType": "json"
-        });
+    //        },
+    //        "dataType": "json"
+    //    });
        
 
-    });
+    //});
 
     $("#reportMain").click(function () {
         //console.log("klik main unti report");
@@ -371,36 +463,29 @@ $(document).ready(function () {
 
     });
 
-    $("#btExc_1").click(function () {
-        var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
-        var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
-        var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
-        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
-        var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
-        var t = $("#f_generateReport select[name='type'] option:selected").val();
-        console.log(tgl1, tgl2, ves, t);
-
-        if (ves == 0 ) {
-            alert("Pilih Vessel");
-            
-        }
-        else {
-            if (tgl1 == NaN || tgl2 == NaN){
-                alert ("Pilih Periode Laporan");
-            }
-            else {
-                window.open("export/r_daily?tg1=" + tgl1 + "&tg2=" + tgl2 + "&v=" + ves+"&t="+t);
-            }
-        }
-    });
-
     //generate Daily report
 
     
-
+    //report Daily Vessel to Unit
+    //=====
     $("#r_layar").click(function () {
-        console.log("klik on layar");
+        //console.log("klik on layar");
+        var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
+        var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        var selisih = tg2 - tg1;
+
+        if (ves == 0) alert("Pilih Vesel");
+        else {
+            if (selisih > 0){
+                //$('#tbUnit').empty();
+                loadDailyReportonScreen(ves, tgl1, tgl2, tipe);
+            } 
+            else alert("Pilih Periode Laporan");
+        }
     });
     $("#r_excel").click(function () {
         //console.log("klik on excel file");
@@ -414,12 +499,11 @@ $(document).ready(function () {
         var selisih = tg2 - tg1;
         //console.log(v, tgl1, tgl2, t, selisih);
         if (v == 0) alert("Pilih Vessel");
-        
         else {
             if (selisih > 0) window.open("export/r_daily?tg1=" + tgl1 + "&tg2=" + tgl2 + "&v=" + v + "&t=" + t)
             else alert("Pilih Periode Laporan");
         }
     });
-
+    //=========================
 
 })
