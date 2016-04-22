@@ -70,16 +70,24 @@ namespace chevron.Controllers
                             case "fl":
                                 isi.Add(con.result["fuel_litre"]);
                                 break;
+                            case "fc":
+                                isi.Add(con.result["fuel_price"]);
+                                break;
+                            case "ch":
+                                isi.Add(con.result["charter_price"]);
+                                break;
+                            case "mb":
+                                isi.Add(con.result["mob_price"]);
+                                break;
+                            case "ap":
+                                isi.Add((decimal)con.result["fuel_price"] + (decimal)con.result["charter_price"] + (decimal)con.result["mob_price"]);
+                                break;
                             default:
                                 break;
                         }
                     }
                     else
-                    {
                         isi.Add(0);
-                    }
-
-                   
                 }
                 d1.Add(isi);
                 //isi.Clear();
@@ -90,9 +98,6 @@ namespace chevron.Controllers
             Response.ContentType = "text/json";
             var json = JsonConvert.SerializeObject(dd);
             return json;
-
-
-            //return "success";
         }
 
         [Route("api/report/{tg1}/{tg2}/{tipe}/{ves}")]
