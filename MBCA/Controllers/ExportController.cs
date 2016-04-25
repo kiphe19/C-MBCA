@@ -344,8 +344,7 @@ namespace chevron.Controllers
                 var tt = ws.Cells[row_total, col_total+1];
 
                 var border = tt.Style.Border;
-                border.Left.Style = ExcelBorderStyle.Medium;
-                border.Right.Style = ExcelBorderStyle.Medium;
+                border.Left.Style = border.Right.Style = ExcelBorderStyle.Medium;
                 border.Bottom.Style = ExcelBorderStyle.Double;
                 tt.Style.Fill.PatternType = ExcelFillStyle.Solid;
                 tt.Style.Fill.BackgroundColor.SetColor(Color.Aquamarine);
@@ -369,10 +368,9 @@ namespace chevron.Controllers
                         //cell_p.Value = "R" + (rowIndex + 2) + "C" + colIndex;
                     }
                     var bd = cell_p.Style.Border;
-                    bd.Top.Style = ExcelBorderStyle.Medium;
-                    bd.Left.Style = ExcelBorderStyle.Thin;
-                    bd.Right.Style = ExcelBorderStyle.Thin;
-                    bd.Bottom.Style = ExcelBorderStyle.Medium;
+                    bd.Top.Style = bd.Bottom.Style = ExcelBorderStyle.Medium;
+                    bd.Left.Style = bd.Right.Style = ExcelBorderStyle.Thin;
+                    
                     colIndex++;
                 }
                 int row_p = rowIndex + 3;
@@ -432,7 +430,7 @@ namespace chevron.Controllers
                 brs["psc"] = con.result["psc_no"];
                 brs["start"] = Convert.ToDateTime(con.result["t_start"]).ToString("HH:mm");
                 brs["end"] = Convert.ToDateTime(con.result["t_end"]).ToString("HH:mm");
-                brs["durasi"] = con.result["durasi"];
+                brs["durasi"] = Convert.ToDecimal(con.result["durasi"]);
                 brs["litre"] = con.result["fuel_litre"];
                 brs["fuel"] = con.result["fuel_price"];
                 brs["charter"] = con.result["charter_price"];
@@ -492,10 +490,10 @@ namespace chevron.Controllers
                 this.logoGb(ws);
                 int kol = dt.Columns.Count + 1;
                 // buat Header
-                ws.Cells[3, 1].Value = "Daily Boat Cost";
+                ws.Cells[3, 1].Value = "Drilling & Completion";
                 ws.Cells[3, 1, 3, kol].Merge = true;
                 ws.Cells[3, 1, 3, kol].Style.Font.Bold = true;
-                ws.Cells[3, 1, 3, kol].Style.Font.Size = 14;
+                ws.Cells[3, 1, 3, kol].Style.Font.Size = 20;
                 ws.Cells[3, 1, 3, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                 ws.Cells[4, 1].Value = "Boat Cost Allocation to Wells";
@@ -526,9 +524,14 @@ namespace chevron.Controllers
                 ws.Cells[8,5].Value = "TIME COMMENCED";
                 ws.Cells[8,6].Value = "TIME COMPLETED";
                 ws.Cells[8,7].Value = "HOURS WORKED";
-                ws.Cells[8, 1, 8, dt.Columns.Count].Style.WrapText = true;
-                ws.Cells[8, 1, 8, dt.Columns.Count].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                ws.Cells[8, 1, 8, dt.Columns.Count].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                ws.Cells[8,8].Value = "MONTHLY C/H%";
+                ws.Cells[8,9].Value = "FUEL COST OF BOATS";
+                ws.Cells[8,10].Value = "HIRE RATE OF BOATS";
+                ws.Cells[8,11].Value = "MOB/DEMOBS FEES";
+                ws.Cells[8,12].Value = "TOTAL BOAT COST/WELL";
+                ws.Cells[8, 1, 8, kol].Style.WrapText = true;
+                ws.Cells[8, 1, 8, kol].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells[8, 1, 8, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
 
                 int colIndex, rowIndex;
@@ -541,41 +544,59 @@ namespace chevron.Controllers
                     rowIndex++;
                     foreach (DataColumn dc in dt.Columns)
                     {
-                        
+                        var cell = ws.Cells[rowIndex, colIndex];
 
-                        if(colIndex > 7)
+                        if(colIndex == 7)
                         {
-                            var cell1 = ws.Cells[rowIndex, colIndex+1];
-                            cell1.Value = dr[dc.ColumnName];
+                            cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
+                        }
+
+                        else if (colIndex == 8)
+                        {
+                            cell.Value = "";
+                            cell.Style.Numberformat.Format = "#0.00%";
+                        }
+                        else if (colIndex > 8)
+                        {
+                            cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
                         }
                         else
                         {
-                            var cell = ws.Cells[rowIndex, colIndex];
                             cell.Value = dr[dc.ColumnName];
                         }
 
-                        //if (colIndex == 1)
-                        //{
-                        //    cell.Style.Numberformat.Format = ""
-                        //}
-                        //Setting Value in cell
-                        //if (colIndex > 1)
-                        //{
-                            //cell.Style.Numberformat.Format = "0.00";
-                            //cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
-                        //}
-                        //cell.Value = Convert.ToInt32(dr[dc.ColumnName]);
-
-                        //else 
-                        //cell.Value = dr[dc.ColumnName];
-                        //Setting borders of cell
-                        //var bd2 = cell.Style.Border;
-                        //bd2.Left.Style =
-                        //    bd2.Right.Style = ExcelBorderStyle.Thin;
                         colIndex++;
                     }
+
+                    ws.Cells[rowIndex, colIndex].Formula = "SUM(" +
+                                 ws.Cells[rowIndex, colIndex - 3].Address + ":" +
+                                 ws.Cells[rowIndex, colIndex - 1].Address + ")";
+
                 }
 
+
+                //buat total totalan
+                int row_tot = rowIndex + 2;
+                for (int k = 0; k< 6; k++)
+                {
+                    var cel = ws.Cells[row_tot, 7 + k];
+                    if (k == 1) cel.Style.Numberformat.Format = "#0.00%";
+
+                    cel.Formula = "SUM(" +
+                               ws.Cells[9, 7+k].Address + ":" +
+                               ws.Cells[rowIndex, 7+k].Address + ")";
+                }
+
+
+                rowIndex = 8;    
+                foreach(DataRow dr in dt.Rows)
+                {
+                    rowIndex++;
+                    ws.Cells[rowIndex, 8].Formula = "SUM("+
+                                ws.Cells[rowIndex,10].Address+"/"+
+                                ws.Cells[row_tot,10].Address+")";
+                }
+                   
 
                 //export to excel
                 this.createxls(p, "DC_" + period);
