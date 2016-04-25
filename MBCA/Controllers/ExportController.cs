@@ -110,6 +110,14 @@ namespace chevron.Controllers
         //    return Json(json, JsonRequestBehavior.AllowGet);
         //}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tg1"></param>
+        /// <param name="tg2"></param>
+        /// <param name="v"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public string laporan(string tg1, string tg2, int v, string t)
         {
             DataTable dt = DailyReport(tg1, tg2, v,t);
@@ -191,10 +199,12 @@ namespace chevron.Controllers
             DateTime dateFrom = DateTime.ParseExact(tg1, "yyyyMMdd", CultureInfo.InvariantCulture);
             DateTime dateTo = DateTime.ParseExact(tg2, "yyyyMMdd", CultureInfo.InvariantCulture);
             var vesselname = "";
-            con.select("vessel_table", "name", string.Format("id={0}", v));
+            var prsh = "";
+            con.select("vessel_table", "name,vs_owner", string.Format("id={0}", v));
             while (con.result.Read())
             {
                 vesselname = con.result["name"].ToString();
+                prsh = con.result["vs_owner"].ToString();
             }
             var periode = dateFrom.ToString("dd MMM") + " - " + dateTo.ToString("dd MMM yy");
             var period = dateFrom.ToString("dd MMM") + "_" + dateTo.ToString("dd MMM yy");
@@ -207,7 +217,7 @@ namespace chevron.Controllers
 
                 ws.Cells[7, 1].Value = "Month :"; ws.Cells[7, 3].Value = periode;
                 ws.Cells[8, 1].Value = "Boat Name :"; ws.Cells[8, 3].Value = vesselname;
-                ws.Cells[9, 1].Value = "Boat Owner :"; ws.Cells[9, 3].Value = "PT. XXXX";
+                ws.Cells[9, 1].Value = "Boat Owner :"; ws.Cells[9, 3].Value = prsh;
                 //using (ExcelRange cel = ws.Cells["A7:D9"])
                 //{
                 //    cel.Style.Font.SetFromFont(new Font("Arial Narrow", 11, FontStyle.Bold));
@@ -216,7 +226,7 @@ namespace chevron.Controllers
                 DataTable dt = DailyReport(tg1, tg2, v,t);
 
                 //Merging cells and create a center heading for out table
-                ws.Cells[6, 1].Value = "Daily Barge";
+                ws.Cells[6, 1].Value = "Daily Boat Cost";
                 ws.Cells[6, 1, 6, dt.Columns.Count].Merge = true;
                 ws.Cells[6, 1, 6, dt.Columns.Count].Style.Font.Bold = true;
                 //ws.Cells[6, 1, 6, dt.Columns.Count].Style.Font.SetFromFont(new Font("Arial Narrow"), 12, FontStyle.Bold);
@@ -245,7 +255,7 @@ namespace chevron.Controllers
                     //Setting Value in cell
                     cell.Value = dc.ColumnName;
                     //cell.AutoFitColumns();
-
+                    
                     colIndex++;
                 }
 
@@ -309,6 +319,7 @@ namespace chevron.Controllers
                 {
                     case "fl":
                         a = "Fuel";
+
                         break;
                     case "fc":
                         a = "Fuel Cost";
@@ -379,6 +390,195 @@ namespace chevron.Controllers
                             +")";
 
                 this.createxls(p, "daily_" + period);
+            }
+        }
+
+        private static DataTable DailyDCReport(string tg1, string tg2, int u)
+        {
+            Connection con = new Connection();
+            DataTable dt = new DataTable();
+            DateTime dateFrom = DateTime.ParseExact(tg1, "yyyyMMdd", CultureInfo.InvariantCulture);
+            DateTime dateTo = DateTime.ParseExact(tg2, "yyyyMMdd", CultureInfo.InvariantCulture);
+            TimeSpan ambilTanggal = dateTo - dateFrom;
+
+            string q = string.Format("select d.tgl tgl, well,afe, psc_no, t_start, t_end , durasi  , fuel_litre, fuel_price, charter_price, mob_price from drilling_table d " +
+                " join report_daily r on r.id_unit = d.id_unit and d.tgl = r.tgl " +
+                //" join unit_table u on u.Id = d.id_unit " +
+                "where d.tgl > '{0}' and d.tgl <= '{1}' and d.id_unit = {2} ;", tg1, tg2, u);
+
+            //JArray unitid = new JArray();
+
+            dt.Columns.Add("date");
+            dt.Columns.Add("well");
+            dt.Columns.Add("afe");
+            dt.Columns.Add("psc");
+            dt.Columns.Add("start");
+            dt.Columns.Add("end");
+            dt.Columns.Add("durasi");
+            dt.Columns.Add("litre");
+            dt.Columns.Add("fuel");
+            dt.Columns.Add("charter");
+            dt.Columns.Add("mob");
+            //dt.Columns.Add("charhour");
+            //dt.Columns.Add("total");
+
+            con.query(q);
+            while (con.result.Read())
+            {
+                DataRow brs = dt.NewRow();
+                brs["date"] = Convert.ToDateTime(con.result["tgl"]).ToString("dd-MMM-yyyy");
+                brs["well"] = con.result["well"];
+                brs["afe"] = con.result["afe"];
+                brs["psc"] = con.result["psc_no"];
+                brs["start"] = Convert.ToDateTime(con.result["t_start"]).ToString("HH:mm");
+                brs["end"] = Convert.ToDateTime(con.result["t_end"]).ToString("HH:mm");
+                brs["durasi"] = con.result["durasi"];
+                brs["litre"] = con.result["fuel_litre"];
+                brs["fuel"] = con.result["fuel_price"];
+                brs["charter"] = con.result["charter_price"];
+                brs["mob"] = con.result["mob_price"];
+
+                dt.Rows.Add(brs);
+
+                ////DataRow brs = dt.NewRow();
+                //dt.Rows.Add(
+                //    con.result["tgl"],
+                //    con.result["well"],
+                //    con.result["afe"],
+                //    con.result["psc_no"],
+                //    con.result["t_start"],
+                //    con.result["t_end"],
+                //    con.result["durasi"],
+                //    con.result["fuel_litre"],
+                //    con.result["fuel_price"],
+                //    con.result["charter_price"],
+                //    con.result["mob_price"]
+                //);
+            }
+
+            return dt;
+        }
+        public string laporanDC(string tg1, string tg2, int u)
+        {
+            DataTable dt = DailyDCReport(tg1, tg2, u);
+
+            dynamic kk = new JObject();
+            kk.satu = tg1;
+            kk.dua = tg2;
+            kk.tiga = u;
+
+            var json = JsonConvert.SerializeObject(dt);
+            //return Json(new {a = "asdasd"}, JsonRequestBehavior.AllowGet);
+            return json;
+        }
+        public void r_DC(string tg1, string tg2, int u)
+        {
+            DateTime dateFrom = DateTime.ParseExact(tg1, "yyyyMMdd", CultureInfo.InvariantCulture);
+            DateTime dateTo = DateTime.ParseExact(tg2, "yyyyMMdd", CultureInfo.InvariantCulture);
+            var unitname = "";
+            con.select("unit_table", "name", string.Format("id={0}", u));
+            while (con.result.Read())
+            {
+                unitname = con.result["name"].ToString();
+            }
+            var periode = dateFrom.ToString("dd MMM yy") + " - " + dateTo.ToString("dd MMM yy");
+            var period = dateFrom.ToString("dd MMM yy") + "_" + dateTo.ToString("dd MMM yy");
+
+            DataTable dt = DailyDCReport(tg1, tg2, u);
+
+            using (ExcelPackage p = new ExcelPackage())
+            {
+                ExcelWorksheet ws = p.Workbook.Worksheets.Add("D&C "+unitname);
+                this.logoGb(ws);
+                int kol = dt.Columns.Count + 1;
+                // buat Header
+                ws.Cells[3, 1].Value = "Daily Boat Cost";
+                ws.Cells[3, 1, 3, kol].Merge = true;
+                ws.Cells[3, 1, 3, kol].Style.Font.Bold = true;
+                ws.Cells[3, 1, 3, kol].Style.Font.Size = 14;
+                ws.Cells[3, 1, 3, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                ws.Cells[4, 1].Value = "Boat Cost Allocation to Wells";
+                ws.Cells[4, 1, 4, kol].Merge = true;
+                ws.Cells[4, 1, 4, kol].Style.Font.Bold = true;
+                ws.Cells[4, 1, 4, kol].Style.Font.Size = 14;
+                ws.Cells[4, 1, 4, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                ws.Cells[5, 1].Value = periode;
+                ws.Cells[5, 1, 5, kol].Merge = true;
+                ws.Cells[5, 1, 5, kol].Style.Font.Bold = true;
+                ws.Cells[5, 1, 5, kol].Style.Font.Size = 14;
+                ws.Cells[5, 1, 5, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                ws.Cells[6, 1].Value = unitname.ToUpper();
+                ws.Cells[6, 1, 6, kol].Merge = true;
+                ws.Cells[6, 1, 6, kol].Style.Font.Bold = true;
+                ws.Cells[6, 1, 6, kol].Style.Font.Size = 18;
+                ws.Cells[6, 1, 6, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+
+                //buat header tabel
+
+                ws.Cells[8,1].Value = "Date";
+                ws.Cells[8,2].Value = "WELL";
+                ws.Cells[8,3].Value = "AFE";
+                ws.Cells[8,4].Value = "PSC NUMBER";
+                ws.Cells[8,5].Value = "TIME COMMENCED";
+                ws.Cells[8,6].Value = "TIME COMPLETED";
+                ws.Cells[8,7].Value = "HOURS WORKED";
+                ws.Cells[8, 1, 8, dt.Columns.Count].Style.WrapText = true;
+                ws.Cells[8, 1, 8, dt.Columns.Count].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells[8, 1, 8, dt.Columns.Count].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+
+                int colIndex, rowIndex;
+
+                rowIndex = 8;
+                //isi table
+                foreach (DataRow dr in dt.Rows) // Adding Data into rows
+                {
+                    colIndex = 1;
+                    rowIndex++;
+                    foreach (DataColumn dc in dt.Columns)
+                    {
+                        
+
+                        if(colIndex > 7)
+                        {
+                            var cell1 = ws.Cells[rowIndex, colIndex+1];
+                            cell1.Value = dr[dc.ColumnName];
+                        }
+                        else
+                        {
+                            var cell = ws.Cells[rowIndex, colIndex];
+                            cell.Value = dr[dc.ColumnName];
+                        }
+
+                        //if (colIndex == 1)
+                        //{
+                        //    cell.Style.Numberformat.Format = ""
+                        //}
+                        //Setting Value in cell
+                        //if (colIndex > 1)
+                        //{
+                            //cell.Style.Numberformat.Format = "0.00";
+                            //cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
+                        //}
+                        //cell.Value = Convert.ToInt32(dr[dc.ColumnName]);
+
+                        //else 
+                        //cell.Value = dr[dc.ColumnName];
+                        //Setting borders of cell
+                        //var bd2 = cell.Style.Border;
+                        //bd2.Left.Style =
+                        //    bd2.Right.Style = ExcelBorderStyle.Thin;
+                        colIndex++;
+                    }
+                }
+
+
+                //export to excel
+                this.createxls(p, "DC_" + period);
             }
         }
 

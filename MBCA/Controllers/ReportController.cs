@@ -45,8 +45,6 @@ namespace chevron.Controllers
             {
                 unit.Add(con.result["id_unit"]);
                 judul.Add(con.result["nama"]);
-                //unitnama.Add(con.result["nama"]);
-                //kolom.Add(con.result["nama"]);
             }
 
             
@@ -57,8 +55,6 @@ namespace chevron.Controllers
                 isi.Add(vesselname);
                 foreach (var u in unit)
                 {
-                    
-
                     var ww = string.Format("select round(fuel_litre,3) fuel_litre,round(fuel_price,3) fuel_price,fuel_curr,round(charter_price,3) charter_price,round(mob_price,3) mob_price,charter_curr from report_daily where tgl = '{0}' and id_unit = {1} and id_vessel = {2};", dateFrom.AddDays(i).ToString("yyyy-MM-dd"), u, ves);
                     //Response.Write(ww + "\n");
                     con.query(ww);

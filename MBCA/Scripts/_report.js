@@ -96,7 +96,8 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
             //console.log(json);
 
             $('#tbDCU').DataTable({
-                dom: "Brtip",
+                dom: "tp",
+                pageLength : 31,
                 destroy: true,
                 data: json.data,
                 columns: [{
@@ -122,47 +123,47 @@ function loadTableDailyDrillUnit(tg1, tg2, unit) {
                     title : "AFE"
                 },{
                     data : "psc",
-                    title : "PSC"
+                    title : "PSC Number"
                 },{
                     data : "start",
-                    title: "From",
+                    title: "Time Commenced",
                     render: function (d) {
                         var date = new Date(d);
                         return ((date.getHours() < 10) ? ("0" + date.getHours()) : date.getHours()) + ":" + ((date.getMinutes() < 10) ? ("0" + date.getMinutes()) : date.getMinutes());
                     }
                 },{
                     data : "end",
-                    title: "To",
+                    title: "Time Completed",
                     render: function (d) {
                         var date = new Date(d);
                         return ((date.getHours() < 10) ? ("0" + date.getHours()) : date.getHours()) + ":" + ((date.getMinutes() < 10) ? ("0" + date.getMinutes()) : date.getMinutes());
                     }
                 }, {
                     data: "dur",
-                    title : "Durasi"
+                    title : "Work Hours"
+                }, {
+                    data: "fuel",
+                    title: "Fuel Cost of Boats"
+                }, {
+                    data: "charter",
+                    title: "Hire Rate of Boats"
+                }, {
+                    data: "mob",
+                    title: "Mob/Demob Fees"
                 }, {
                     data: "litre",
-                    title: "Fuel (L)",
+                    title: "Liters",
                     render: function (d) {
                         return parseFloat(d).toFixed(3);
                     }
-                }, {
-                    data: "fuel",
-                    title: "Fuel Price"
-                }, {
-                    data: "charter",
-                    title: "Charter Price"
-                }, {
-                    data: "mob",
-                    title: "Mob/Demob"
                 }],
-                buttons: [
-                    {
-                        extend: "excelHtml5",
-                        text: "Excel D&C",
-                        filename: "ReportDCU_" + tg1 + "_" + tg2
-                    }
-                ],
+                //buttons: [
+                //    {
+                //        extend: "excelHtml5",
+                //        text: "Excel D&C",
+                //        filename: "ReportDCU_" + tg1 + "_" + tg2
+                //    }
+                //],
                 fnDrawCallback: function (oSettings) {
                     if (oSettings.bSorted || oSettings.bFiltered) {
                         for (var i = 0, iLen = oSettings.aiDisplay.length ; i < iLen ; i++) {
@@ -196,10 +197,6 @@ function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
 
         //Create table header row
         var rowHeader = $("<thead>"+tableHeaders+"</thead>").appendTo(table);
-        //$("<td></td>").text("Name").appendTo(rowHeader);
-        //$("<td></td").text("ID").appendTo(rowHeader);
-        //$("<td></td>").text("Department").appendTo(rowHeader)
-        //$("<td></td>").text("Salary").appendTo(rowHeader);
 
         //$("#reportUnitTable").empty();
         //var s = $("#reportUnitTable").html('<table id=\'displayTable\' class=\'table table-bordered\' width=\'100%\'><thead><tr>' + tableHeaders + '</tr></thead></table>');
@@ -207,7 +204,7 @@ function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
         console.log(rowHeader);
         $('#displayTable').dataTable({
             dom: 'tp',
-            pageLength: 30,
+            pageLength: 31,
             destroy: true,
             data : json.data
         });
@@ -244,60 +241,6 @@ function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
         //});
     });
 
-    //$.ajax({
-    //    "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
-    //    "success": function (json) {
-    //        var kolom = [];
-    //        $.each(json.columns, function (i, value) {
-    //            //var obj = { sTitle: value };
-    //            var obj = { title: value };
-    //            kolom.push(obj);
-    //        });
-    //        var dd = [];
-    //        var aa = [];
-    //        $.each(json.data, function (i, val) {
-    //            aa.push(val.tg);
-    //            aa.push(val.ves);
-    //            for (var k = 0; k < val.datax.length; k++) {
-    //                aa.push(val.datax[k]);
-    //            }
-    //            dd.push(aa);
-    //            aa = [];
-    //        });
-    //        $('#tbUnit').DataTable({
-    //            dom: "..t.p",
-    //            pageLength : 40,
-    //            destroy: true,
-    //            data: dd,
-    //            columns: kolom
-    //            //footerCallback: function (row, data, start, end, display) {
-    //            //    var api = this.api(), data;
-    //            //    var total = api
-    //            //        .column(2)
-    //            //        .data()
-    //            //        .reduce(function (a, b) {
-    //            //            return parseFloat(a) + parseFloat(b);
-    //            //        }, 0);
-    //            //    //console.log(total);
-    //            //    $(api.column(2).footer()).html('totalnya : ' + total
-    //            //        );
-    //            //}
-    //        });
-    //        //var aa = $('#tbUnit').DataTable();
-    //        //var numCols = aa.columns(':visible').nodes().length;
-    //        //var tb;
-    //        //for (var i = 2; i < 7; i++) {
-    //        //    var isi = aa.column(i).data().reduce(function (a, b) {
-    //        //        console.log('isi a ' + i + ' : ' + a);
-    //        //        console.log('isi b ' + i + ' : ' + b);
-    //        //        return parseFloat(a) + parseFloat(b);
-    //        //    });
-    //        //    console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
-    //        //    tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
-    //        //}
-    //    },
-    //    "dataType": "json"
-    //});
 }
 $(document).ready(function () {
     $('.dropdown-toggle').dropdown();
@@ -353,110 +296,6 @@ $(document).ready(function () {
     });
     
 
-    //$("#report1").click(function (e) {
-    //    var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
-    //    var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-    //    var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
-    //    var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
-    //    var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
-    //    var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
-    //    //$('#tbUnit').DataTable().destroy();
-    //    $.ajax({
-    //        "url": "api/report/" + tgl1 + "/" + tgl2 + "/" + tipe + "/" + ves,
-    //        "success": function (json) {
-    //            var kolom = [];
-    //            $.each(json.columns, function(i, value){
-    //                //var obj = { sTitle: value };
-    //                var obj = { title: value };
-    //                kolom.push(obj);
-    //            });
-
-    //            var dd = [];
-    //            var aa = [];
-    //            //$("#tbUnit").empty();
-    //            $.each(json.data, function (i, val) {
-    //                aa.push(val.tg);
-    //                aa.push(val.ves);
-    //                for (var k = 0; k < val.datax.length; k++) {
-    //                    aa.push(val.datax[k]);
-    //                }
-    //                dd.push(aa);
-    //                aa = [];
-    //            });
-    //            $('#tbUnit').DataTable({
-    //                dom: "..tip",
-    //                destroy: true,
-    //                data: dd,
-    //                columns: kolom,
-    //                footerCallback: function (row, data, start, end, display) {
-    //                    var api = this.api(), data;
-    //                    var total = api
-    //                        .column(2)
-    //                        .data()
-    //                        .reduce(function (a, b) {
-    //                            return parseFloat(a) + parseFloat(b);
-    //                        }, 0);
-    //                    //console.log(total);
-    //                    $(api.column(2).footer()).html('totalnya : '+total
-    //                        );
-    //                },
-    //                buttons: [
-    //                    {
-    //                        extend: "excelHtml5",
-    //                        text: "Excel",
-    //                        filename: "Report_" + tgl1 + "_" + tgl2
-    //                    },
-    //                    {
-    //                        text: "exc", action: function () {
-    //                            console.log("klik tombl datatable");
-    //                            //$("#jajal").load("api/xls");
-    //                            //window.open("/coba/excel?dt1=kasjdkasjda&dt2=lkhdflkasf");
-    //                            window.open("export/r_dailyUnit?tg1=20160401&tg2=20160414&v=43");
-    //                        }
-    //                    }
-    //                ]
-    //            });
-    //            var aa = $('#tbUnit').DataTable();
-    //            //var kol = $('#tbUnit').DataTable().column(2, { page: 'current' });
-    //            //var tot = kol.data().reduce(function (a, b) {
-    //            //    return parseFloat(a) + parseFloat(b);
-    //            //});
-    //            //console.log(tot);
-    //            //console.log(aa);
-    //            //var iColumns = $('#tbUnit thead th').length;
-    //            //console.log(iColumns2);
-    //            var numCols = aa.columns(':visible').nodes().length;
-    //            var tb;
-    //            for (var i = 2; i < 7; i++) {
-    //                var isi = aa.column(i).data().reduce(function (a, b) {
-    //                    console.log('isi a '+i+' : '+a);
-    //                    console.log('isi b ' + i + ' : ' + b);
-    //                    return parseFloat(a) + parseFloat(b);
-    //                });
-    //                console.log('isi kol ke ' + i + ': = ' + parseFloat(isi).toFixed(2));
-    //                tb += '<th>' + parseFloat(isi).toFixed(2) + '</th>';
-    //            }
-
-                
-    //            //console.log(iColumns);
-    //            //console.log(numCols);
-    //            //$("#tbUnit").append('<tfoot><tr><th></th><th>Jumlah</th>'+tb+'</tr></tfoot>');
-    //            //console.log(kol.data().reduce(function (a, b) {
-    //            //    return parseFloat(a) + parseFloat(b);
-    //            //}));
-    //            //console.log(kol.footer());
-    //            //$(aa.table().footer()).html(
-    //            //    kol.data().reduce(function (a,b) {
-    //            //        return parseFloat(a) + parseFloat(b);
-    //            //    })
-    //            //);
-
-    //        },
-    //        "dataType": "json"
-    //    });
-       
-
-    //});
 
     $("#reportMain").click(function () {
         //console.log("klik main unti report");
@@ -535,5 +374,32 @@ $(document).ready(function () {
         }
     });
     //=========================
+
+    //=======
+    //Repoprt D&C
+    //=======
+    $("#r2_layar").click(function () {
+        var tg1 = new Date($("#f_RepDailyDC input[name='tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_RepDailyDC input[name='tgTo']").val());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        var unit = $("#f_RepDailyDC select[name='unitId'] option:selected").val();
+        //var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+        //console.log("==> " + tgl1 + " ===> " + tgl2 + " ====> " + unit);
+        loadTableDailyDrillUnit(tgl1, tgl2, unit);
+
+    });
+
+    $("#r2_excel").click(function () {
+        //console.log("buat excel");
+        var tg1 = new Date($("#f_RepDailyDC input[name='tgFrom']").val());
+        var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tg2 = new Date($("#f_RepDailyDC input[name='tgTo']").val());
+        var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        var unit = $("#f_RepDailyDC select[name='unitId'] option:selected").val();
+
+        window.open("export/r_DC?tg1=" + tgl1 + "&tg2=" + tgl2 + "&u=" + unit);
+    });
+    //=======
 
 })

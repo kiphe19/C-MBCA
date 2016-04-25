@@ -15,7 +15,7 @@ $(document).ready(function () {
         ]
     });
 
-    vesselTable = $('#vesselTable').DataTable({
+    var vesselTable = $('#vesselTable').DataTable({
         dom: "Bfrtip",
         ajax: {
             url: "api/vessel",
@@ -23,13 +23,44 @@ $(document).ready(function () {
         },
         columns: [
             { data: null },
-            { data: "name" },
-            { data: "vs_desc" }
+            { data: "nm" },
+            { data: "own" },
+            { data: "desc" }
         ],
         select: true,
         buttons: [
-            { extend: 'create', editor: editorVes, text: "Add New Vessel" },
-            { extend: 'edit', editor: editorVes },
+            //{ extend: 'create', editor: editorVes, text: "Add New Vessel" },
+            {
+                extend: 'create', text: "New Vessel",
+                action: function () {
+                    $("#modalVessel").modal({ backdrop: false });
+                    $("#modalVessel button[type='submit']").text("Add")
+                    $("#modalVessel input").val(null);
+                    $("#modalVessel input[name='action']").val("create");
+                }
+            },
+            {
+                extend: 'edit',
+                text: 'Edit',
+                action:function(){
+                    //console.log('edittt');
+                    $("#modalVessel").modal({ backdrop: false });
+                    $("#modalVessel button[type='submit']").text("Update")
+                    $("#modalVessel input[name='action']").val("update");
+                   
+
+                    var a = vesselTable.rows('.selected').data(), b = a[0];
+                    console.log(a, b);
+                    if (a.length > 0) {
+                        $("#modalVessel input[name='vessel_name']").val(b.nm);
+                        $("#modalVessel input[name='vessel_own']").val(b.own);
+                        $("#modalVessel input[name='vessel_desc']").val(b.desc);
+                        $("#modalVessel input[name='id']").val(b.id);
+                    }
+
+                }
+                //editor: editorVes
+            },
             { extend: 'remove', editor: editorVes },
         ],
         fnDrawCallback: function (oSettings) {
@@ -419,6 +450,25 @@ $(document).ready(function () {
                 }
             }
         }
+    });
+
+
+    $("#modalVessel form").submit(function (e) {
+        e.preventDefault();
+
+        var data = $(this).serialize();
+        //console.log(data);
+        $.post("api/cs/vessel", data, function (res) {
+            //console.log(res);
+            if (res == "success") {
+                $("#modalVessel").modal('hide');
+                vesselTable.ajax.reload();
+            }
+            else {
+                alert(res);
+            }
+        });
+
     });
 
     $("#modalBarge form").submit(function (e) {

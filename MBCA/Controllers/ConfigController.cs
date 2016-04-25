@@ -94,14 +94,6 @@ namespace chevron.Controllers
                 .Field(new Field("name")
                     .Validator(Validation.NotEmpty())
                 )
-                //.Field(new Field("distance")
-                //    .Validator(Validation.NotEmpty())
-                //    .Validator(Validation.Numeric())
-                //)
-                //.Field(new Field("tgl")
-                //    .Validator(Validation.DateFormat("MM/dd/yyyy"))
-                //    .GetFormatter(Format.DateTime("MM/dd/yyyy H:m:s", "MM/dd/yyyy"))
-                //    )
                 .Process(request)
                 .Data();
 
@@ -323,6 +315,28 @@ namespace chevron.Controllers
             con.Close();
             var mainunitSorted = (from li in mainunit orderby li.Text select li).ToList();
             return mainunitSorted;
+        }
+
+
+        [Route("cs/vessel")]
+        [HttpPost]
+        public string _VesselCreate(FormCollection input)
+        {
+            string q = "";
+            switch (input["action"])
+            {
+                case "create":
+                    q = string.Format("insert into vessel_table (name,vs_owner,vs_desc) values ('{0}','{1}','{2}');", input["vessel_name"], input["vessel_own"], input["vessel_desc"]);
+                    break;
+                case "update":
+                    q = string.Format("update vessel_table set name = '{0}',vs_owner='{1}',vs_desc = '{2}' where id = {3};", input["vessel_name"], input["vessel_own"], input["vessel_desc"], input["id"]);
+                    break;
+                default:
+                    break;
+            }
+            //Response.Write(q);
+            con.queryExec(q);
+            return "success";
         }
 
         [Route("cs/mainunit")]
