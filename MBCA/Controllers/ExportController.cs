@@ -487,9 +487,12 @@ namespace chevron.Controllers
             using (ExcelPackage p = new ExcelPackage())
             {
                 ExcelWorksheet ws = p.Workbook.Worksheets.Add("D&C "+unitname);
+
                 this.logoGb(ws);
+
                 int kol = dt.Columns.Count + 1;
-                // buat Header
+
+                // buat Judul
                 ws.Cells[3, 1].Value = "Drilling & Completion";
                 ws.Cells[3, 1, 3, kol].Merge = true;
                 ws.Cells[3, 1, 3, kol].Style.Font.Bold = true;
@@ -516,7 +519,6 @@ namespace chevron.Controllers
 
 
                 //buat header tabel
-
                 ws.Cells[8,1].Value = "Date";
                 ws.Cells[8,2].Value = "WELL";
                 ws.Cells[8,3].Value = "AFE";
@@ -529,10 +531,16 @@ namespace chevron.Controllers
                 ws.Cells[8,10].Value = "HIRE RATE OF BOATS";
                 ws.Cells[8,11].Value = "MOB/DEMOBS FEES";
                 ws.Cells[8,12].Value = "TOTAL BOAT COST/WELL";
+                //ws.Cells[8,13].Value = "LITERS";
                 ws.Cells[8, 1, 8, kol].Style.WrapText = true;
                 ws.Cells[8, 1, 8, kol].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 ws.Cells[8, 1, 8, kol].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
+                for (int t = 0; t < kol; t++)
+                {
+                    var cc = ws.Cells[8, t + 1].Style.Border;
+                    cc.Left.Style = cc.Top.Style = cc.Right.Style = cc.Bottom.Style = ExcelBorderStyle.Medium;
+                }
 
                 int colIndex, rowIndex;
 
@@ -547,36 +555,36 @@ namespace chevron.Controllers
                         var cell = ws.Cells[rowIndex, colIndex];
 
                         if(colIndex == 7)
-                        {
                             cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
-                        }
-
                         else if (colIndex == 8)
                         {
                             cell.Value = "";
                             cell.Style.Numberformat.Format = "#0.00%";
                         }
                         else if (colIndex > 8)
-                        {
                             cell.Value = Convert.ToDecimal(dr[dc.ColumnName]);
-                        }
                         else
-                        {
                             cell.Value = dr[dc.ColumnName];
-                        }
+
+                        var cc = cell.Style.Border;
+                        cc.Left.Style = cc.Top.Style = cc.Right.Style = cc.Bottom.Style = ExcelBorderStyle.Thin;
 
                         colIndex++;
                     }
+
 
                     ws.Cells[rowIndex, colIndex].Formula = "SUM(" +
                                  ws.Cells[rowIndex, colIndex - 3].Address + ":" +
                                  ws.Cells[rowIndex, colIndex - 1].Address + ")";
 
+                    var dd = ws.Cells[rowIndex, colIndex].Style.Border;
+                    dd.Left.Style = dd.Right.Style = dd.Top.Style = dd.Bottom.Style = ExcelBorderStyle.Thin;
+
                 }
 
 
                 //buat total totalan
-                int row_tot = rowIndex + 2;
+                int row_tot = rowIndex + 1;
                 for (int k = 0; k< 6; k++)
                 {
                     var cel = ws.Cells[row_tot, 7 + k];
@@ -587,7 +595,6 @@ namespace chevron.Controllers
                                ws.Cells[rowIndex, 7+k].Address + ")";
                 }
 
-
                 rowIndex = 8;    
                 foreach(DataRow dr in dt.Rows)
                 {
@@ -596,10 +603,21 @@ namespace chevron.Controllers
                                 ws.Cells[rowIndex,10].Address+"/"+
                                 ws.Cells[row_tot,10].Address+")";
                 }
-                   
+
+                for (int t = 0; t < kol; t++)
+                {
+                    var cc = ws.Cells[row_tot, t + 1].Style.Border;
+                    cc.Top.Style = ExcelBorderStyle.Medium;
+                    cc.Bottom.Style = ExcelBorderStyle.Double;
+                    if (t == 0)
+                        cc.Left.Style = ExcelBorderStyle.Thin;
+
+                    if (t > 5)
+                        cc.Left.Style = cc.Right.Style = ExcelBorderStyle.Thin;
+                }
 
                 //export to excel
-                this.createxls(p, "DC_" + period);
+                this.createxls(p, "DC_" + unitname +"_"+ period);
             }
         }
 

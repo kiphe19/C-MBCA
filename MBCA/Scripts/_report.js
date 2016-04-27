@@ -61,9 +61,12 @@ function loadTableDrillComptUnit(tg1, tg2) {
                         data : "fuel",
                         title: "Fuel Price"
                     },{   
-                        data : "charter",
-                        title: "Charter Price" 
-                    },{ 
+                        data: "charter",
+                        title: "Charter Price"
+                    }, {
+                        data: "mob",
+                        title: "Mob/Demob"
+                    }, {
                         data : "boat",
                         title: "Boat Hours"
                     }],
