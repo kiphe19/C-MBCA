@@ -14,7 +14,7 @@ function loadTableMainUnit(tg1, tg2) {
                 data: json.data,
                 columns: [{
                         data: "main",
-                        title: "Main Unit"
+                        title: "User Department"
                     },{
                         data: "litre",
                         title: "Fuel (L)",
