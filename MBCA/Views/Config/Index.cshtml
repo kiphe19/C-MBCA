@@ -34,10 +34,8 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Name User Department</th>
-                            @*<th>User Unit</th>*@
+                            <th>User Department</th>
                             <th>Description</th>
-
                         </tr>
                     </thead>
                 </table>
@@ -57,7 +55,7 @@
                         <tr>
                             <th>No</th>
                             <th>Name of Unit</th>
-                            <th>Main Unit</th>
+                            <th>User Department</th>
                             <th>Distance Area</th>
                             <th>Date</th>
                         </tr>
@@ -257,7 +255,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Main Unit</label>
+                        <label class="col-sm-2 control-label">User Department</label>
                         <div class="col-sm-10">
                             @Html.DropDownList("mainunit", null, new { @class = "form-control" })
                         </div>
@@ -292,7 +290,7 @@
             <form class="form-horizontal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Main Unit Daily</h4>
+                    <h4 class="modal-title">User Department Daily</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -302,7 +300,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Main Unit</label>
+                        <label class="col-sm-2 control-label">User Department</label>
                         <div class="col-sm-10">
                             @Html.DropDownList("mainunit", null, new { @class = "form-control" })
                         </div>
@@ -331,11 +329,11 @@
             <form class="form-horizontal">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Main Unit</h4>
+                    <h4 class="modal-title">User Department</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Main Unit Name</label>
+                        <label class="col-sm-3 control-label">User Department Name</label>
                         <div class="col-sm-9">
                             <input type="text" name="mainunit_name" class="form-control" autocomplete="off" required />
                         </div>

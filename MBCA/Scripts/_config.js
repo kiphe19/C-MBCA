@@ -128,7 +128,7 @@ $(document).ready(function () {
 
             },
             {
-                text: "Main Unit",
+                text: "User Department",
                 action: function () {
                     $("#modalUnittoMainUnit").modal({ backdrop: false });
                 }
@@ -183,7 +183,7 @@ $(document).ready(function () {
         buttons: [
             {
                 extend: "create",
-                text: "New Main User",
+                text: "New User Department",
                 action: function () {
                     $("#modalMainUnit").modal({ backdrop: false });
                     $("#modalMainUnit button[type='submit']").text("Add")

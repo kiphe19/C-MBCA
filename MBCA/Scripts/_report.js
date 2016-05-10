@@ -3,6 +3,20 @@
 //var aseliTable = $("table").html(); 
 //var tablee = tablee = $("table").DataTable({ "scrollX": true });
 //$("#DataTables_Table_0_wrapper").hide();
+var hrini = new Date();
+var yyyy = hrini.getFullYear();
+var mm = (hrini.getMonth() + 1);
+var dd = (hrini.getDate() < 10) ? "0" + hrini.getDate() : hrini.getDate();
+var start, stop;
+if (dd <= 25) {
+    start = yyyy + "-" + (((mm - 1) < 10) ? "0" + (mm - 1) : (mm - 1)) + "-" + 25;
+    stop = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+}
+else {
+    start = yyyy + "-" + ((mm < 10) ? "0" + mm : mm) + "-" + 25;
+    stop = yyyy + "-" + (((mm + 1) < 10) ? "0" + (mm + 1) : (mm + 1)) + "-" + 25;
+}
+
 
 function loadTableMainUnit(tg1, tg2) {
     $.ajax({
@@ -245,6 +259,10 @@ function loadDailyReportonScreen(ves, tgl1, tgl2, tipe) {
     });
 
 }
+
+
+
+
 $(document).ready(function () {
     $('.dropdown-toggle').dropdown();
 
@@ -344,12 +362,19 @@ $(document).ready(function () {
         //console.log("klik on layar");
         var ves = $("#f_generateReport select[name='vesselId'] option:selected").val();
         var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
+        var tgdari = $("#f_generateReport input[name='tgFrom']").val()
+        var tgke = $("#f_generateReport input[name='tgTo']").val()
+        var tg1, tg2;
+
+        if (tgdari != "" && tgke != "") { tg1 = new Date(tg1); tg2 = new Date(tg2); }
+        else { tg1 = new Date(start); tg2 = new Date(stop); }
+
         var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
-        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
         var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
         var selisih = tg2 - tg1;
 
+        //console.log(tgl1, tgl2);
+        //console.log(new Date(start), new Date(stop));
         if (ves == 0) alert("Pilih Vesel");
         else {
             if (selisih > 0){
@@ -363,16 +388,29 @@ $(document).ready(function () {
         //console.log("klik on excel file");
         var v = $("#f_generateReport select[name='vesselId'] option:selected").val();
         var tipe = $("#f_generateReport select[name='type'] option:selected").val();
-        var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
-        var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
-        var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
-        var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
-        var t = $("#f_generateReport select[name='type'] option:selected").val();
+        var tgdari = $("#f_generateReport input[name='tgFrom']").val()
+        var tgke = $("#f_generateReport input[name='tgTo']").val()
+        var tg1, tg2;
+
+        if (tgdari != "" && tgke != "") { tg1 = new Date(tg1); tg2 = new Date(tg2); }
+        else { tg1 = new Date(start); tg2 = new Date(stop); }
+
+        var tgl1 = tg1.getFullYear() + "-" + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + "-" + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        var tgl2 = tg2.getFullYear() + "-" + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + "-" + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
         var selisih = tg2 - tg1;
+
+        //var v = $("#f_generateReport select[name='vesselId'] option:selected").val();
+        //var tipe = $("#f_generateReport select[name='type'] option:selected").val();
+        //var tg1 = new Date($("#f_generateReport input[name='tgFrom']").val());
+        //var tgl1 = tg1.getFullYear() + (((tg1.getMonth() + 1) < 10) ? ("0" + (tg1.getMonth() + 1)) : (tg1.getMonth() + 1)) + ((tg1.getDate() < 10) ? ("0" + tg1.getDate()) : tg1.getDate());
+        //var tg2 = new Date($("#f_generateReport input[name='tgTo']").val());
+        //var tgl2 = tg2.getFullYear() + (((tg2.getMonth() + 1) < 10) ? ("0" + (tg2.getMonth() + 1)) : (tg2.getMonth() + 1)) + ((tg2.getDate() < 10) ? ("0" + tg2.getDate()) : tg2.getDate());
+        //var t = $("#f_generateReport select[name='type'] option:selected").val();
+        //var selisih = tg2 - tg1;
         //console.log(v, tgl1, tgl2, t, selisih);
         if (v == 0) alert("Pilih Vessel");
         else {
-            if (selisih > 0) window.open("export/r_daily?tg1=" + tgl1 + "&tg2=" + tgl2 + "&v=" + v + "&t=" + t)
+            if (selisih > 0) window.open("export/r_daily?tg1=" + tgl1 + "&tg2=" + tgl2 + "&v=" + v + "&t=" + t);
             else alert("Pilih Periode Laporan");
         }
     });
